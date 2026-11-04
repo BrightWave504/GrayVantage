@@ -1,1280 +1,881 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="theme-color" content="#123e63">
-<title>GrayVantage Academic & Corporate Services</title>
-<style>
-:root{
-  --navy:#123e63;
-  --blue:#2478b7;
-  --blue-light:#eaf3fa;
-  --ink:#233a50;
-  --muted:#65798a;
-  --line:#dce6ee;
-  --background:#f5f8fb;
-  --white:#fff;
-}
-*{box-sizing:border-box}
-html{scroll-behavior:smooth}
-body{
-  margin:0;
-  background:var(--background);
-  color:var(--ink);
-  font-family:Inter,"Segoe UI",Arial,sans-serif;
-  font-size:16px;
-  line-height:1.75;
-}
-h1,h2,h3,h4{
-  color:var(--navy);
-  line-height:1.3;
-  letter-spacing:-.025em;
-}
-h1{font-size:clamp(30px,4vw,45px)}
-h2{font-size:clamp(23px,3vw,30px)}
-h3{font-size:20px}
-p{margin:0 0 17px}
-a{color:var(--blue)}
-button,input,select,textarea{font:inherit}
-button,.button{
-  display:inline-flex;
-  justify-content:center;
-  align-items:center;
-  gap:8px;
-  background:var(--blue);
-  color:white;
-  border:1px solid var(--blue);
-  border-radius:8px;
-  padding:11px 20px;
-  font-size:14px;
-  font-weight:650;
-  cursor:pointer;
-  text-decoration:none;
-  transition:background .2s,transform .2s;
-}
-button:hover,.button:hover{
-  background:#155b91;
-  color:white;
-}
-button:disabled{opacity:.55;cursor:not-allowed}
-button.secondary{
-  background:#edf3f8;
-  border-color:#edf3f8;
-  color:var(--navy);
-}
-button.secondary:hover{background:#dcebf5}
-button.danger{background:#a82e38;border-color:#a82e38}
-.container{max-width:1200px;margin:auto;padding:0 25px}
-header{
-  background:white;
-  position:sticky;
-  top:0;
-  z-index:100;
-  border-bottom:1px solid var(--line);
-}
-.navbar{
-  min-height:88px;
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:25px;
-}
-.brand{
-  display:flex;
-  align-items:center;
-  gap:14px;
-  color:var(--navy);
-  font-weight:750;
-  font-size:18px;
-  line-height:1.35;
-}
-.brand img{width:58px;height:58px;object-fit:contain}
-nav{display:flex;gap:5px;flex-wrap:wrap}
-nav button{
-  background:transparent;
-  color:var(--navy);
-  border:0;
-  padding:10px 12px;
-}
-nav button:hover{background:var(--blue-light);color:var(--navy)}
-.page{display:none;padding:55px 0}
-.page.active{display:block}
-.hero{
-  background:linear-gradient(115deg,#123e63,#2e7fb7);
-  color:white;
-  padding:90px 0;
-}
-.hero-grid{
-  display:grid;
-  grid-template-columns:1.4fr 1fr;
-  align-items:center;
-  gap:50px;
-}
-.hero h1{font-size:clamp(38px,5vw,65px);color:white;margin:18px 0}
-.hero p{font-size:19px;max-width:720px}
-.hero .eyebrow{font-size:13px;color:#b8dcf5}
-.hero img{
-  width:100%;
-  max-width:360px;
-  display:block;
-  margin:auto;
-  padding:20px;
-  background:white;
-  border-radius:18px;
-}
-.hero button{background:white;color:var(--navy);border-color:white}
-.eyebrow{
-  color:var(--blue);
-  font-size:12px;
-  font-weight:800;
-  text-transform:uppercase;
-  letter-spacing:2px;
-}
-.section-title{margin:0 0 28px}
-.grid{
-  display:grid;
-  grid-template-columns:repeat(3,minmax(0,1fr));
-  gap:24px;
-}
-.card{
-  background:white;
-  border:1px solid var(--line);
-  border-radius:15px;
-  padding:32px;
-  box-shadow:0 5px 22px rgba(17,61,99,.035);
-}
-.card h3{margin:15px 0}
-.pill{
-  display:inline-block;
-  background:var(--blue-light);
-  color:#175e91;
-  border-radius:30px;
-  padding:6px 13px;
-  font-size:12px;
-  font-weight:750;
-  letter-spacing:.2px;
-}
-.details{max-width:960px}
-.details .card{margin-top:24px}
-.details h2{margin-top:32px}
-.info-box{
-  background:#eef6fc;
-  border-left:4px solid var(--blue);
-  padding:20px 24px;
-  margin:24px 0;
-  border-radius:5px 10px 10px 5px;
-}
-.notice{
-  background:#fff8e9;
-  border:1px solid #eedbb4;
-  border-radius:10px;
-  padding:20px;
-  margin:20px 0;
-}
-.muted{color:var(--muted)}
-.divider{
-  height:1px;
-  background:var(--line);
-  border:0;
-  margin:36px 0;
-}
-.program-header{
-  text-align:center;
-  padding:20px 0 30px;
-}
-.program-header img{width:100px;height:100px;object-fit:contain}
-.program-header h1{font-size:28px;margin:15px 0 8px}
-.program-header p{margin:6px 0}
-.program-section{padding:16px 0}
-.program-section h2{
-  font-size:26px;
-  margin-bottom:14px;
-}
-.program-section h3{font-size:19px;margin-top:25px}
-.program-section ul{padding-left:24px}
-.program-section li{margin-bottom:8px}
-.payment-grid{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:20px;
-}
-.payment-card{
-  border:1px solid var(--line);
-  background:#f8fbfd;
-  padding:24px;
-  border-radius:12px;
-}
-.payment-card h3{margin-top:0}
-.form-grid{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:22px;
-}
-.full{grid-column:1/-1}
-label{
-  display:block;
-  font-size:14px;
-  font-weight:700;
-  margin-bottom:7px;
-  color:var(--navy);
-}
-input,select,textarea{
-  width:100%;
-  padding:12px 14px;
-  border:1px solid #cbd9e5;
-  border-radius:8px;
-  background:white;
-  color:var(--ink);
-  font-size:15px;
-}
-input:focus,select:focus,textarea:focus{
-  outline:2px solid #9ec9eb;
-  border-color:var(--blue);
-}
-input[type=checkbox]{width:auto;accent-color:var(--blue)}
-textarea{min-height:110px}
-.consent{
-  display:flex;
-  gap:12px;
-  align-items:flex-start;
-  padding:20px;
-  background:#f5f9fc;
-  border:1px solid var(--line);
-  border-radius:9px;
-}
-.consent label{font-weight:450;line-height:1.7}
-.consent input{margin-top:5px}
-.status{
-  padding:20px;
-  background:#eaf7ee;
-  border:1px solid #b7dfc4;
-  border-radius:10px;
-  margin-top:24px;
-}
-.dashboard-grid{
-  display:grid;
-  grid-template-columns:repeat(3,1fr);
-  gap:20px;
-}
-.stat{font-size:37px;font-weight:800;color:var(--blue)}
-.table-wrap{overflow-x:auto}
-table{width:100%;border-collapse:collapse}
-th,td{padding:13px;text-align:left;border-bottom:1px solid var(--line)}
-th{background:#eef5fa;font-size:13px}
-td{font-size:14px}
-footer{background:var(--navy);color:white;padding:45px 0;margin-top:50px}
-footer h3,footer a{color:white}
-footer small{color:#c9d9e6}
-@media(max-width:850px){
- .hero-grid,.grid,.form-grid,.payment-grid,.dashboard-grid{
-   grid-template-columns:1fr;
- }
- .full{grid-column:auto}
- .navbar{flex-direction:column;padding-top:15px;padding-bottom:15px}
- nav{justify-content:center}
- .hero{padding:55px 0}
- .card{padding:23px}
- .container{padding-left:18px;padding-right:18px}
-}
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="GrayVantage Academic & Corporate Services — professional certifications, assessments, and corporate training.">
+  <title>GrayVantage Academic & Corporate Services</title>
+  <style>
+    :root {
+      --navy:#103c63;
+      --blue:#287ab8;
+      --light:#e9f4fd;
+      --bg:#f6f9fc;
+      --border:#dce7f0;
+      --text:#18344c;
+      --muted:#65798a;
+      --white:#fff;
+      --green:#177b51;
+      --red:#b42332;
+    }
+    * { box-sizing:border-box; }
+    html { scroll-behavior:smooth; }
+    body { margin:0; font-family:Arial,Helvetica,sans-serif; background:var(--bg); color:var(--text); line-height:1.65; }
+    button,input,select { font:inherit; }
+    button { cursor:pointer; }
+    a { color:inherit; }
+    .container { max-width:1200px; margin:auto; padding:0 22px; }
+    header { background:white; border-bottom:1px solid var(--border); position:sticky; top:0; z-index:20; }
+    .nav { min-height:82px; display:flex; align-items:center; justify-content:space-between; gap:20px; }
+    .brand { display:flex; align-items:center; gap:13px; text-decoration:none; font-weight:800; color:var(--navy); line-height:1.3; }
+    .brand img { width:60px; height:60px; object-fit:contain; }
+    nav { display:flex; flex-wrap:wrap; gap:23px; }
+    nav a { text-decoration:none; font-weight:700; color:var(--navy); }
+    nav a:hover { color:var(--blue); }
+    h1,h2,h3 { line-height:1.2; color:var(--navy); }
+    h1 { font-size:clamp(36px,5vw,64px); margin:15px 0; }
+    h2 { font-size:clamp(26px,3vw,38px); }
+    h3 { font-size:22px; }
+    p { margin:12px 0; }
+    .hero { background:linear-gradient(120deg,#123d63,#307fb9); color:white; padding:85px 0; }
+    .hero h1 { color:white; }
+    .hero p { max-width:730px; font-size:19px; }
+    .hero .eyebrow { color:#b9e5ff; font-weight:800; letter-spacing:2px; }
+    .hero-grid { display:grid; grid-template-columns:1.4fr 1fr; gap:45px; align-items:center; }
+    .hero img { width:100%; border-radius:18px; }
+    .btn { display:inline-block; background:var(--blue); color:white; border:0; border-radius:10px; padding:12px 22px; font-weight:700; text-decoration:none; }
+    .btn:hover { background:#17639b; }
+    .btn.secondary { background:#e7f0f7; color:var(--navy); }
+    .btn.white { background:white; color:var(--navy); }
+    .btn:disabled { opacity:.5; cursor:not-allowed; }
+    section { padding:65px 0; scroll-margin-top:100px; }
+    .cards { display:grid; grid-template-columns:repeat(3,1fr); gap:24px; }
+    .card,.panel { background:white; border:1px solid var(--border); border-radius:18px; padding:27px; box-shadow:0 8px 25px #173c6210; }
+    .card { display:flex; flex-direction:column; align-items:flex-start; }
+    .card p { flex:1; }
+    .tag { display:inline-block; background:#e6f2ff; color:#155987; padding:5px 13px; border-radius:30px; font-size:13px; font-weight:800; }
+    .details { display:none; }
+    .details.active { display:block; }
+    .details ul { padding-left:24px; }
+    .details li { margin-bottom:8px; }
+    .detail-top { display:flex; justify-content:space-between; align-items:center; gap:15px; flex-wrap:wrap; }
+    .info-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:20px; margin:25px 0; }
+    .info-box { background:#f2f8fd; border:1px solid var(--border); border-radius:12px; padding:20px; }
+    .application { max-width:850px; margin:auto; }
+    .form-header { text-align:center; margin-bottom:30px; }
+    .form-header p { color:var(--muted); }
+    .form-grid { display:grid; grid-template-columns:1fr 1fr; gap:19px; }
+    .field { display:flex; flex-direction:column; gap:7px; }
+    .field.full { grid-column:1/-1; }
+    label { font-weight:700; font-size:14px; color:var(--navy); }
+    input,select { width:100%; padding:13px; border:1px solid #cbd9e5; border-radius:9px; background:white; color:var(--text); }
+    input:focus,select:focus { outline:2px solid #8dc5ee; border-color:var(--blue); }
+    .hint { color:var(--muted); font-size:13px; }
+    .consent { display:flex; align-items:flex-start; gap:12px; padding:16px; background:#f2f8fd; border-radius:10px; }
+    .consent input { width:18px; height:18px; margin-top:4px; flex-shrink:0; }
+    .status { padding:14px; border-radius:9px; margin:18px 0; display:none; }
+    .status.success { display:block; background:#e7f7ee; color:#176442; }
+    .status.error { display:block; background:#fff0f0; color:#a1212d; }
+    .slot-note { margin-top:9px; padding:12px; background:#edf6ff; border-radius:9px; font-size:14px; }
+    .dashboard-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:18px; }
+    .stat { background:#f2f8fd; padding:22px; border-radius:12px; }
+    .stat strong { display:block; font-size:28px; color:var(--navy); }
+    .table-wrap { overflow-x:auto; margin-top:20px; }
+    table { width:100%; border-collapse:collapse; min-width:650px; }
+    th,td { padding:12px; text-align:left; border-bottom:1px solid var(--border); }
+    th { background:#edf5fc; color:var(--navy); }
+    .small-btn { border:0; padding:7px 12px; border-radius:7px; background:var(--blue); color:white; margin:3px; }
+    .small-btn.danger { background:var(--red); }
+    .small-btn.green { background:var(--green); }
+    .hidden { display:none!important; }
+    .login-panel { max-width:480px; margin:auto; }
+    .login-panel .field { margin:18px 0; }
+    .muted { color:var(--muted); }
+    footer { background:var(--navy); color:white; padding:35px 0; margin-top:45px; }
+    footer a { color:white; }
+    @media(max-width:850px) {
+      .nav { flex-direction:column; padding:12px 0; }
+      nav { justify-content:center; gap:14px; }
+      .hero-grid,.cards,.info-grid,.dashboard-grid { grid-template-columns:1fr; }
+      .hero { padding:55px 0; }
+    }
+    @media(max-width:550px) {
+      .form-grid { grid-template-columns:1fr; }
+      .field.full { grid-column:auto; }
+      .card,.panel { padding:20px; }
+    }
+  </style>
 </head>
 <body>
 
 <header>
-<div class="container navbar">
-  <div class="brand">
-    <img src="assets/image(20261104-035947).png" alt="GACS Logo">
-    <span>GrayVantage Academic<br>& Corporate Services</span>
+  <div class="container nav">
+    <a class="brand" href="#home">
+      <img src="assets/20261104-040004.png" alt="GACS Logo" onerror="this.src='assets/logo.png'">
+      <span>GrayVantage Academic<br>&amp; Corporate Services</span>
+    </a>
+    <nav>
+      <a href="#home">Home</a>
+      <a href="#services">Services</a>
+      <a href="#apply">Apply</a>
+      <a href="#login">Login</a>
+      <a href="#examinee">Examinee</a>
+      <a href="#admin">Admin</a>
+      <a href="#it">IT</a>
+    </nav>
   </div>
-  <nav aria-label="Main navigation">
-    <button onclick="showPage('home')">Home</button>
-    <button onclick="showPage('apply')">Apply</button>
-    <button onclick="showPage('login')">Login</button>
-    <button onclick="showPage('examinee')">Examinee</button>
-    <button onclick="showPage('admin')">Admin</button>
-    <button onclick="showPage('it')">IT</button>
-  </nav>
-</div>
 </header>
 
 <main>
-
-<!-- HOME -->
-<section id="home" class="page active" style="padding-top:0">
-  <div class="hero">
+  <section id="home" class="hero">
     <div class="container hero-grid">
       <div>
         <div class="eyebrow">INNOVATE. LEARN. LEAD.</div>
         <h1>Build your skills.<br>Validate your expertise.</h1>
-        <p>GrayVantage Academic & Corporate Services provides professional training, seminars, webinars, and competency-based assessment programs for aspiring and working professionals.</p>
-        <button onclick="showPage('apply')">Explore Certification Applications &rarr;</button>
+        <p>GrayVantage Academic &amp; Corporate Services provides professional training, seminars, webinars, and competency-based assessment programs for students and working professionals.</p>
+        <a class="btn white" href="#services">Explore Our Programs</a>
       </div>
-      <img src="assets/image(20261104-035947).png" alt="GrayVantage Official Logo">
+      <img src="assets/hero.png" alt="GrayVantage Academic and Corporate Services" onerror="this.style.display='none'">
     </div>
-  </div>
+  </section>
 
-  <div class="container" style="padding-top:65px">
-    <div class="eyebrow">What We Offer</div>
-    <h2 class="section-title">Our Programs and Services</h2>
-
-    <div class="grid">
-      <article class="card">
-        <span class="pill">Assessment & Certification</span>
-        <h3>Certified Professional Office Administrator (CPOA)</h3>
-        <p>Develop professional competencies in office administration, records management, communication, organizational coordination, and workplace ethics.</p>
-        <button onclick="showPage('cpoa-details')">See Details &rarr;</button>
-      </article>
-
-      <article class="card">
-        <span class="pill">Assessment & Certification</span>
-        <h3>Certified Junior Marketing Associate (CJMA)</h3>
-        <p>Build practical marketing competencies in branding, consumer behavior, digital marketing, market research, and strategic communication.</p>
-        <button onclick="showPage('cjma-details')">See Details &rarr;</button>
-      </article>
-
-      <article class="card">
-        <span class="pill">Professional Development</span>
-        <h3>Corporate Training & Seminars</h3>
-        <p>Professional development programs in leadership, office administration, customer service, operations management, and marketing.</p>
-        <button onclick="showPage('training-details')">See Details &rarr;</button>
-      </article>
-    </div>
-
-    <div class="card" style="margin-top:35px">
-      <div class="eyebrow">Our Organization</div>
-      <h2>About GrayVantage</h2>
-      <p>GrayVantage Academic & Corporate Services is a professional learning and development organization dedicated to strengthening workplace competencies through training, educational seminars, and assessment-based certification programs.</p>
-      <p>Our programs support learners, educational institutions, and organizations in building practical knowledge and developing professional capabilities.</p>
-      <p><strong>Founder and Lead Consultant:</strong> Mr. Augusto M. Acosta</p>
-      <p><strong>DTI Registration:</strong> 7316721 | <strong>BIR Registration:</strong> 487617982</p>
-    </div>
-  </div>
-</section>
-
-<!-- CPOA DETAILS -->
-<section id="cpoa-details" class="page">
-<div class="container details">
-  <button class="secondary" onclick="showPage('home')">&larr; Back to Programs</button>
-  <div class="card">
-    <span class="pill">Professional Certification Program</span>
-    <h1>Certified Professional Office Administrator (CPOA)</h1>
-    <p class="muted">GrayVantage Academic & Corporate Services</p>
-    <p class="muted">DTI Registration No. 7316721 | BIR Registration No. 487617982</p>
-    <p><strong>International Partnership:</strong> Reccsar Private Limited, Madurai, Tamil Nadu, India</p>
-
-    <div class="info-box"><strong>CPOA: Learn First, Excel Later — A Learning-First Approach Before Assessment</strong></div>
-
-    <h2>Program Overview</h2>
-    <p>The Certified Professional Office Administrator (CPOA) is a private competency-based micro-credential recognizing knowledge and skills in office management, administrative support, and organizational operations.</p>
-    <p>The program equips participants with essential competencies in professional communication, records management, customer relations, administrative coordination, and professional ethics.</p>
-
-    <div class="info-box">
-      The Certified Professional Office Administrator (CPOA) Program is open to all courses and disciplines since effective office administration, communication, records management, coordination, and professional workplace skills are essential across all industries and organizations.
-    </div>
-
-    <h2>Examination Information</h2>
-    <p><strong>Delivery Platform:</strong> Zoom</p>
-    <p><strong>Registration Fee:</strong> ₱900.00</p>
-    <p><strong>Program Inclusions:</strong></p>
-    <ul>
-      <li>Training Materials and Reviewer</li>
-      <li>Comprehensive Discussion</li>
-      <li>CPOA Certification upon successful completion and passing of the assessment</li>
-    </ul>
-
-    <h2>Resource Speaker</h2>
-    <p><strong>Mr. Augusto M. Acosta</strong><br>Founder and Lead Consultant<br>CPOA Lecturer</p>
-
-    <h2>Registration and Inquiries</h2>
-    <p><strong>Email:</strong> acostaaugusto24@gmail.com</p>
-    <p><strong>Facebook:</strong> GrayVantage Academic & Corporate Services</p>
-    <p><strong>Contact:</strong> 0977-394-6417 / 0905-5416-372</p>
-    <button onclick="selectProgram('CPOA')">Apply for CPOA &rarr;</button>
-  </div>
-</div>
-</section>
-
-<!-- CJMA DETAILS -->
-<section id="cjma-details" class="page">
-<div class="container details">
-  <button class="secondary" onclick="showPage('home')">&larr; Back to Programs</button>
-  <div class="card">
-    <span class="pill">Professional Certification Program</span>
-    <h1>Certified Junior Marketing Associate (CJMA)</h1>
-    <p class="muted">GrayVantage Academic & Corporate Services</p>
-    <p class="muted">DTI Registration No. 7316721 | BIR Registration No. 487617982</p>
-    <p><strong>International Partnership:</strong> Reccsar Private Limited, Madurai, Tamil Nadu, India</p>
-
-    <div class="info-box"><strong>CJMA: Learn First, Excel Later — A Learning-First Approach Before Assessment</strong></div>
-
-    <h2>Program Overview</h2>
-    <p>The Certified Junior Marketing Associate (CJMA) is a private competency-based professional certification designed for students and professionals seeking to strengthen and validate their competencies in contemporary marketing practice.</p>
-    <p>The program develops practical knowledge in branding, digital marketing, consumer behavior, market research, and marketing communication strategies.</p>
-    <p>Participants will learn to create effective marketing campaigns, identify target markets, and apply data-driven decision-making to support business growth.</p>
-    <p>CJMA prepares learners and working professionals for entry-level marketing responsibilities and continued career development in competitive business environments.</p>
-
-    <h2>Examination Information</h2>
-    <p><strong>Delivery Platform:</strong> Zoom</p>
-    <p><strong>Registration Fee:</strong> ₱900.00</p>
-    <p><strong>Program Inclusions:</strong></p>
-    <ul>
-      <li>Training Materials and Reviewer</li>
-      <li>Comprehensive Discussion</li>
-      <li>CJMA Certification upon successful completion and passing of the assessment</li>
-    </ul>
-
-    <h2>Resource Speaker</h2>
-    <p><strong>Mr. Augusto M. Acosta</strong><br>Founder and Lead Consultant<br>Corporate Marketing Trainer</p>
-
-    <h2>Registration and Inquiries</h2>
-    <p><strong>Email:</strong> acostaaugusto24@gmail.com</p>
-    <p><strong>Facebook:</strong> GrayVantage Academic & Corporate Services</p>
-    <p><strong>Contact:</strong> 0977-394-6417 / 0905-5416-372</p>
-    <button onclick="selectProgram('CJMA')">Apply for CJMA &rarr;</button>
-  </div>
-</div>
-</section>
-
-<!-- TRAINING DETAILS -->
-<section id="training-details" class="page">
-<div class="container details">
-  <button class="secondary" onclick="showPage('home')">&larr; Back to Programs</button>
-  <div class="card">
-    <span class="pill">Professional Development</span>
-    <h1>Corporate Training & Seminars</h1>
-    <div class="info-box"><strong>Elevate Your Skills. Empower Your Career. Achieve Professional Excellence.</strong></div>
-    <p>GrayVantage Academic & Corporate Services recognizes the importance of continuous learning and professional development in today's competitive workplace.</p>
-    <p>Our training programs equip students, aspiring professionals, employees, and organizations with practical knowledge and industry-relevant competencies.</p>
-
-    <h2>Available Training Programs</h2>
-    <h3>Cashiering Operations</h3>
-    <p>Develop practical skills in retail operations, cash handling, and transaction processing.</p>
-    <h3>Leadership and Supervisory Skills</h3>
-    <p>Strengthen leadership capabilities, team management, professional communication, and decision-making.</p>
-    <h3>Office Administration</h3>
-    <p>Improve office procedures, scheduling, documentation, and administrative operations.</p>
-    <h3>Customer Service</h3>
-    <p>Develop customer engagement, relationship management, and problem-solving competencies.</p>
-    <h3>Operations Management</h3>
-    <p>Understand process optimization, resource allocation, and operational efficiency.</p>
-    <h3>Marketing Management</h3>
-    <p>Develop marketing strategies, identify market opportunities, and support organizational growth.</p>
-
-    <h2>Professional Certification Programs</h2>
-    <ul>
-      <li>Certified Professional Office Administrator (CPOA)</li>
-      <li>Certified Junior Marketing Associate (CJMA)</li>
-    </ul>
-
-    <h2>Institutional Partnerships</h2>
-    <p>GrayVantage welcomes collaboration with schools, colleges, universities, companies, government agencies, and other organizations seeking customized training and professional development initiatives.</p>
-
-    <h2>Training Inquiries</h2>
-    <p><strong>Email:</strong> acostaaugusto24@gmail.com</p>
-    <p><strong>Facebook:</strong> GrayVantage Academic & Corporate Services</p>
-    <button onclick="showPage('seminar-apply')">Apply for Training or Seminar &rarr;</button>
-  </div>
-</div>
-</section>
-
-<!-- UNIFIED CERTIFICATION APPLICATION -->
-<section id="apply" class="page">
-<div class="container details">
-  <div class="card">
-
-    <div class="program-header">
-      <img src="assets/image(20261104-035947).png" alt="GrayVantage Logo">
-      <h1>GRAYVANTAGE ACADEMIC & CORPORATE SERVICES</h1>
-      <p class="eyebrow">INNOVATE. LEARN. LEAD.</p>
-      <p class="muted">DTI Registration No. 7316721 | BIR Registration No. 487617982</p>
-      <p class="muted">International Partnership with Reccsar Private Limited, Madurai, Tamil Nadu, India</p>
-    </div>
-
-    <hr class="divider">
-
-    <div class="eyebrow">Official Application Portal</div>
-    <h1>Professional Certification Application</h1>
-    <p>Welcome to the official certification application portal of GrayVantage Academic & Corporate Services.</p>
-    <p>Our competency-based certification programs support students, aspiring professionals, and working individuals seeking to strengthen their knowledge, develop practical competencies, and pursue professional development.</p>
-    <p>Please review the following program information before completing the unified certification application form.</p>
-
-    <hr class="divider">
-
-    <div class="program-section">
-      <span class="pill">Certification Program 01</span>
-      <h2>Certified Professional Office Administrator (CPOA)</h2>
-      <p><strong>Professional Development in Office Administration and Organizational Operations</strong></p>
-      <p>The CPOA program is designed for individuals interested in developing professional skills in office administration, organizational coordination, records management, workplace communication, and administrative operations.</p>
-      <p>The program is available to participants from all academic courses and professional disciplines.</p>
-
-      <h3>International Partnership</h3>
-      <p>The program is offered in collaboration with Reccsar Private Limited, Madurai, Tamil Nadu, India, to support professional learning and competency development.</p>
-
-      <div class="info-box">
-        <strong>Program Eligibility</strong>
-        <p style="margin-top:10px;margin-bottom:0">The Certified Professional Office Administrator (CPOA) Program is open to all courses and disciplines since effective office administration, communication, records management, coordination, and professional workplace skills are essential across all industries and organizations.</p>
-      </div>
-
-      <h3>Target Participants</h3>
-      <ul>
-        <li>Administrative Assistants and Office Personnel</li>
-        <li>Office Managers and Administrative Supervisors</li>
-        <li>BSOA Students and Students from Other Academic Programs</li>
-        <li>Aspiring and Working Professionals</li>
-      </ul>
-
-      <h3>Program Inclusions</h3>
-      <ul>
-        <li>Comprehensive Online Lecture and Discussion</li>
-        <li>Training Materials and Reviewer</li>
-        <li>CPOA Certification upon successful completion and passing of the assessment</li>
-        <li>Post-nominal designation upon certification (e.g., Juan A. Cruz, CPOA)</li>
-      </ul>
-
-      <p><strong>Delivery Platform:</strong> Zoom</p>
-      <p><strong>Registration Fee:</strong> ₱900.00</p>
-    </div>
-
-    <hr class="divider">
-
-    <div class="program-section">
-      <span class="pill">Certification Program 02</span>
-      <h2>Certified Junior Marketing Associate (CJMA)</h2>
-      <p><strong>Professional Development in Contemporary Marketing Practice</strong></p>
-      <p>GrayVantage Academic & Corporate Services introduces the Certified Junior Marketing Associate (CJMA), a competency-based certification program developed for students and professionals seeking to strengthen and validate their knowledge in contemporary marketing practice.</p>
-      <p>The program establishes foundational marketing competencies while developing practical, industry-relevant skills in strategic marketing, consumer behavior, digital marketing, and campaign execution.</p>
-      <p>Participants will develop the ability to think strategically, formulate effective marketing campaigns, understand consumer and market dynamics, and apply data-driven decision-making in real-world business settings.</p>
-
-      <h3>Program Coverage</h3>
-      <ul>
-        <li>Fundamentals of Marketing Management</li>
-        <li>Branding and Marketing Communication</li>
-        <li>Consumer Behavior and Market Analysis</li>
-        <li>Digital Marketing Strategies</li>
-        <li>Market Research and Data-Driven Decision-Making</li>
-        <li>Marketing Campaign Planning and Execution</li>
-      </ul>
-
-      <h3>Program Inclusions</h3>
-      <ul>
-        <li>Comprehensive Online Lecture and Discussion</li>
-        <li>Training Materials and Reviewer</li>
-        <li>CJMA Certification upon successful completion and passing of the assessment</li>
-      </ul>
-
-      <p><strong>Delivery Platform:</strong> Zoom</p>
-      <p><strong>Registration Fee:</strong> ₱900.00</p>
-    </div>
-
-    <hr class="divider">
-
-    <div class="program-section">
-      <div class="eyebrow">Registration Information</div>
-      <h2>Payment Instructions</h2>
-      <p>The registration fee for either the CPOA or CJMA certification program is <strong>₱900.00</strong>.</p>
-      <p>Applicants may use either of the following authorized payment channels:</p>
-
-      <div class="payment-grid">
-        <div class="payment-card">
-          <span class="pill">Electronic Wallet</span>
-          <h3>GCash</h3>
-          <p><strong>Account Name</strong><br>Riza A.</p>
-          <p><strong>Mobile Number</strong><br>0905-5416-372</p>
-        </div>
-        <div class="payment-card">
-          <span class="pill">Bank Transfer</span>
-          <h3>GoTyme Bank</h3>
-          <p><strong>Account Name</strong><br>Riza Abinal</p>
-          <p><strong>Account Number</strong><br>0115-4420-5645</p>
-        </div>
-      </div>
-
-      <div class="notice">
-        <strong>Application and Payment Verification Procedure</strong>
-        <p style="margin-top:10px">Applicants must first complete and submit the certification application form. After submission, payment instructions and document requirements will be provided through the registered email address once the automated email system is activated.</p>
-        <p>Proof of payment and supporting requirements must be submitted through the instructions provided by GrayVantage. Applications are subject to administrative review and verification.</p>
-        <p style="margin-bottom:0"><strong>Account activation will take place only after administrative approval.</strong></p>
+  <section id="services">
+    <div class="container">
+      <h2>Our Programs and Services</h2>
+      <div class="cards">
+        <article class="card">
+          <span class="tag">Assessment &amp; Certification</span>
+          <h3>Certified Professional Office Administrator (CPOA)</h3>
+          <p>Develop competencies in office administration, records management, communication, customer service, and professional ethics.</p>
+          <button class="btn" onclick="showDetails('cpoa')">See Details</button>
+        </article>
+        <article class="card">
+          <span class="tag">Assessment &amp; Certification</span>
+          <h3>Certified Junior Marketing Associate (CJMA)</h3>
+          <p>Build expertise in branding, consumer behavior, digital marketing, research, and marketing communication.</p>
+          <button class="btn" onclick="showDetails('cjma')">See Details</button>
+        </article>
+        <article class="card">
+          <span class="tag">Professional Development</span>
+          <h3>Corporate Training &amp; Seminars</h3>
+          <p>Practical training in leadership, office administration, cashiering, customer service, operations, and marketing.</p>
+          <button class="btn" onclick="showDetails('training')">See Details</button>
+        </article>
       </div>
     </div>
+  </section>
 
-    <hr class="divider">
+  <section id="program-details" class="details">
+    <div class="container">
+      <div class="panel">
+        <div class="detail-top">
+          <span class="tag">GrayVantage Program Information</span>
+          <button class="btn secondary" onclick="closeDetails()">Close Details</button>
+        </div>
 
-    <div class="program-section">
-      <h2>Online Lecture and Examination Access</h2>
-      <p>Both certification programs will be conducted through Zoom. Approved applicants will be provided with access instructions for their examinee accounts.</p>
-      <p>The Zoom meeting link and assessment examination link will be published in the designated examinee dashboard by the administrator.</p>
-      <p>Examination access will be available only during the scheduled assessment period, subject to the program administrator's instructions.</p>
-    </div>
+        <div id="detail-cpoa" class="hidden">
+          <h2>Certified Professional Office Administrator (CPOA)</h2>
+          <p><strong>Learn First, Excel Later — A Learning-First Approach Before Assessment</strong></p>
+          <p>CPOA is a private competency-based micro-credential recognizing competence in office management, administrative support, and organizational operations.</p>
+          <p>The program develops communication, records management, customer relations, professional ethics, and administrative skills.</p>
+          <p>The CPOA program is open to all courses and disciplines because office administration and workplace skills are relevant across industries.</p>
+          <div class="info-grid">
+            <div class="info-box">
+              <h3>Program Details</h3>
+              <p><strong>Platform:</strong> Zoom</p>
+              <p><strong>Registration Fee:</strong> ₱900.00</p>
+              <p><strong>Inclusions:</strong> Reviewer, training materials, and comprehensive discussion.</p>
+              <p>Certification is subject to successful completion and passing of the assessment.</p>
+            </div>
+            <div class="info-box">
+              <h3>Resource Speaker</h3>
+              <p><strong>Mr. Augusto M. Acosta</strong></p>
+              <p>Founder &amp; Lead Consultant<br>CPOA Lecturer</p>
+              <p><strong>International Partner:</strong> Reccsar Private Limited, Madurai, Tamil Nadu, India.</p>
+            </div>
+          </div>
+          <h3>Payment Information</h3>
+          <p><strong>GCash:</strong> 0905-5416-372 — Riza A.</p>
+          <p><strong>GoTyme:</strong> 0115-4420-5645 — Riza Abinal</p>
+          <p><strong>Contact:</strong> 0977-394-6417 / 0905-5416-372</p>
+          <p><strong>Email:</strong> acostaaugusto24@gmail.com</p>
+          <p class="muted">DTI Registration No. 7316721 | BIR Registration No. 487617982</p>
+          <button class="btn" onclick="applyFor('CPOA')">Apply for CPOA</button>
+        </div>
 
-    <hr class="divider">
+        <div id="detail-cjma" class="hidden">
+          <h2>Certified Junior Marketing Associate (CJMA)</h2>
+          <p><strong>Learn First, Excel Later — A Learning-First Approach Before Assessment</strong></p>
+          <p>The Certified Junior Marketing Associate is a private competency-based certification program for students and professionals seeking to validate their modern marketing competencies.</p>
+          <p>Participants develop practical expertise in branding, digital marketing, consumer behavior, market research, marketing communications, campaign execution, and data-driven decision-making.</p>
+          <div class="info-grid">
+            <div class="info-box">
+              <h3>Program Details</h3>
+              <p><strong>Platform:</strong> Zoom</p>
+              <p><strong>Investment Fee:</strong> ₱900.00</p>
+              <p><strong>Inclusions:</strong> Training materials, comprehensive discussion, and certification upon successful assessment.</p>
+            </div>
+            <div class="info-box">
+              <h3>Resource Speaker</h3>
+              <p><strong>Mr. Augusto M. Acosta</strong></p>
+              <p>Founder &amp; Lead Consultant<br>Corporate Marketing Trainer</p>
+              <p><strong>International Partner:</strong> Reccsar Private Limited, Madurai, Tamil Nadu, India.</p>
+            </div>
+          </div>
+          <h3>Payment Information</h3>
+          <p><strong>GCash:</strong> 0905-5416-372 — Riza A.</p>
+          <p><strong>GoTyme:</strong> 0115-4420-5645 — Riza Abinal</p>
+          <h3>Important Disclaimer</h3>
+          <p>CJMA is a private competency-based certification and is not a government-issued license, PRC accreditation, or professional regulatory certification. Certificate issuance is subject to successful completion of training and assessment.</p>
+          <p class="muted">DTI Registration No. 7316721 | BIR Registration No. 487617982</p>
+          <button class="btn" onclick="applyFor('CJMA')">Apply for CJMA</button>
+        </div>
 
-    <div class="program-section">
-      <h2>Certification and Data Privacy Disclaimer</h2>
-      <div class="info-box">
-        <p>The CPOA and CJMA certification programs are conducted by GrayVantage Academic & Corporate Services for educational and competency development purposes.</p>
-        <p>These are private competency-based certifications and are not equivalent to government-issued professional licenses, Professional Regulation Commission (PRC) accreditation, or professional regulatory certifications.</p>
-        <p>Certificate issuance is subject to completion of the applicable training requirements and successful passing of the assessment.</p>
-        <p>Personal information collected through the application process will be used for registration, communication, identity verification, examination administration, and certification purposes in accordance with applicable Philippine data privacy laws.</p>
-        <p style="margin-bottom:0">Personal information will be handled securely and will not be disclosed to unauthorized third parties, except where consent is provided or disclosure is required by law.</p>
+        <div id="detail-training" class="hidden">
+          <h2>Corporate Training &amp; Seminars</h2>
+          <p><strong>Elevate Your Skills. Empower Your Career. Achieve Professional Excellence.</strong></p>
+          <p>GrayVantage provides practical, industry-relevant training for students, employees, aspiring professionals, and organizations.</p>
+          <h3>Available Training Programs</h3>
+          <ul>
+            <li><strong>Cashiering Operations:</strong> Retail operations, cash handling, and transaction processing.</li>
+            <li><strong>Leadership and Supervisory Skills:</strong> Team management, communication, and decision-making.</li>
+            <li><strong>Office Administration:</strong> Office procedures, scheduling, documentation, and administrative operations.</li>
+            <li><strong>Customer Service:</strong> Customer engagement, relationship management, and problem-solving.</li>
+            <li><strong>Operations Management:</strong> Process optimization, resource allocation, and operational efficiency.</li>
+            <li><strong>Marketing Management:</strong> Marketing strategy, market opportunities, and organizational growth.</li>
+          </ul>
+          <p>Customized programs are available for schools, universities, companies, government agencies, and other organizations.</p>
+          <p><strong>Email:</strong> acostaaugusto24@gmail.com</p>
+          <a class="btn" href="mailto:acostaaugusto24@gmail.com?subject=Corporate%20Training%20and%20Seminar%20Application">Apply for Individual, Group or Organization Seminar</a>
+        </div>
       </div>
     </div>
+  </section>
 
-    <hr class="divider">
+  <section id="apply">
+    <div class="container">
+      <div class="application">
+        <div class="form-header">
+          <span class="tag">Official Application Portal</span>
+          <h2>Certification Examination Application</h2>
+          <p>GrayVantage Academic &amp; Corporate Services</p>
+          <p>Complete the application form below and select an available examination schedule. Examination dates, times, and available slots are managed by the administration.</p>
+        </div>
 
-    <div class="program-section" id="applicationFormSection">
-      <div class="eyebrow">Registration</div>
-      <h2>Certification Application Form</h2>
-      <p>Please complete all required fields accurately. The information provided will be used to process your application and identify your examinee account.</p>
+        <div class="panel">
+          <form id="applicationForm">
+            <div class="form-grid">
 
-      <form id="applicationForm" class="form-grid">
-        <div class="full">
-          <label for="email">1. Email Address *</label>
-          <input id="email" name="email" type="email" placeholder="example@gmail.com" required>
+              <div class="field full">
+                <label for="email">1. Email Address *</label>
+                <input id="email" type="email" autocomplete="email" required placeholder="example@email.com">
+              </div>
+
+              <div class="field full">
+                <label for="fullname">2. Full Name *</label>
+                <input id="fullname" type="text" required placeholder="e.g., Juan A. Cruz">
+              </div>
+
+              <div class="field">
+                <label for="school">3. School &amp; Campus *</label>
+                <input id="school" type="text" required placeholder="e.g., STI College – Lipa">
+              </div>
+
+              <div class="field">
+                <label for="company">4. Company (If Applicable)</label>
+                <input id="company" type="text" placeholder="Company or organization name">
+                <span class="hint">Optional. Leave blank if not applicable.</span>
+              </div>
+
+              <div class="field">
+                <label for="course">5. Course or Program *</label>
+                <input id="course" type="text" required placeholder="e.g., BSBA – Human Resource Management">
+              </div>
+
+              <div class="field">
+                <label for="dob">6. Date of Birth *</label>
+                <input id="dob" type="date" required>
+                <span class="hint">Used for account identification.</span>
+              </div>
+
+              <div class="field">
+                <label for="program">7. Examination Program *</label>
+                <select id="program" required>
+                  <option value="">Select examination program</option>
+                  <option value="CPOA">Certified Professional Office Administrator (CPOA)</option>
+                  <option value="CJMA">Certified Junior Marketing Associate (CJMA)</option>
+                </select>
+              </div>
+
+              <div class="field">
+                <label for="examSchedule">8. Examination Batch, Date &amp; Time *</label>
+                <select id="examSchedule" required disabled>
+                  <option value="">Select an examination program first</option>
+                </select>
+                <span class="hint">Only admin-published schedules with available slots can be selected.</span>
+              </div>
+
+              <div class="field full">
+                <div id="slotInformation" class="slot-note" aria-live="polite">
+                  Available examination schedules will appear here once published by the administrator.
+                </div>
+              </div>
+
+              <div class="field full">
+                <label>9. Privacy Consent *</label>
+                <div class="consent">
+                  <input id="privacy" type="checkbox" required>
+                  <label for="privacy">
+                    I consent to the collection and processing of my personal information for examination registration, communication, account identification, and certification administration in accordance with applicable data privacy laws.
+                  </label>
+                </div>
+              </div>
+
+              <div class="field full">
+                <button id="submitApplication" type="submit" class="btn">
+                  10. Submit Application
+                </button>
+              </div>
+
+            </div>
+          </form>
+          <div id="applicationStatus" class="status" role="status" aria-live="polite"></div>
         </div>
-        <div class="full">
-          <label for="fullName">2. Full Name *</label>
-          <input id="fullName" name="fullName" placeholder="Juan A. Cruz" required>
-        </div>
-        <div class="full">
-          <label for="school">3. School & Campus *</label>
-          <input id="school" name="school" placeholder="STI College - Lipa" required>
-        </div>
-        <div class="full">
-          <label for="course">4. Course or Program *</label>
-          <input id="course" name="course" placeholder="BS Business Administration" required>
-        </div>
-        <div class="full">
-          <label for="dob">5. Date of Birth *</label>
-          <input id="dob" name="dob" type="date" required>
-          <small class="muted">Required for account identification and verification.</small>
-        </div>
-        <div class="full">
-          <label for="program">6. Examination Program *</label>
-          <select id="program" name="program" required>
-            <option value="">Select Certification Program</option>
-            <option value="CPOA">Certified Professional Office Administrator (CPOA)</option>
-            <option value="CJMA">Certified Junior Marketing Associate (CJMA)</option>
-          </select>
-        </div>
-        <div class="full">
-          <label for="examMonth">7. Examination Batch or Month *</label>
-          <input id="examMonth" name="examMonth" type="month" required>
-        </div>
-        <div class="full">
-          <label>8. Data Privacy Consent *</label>
-          <div class="consent">
-            <input id="privacyConsent" type="checkbox" name="privacyConsent" required>
-            <label for="privacyConsent">
-              I acknowledge that I have read and understood the Certification and Data Privacy Disclaimer. I voluntarily consent to the collection and processing of my personal information for certification registration, communication, identity verification, examination administration, and account identification purposes.
-            </label>
+      </div>
+    </div>
+  </section>
+
+  <section id="login">
+    <div class="container">
+      <div class="panel login-panel">
+        <h2>Portal Login</h2>
+        <p class="muted">Access your approved examinee account or authorized staff dashboard.</p>
+        <form id="loginForm">
+          <div class="field">
+            <label for="username">Username or Email</label>
+            <input id="username" autocomplete="username" required>
+          </div>
+          <div class="field">
+            <label for="password">Password</label>
+            <input id="password" type="password" autocomplete="current-password" required>
+          </div>
+          <button class="btn" type="submit">Login</button>
+        </form>
+        <div id="loginStatus" class="status" role="status"></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="examinee">
+    <div class="container">
+      <div class="panel">
+        <h2>Examinee Dashboard</h2>
+        <p class="muted">Your examination schedule, Zoom meeting information, and assessment access will appear here after your account is approved and authenticated.</p>
+        <div id="examineeContent" class="info-grid">
+          <div class="info-box">
+            <h3>Examination Schedule</h3>
+            <p>Login required.</p>
+          </div>
+          <div class="info-box">
+            <h3>Zoom &amp; Assessment</h3>
+            <p>Meeting links and examinations are released by the administrator.</p>
           </div>
         </div>
-        <div class="full">
-          <button type="submit">9. Submit Application &rarr;</button>
-        </div>
-      </form>
-      <div id="applyMessage" aria-live="polite"></div>
+      </div>
     </div>
+  </section>
 
-  </div>
-</div>
-</section>
+  <section id="admin">
+    <div class="container">
+      <div class="panel">
+        <h2>Administration Dashboard</h2>
+        <p class="muted">Manage examination programs, batches, dates, times, and available slots.</p>
+        <div id="adminLocked" class="info-box">
+          Administrator authentication and role verification are required before schedule management can be enabled.
+        </div>
 
-<!-- SEMINAR APPLICATION -->
-<section id="seminar-apply" class="page">
-<div class="container details">
-  <button class="secondary" onclick="showPage('training-details')">&larr; Back to Training Programs</button>
-  <div class="card">
-    <div class="eyebrow">Training Registration</div>
-    <h1>Corporate Training & Seminar Application</h1>
-    <p>Submit an inquiry for individual, group, or organizational training arrangements.</p>
-    <form id="seminarForm" class="form-grid">
-      <div class="full">
-        <label>Applicant Classification *</label>
-        <select name="type" required>
-          <option value="">Select Applicant Type</option>
-          <option>Individual</option>
-          <option>Group</option>
-          <option>Organization</option>
-        </select>
-      </div>
-      <div>
-        <label>Full Name / Contact Person *</label>
-        <input name="name" required>
-      </div>
-      <div>
-        <label>Email Address *</label>
-        <input type="email" name="email" required>
-      </div>
-      <div class="full">
-        <label>School / Company / Organization</label>
-        <input name="organization">
-      </div>
-      <div class="full">
-        <label>Preferred Training Program *</label>
-        <select name="training" required>
-          <option value="">Select Training Program</option>
-          <option>Cashiering Operations</option>
-          <option>Leadership and Supervisory Skills</option>
-          <option>Office Administration</option>
-          <option>Customer Service</option>
-          <option>Operations Management</option>
-          <option>Marketing Management</option>
-          <option>Customized Training Program</option>
-        </select>
-      </div>
-      <div>
-        <label>Estimated Number of Participants</label>
-        <input type="number" name="participants" min="1">
-      </div>
-      <div>
-        <label>Preferred Training Date</label>
-        <input type="date" name="date">
-      </div>
-      <div class="full">
-        <label>Additional Information</label>
-        <textarea name="message" placeholder="Provide additional training requirements or inquiries."></textarea>
-      </div>
-      <div class="full">
-        <button type="submit">Prepare Training Inquiry &rarr;</button>
-      </div>
-    </form>
-    <div id="seminarMessage" aria-live="polite"></div>
-  </div>
-</div>
-</section>
+        <div id="adminContent" class="hidden">
+          <h3>Create Examination Schedule</h3>
+          <form id="scheduleForm">
+            <div class="form-grid">
+              <div class="field">
+                <label for="scheduleProgram">Examination Program</label>
+                <select id="scheduleProgram" required>
+                  <option value="CPOA">CPOA</option>
+                  <option value="CJMA">CJMA</option>
+                </select>
+              </div>
+              <div class="field">
+                <label for="batchName">Examination Batch</label>
+                <input id="batchName" required placeholder="e.g., Batch 32">
+              </div>
+              <div class="field">
+                <label for="examDate">Examination Date</label>
+                <input id="examDate" type="date" required>
+              </div>
+              <div class="field">
+                <label for="startTime">Start Time</label>
+                <input id="startTime" type="time" required>
+              </div>
+              <div class="field">
+                <label for="endTime">End Time</label>
+                <input id="endTime" type="time" required>
+              </div>
+              <div class="field">
+                <label for="totalSlots">Total Examination Slots</label>
+                <input id="totalSlots" type="number" min="1" required>
+              </div>
+              <div class="field full">
+                <label for="zoomLink">Zoom Meeting Link</label>
+                <input id="zoomLink" type="url" placeholder="https://zoom.us/j/...">
+              </div>
+              <div class="field full">
+                <label for="assessmentLink">Assessment Form Link</label>
+                <input id="assessmentLink" type="url" placeholder="https://...">
+              </div>
+              <div class="field full">
+                <button class="btn" type="submit">Publish Examination Schedule</button>
+              </div>
+            </div>
+          </form>
 
-<!-- LOGIN -->
-<section id="login" class="page">
-<div class="container details">
-  <div class="card">
-    <div class="eyebrow">Secure Portal</div>
-    <h1>Examinee Account Login</h1>
-    <p>Access to the examinee dashboard is intended for applicants whose certification registrations have been verified and approved.</p>
-    <form id="loginForm" class="form-grid">
-      <div class="full">
-        <label for="username">Username</label>
-        <input id="username" autocomplete="username" placeholder="Enter your assigned username" required>
+          <div id="scheduleStatus" class="status" role="status"></div>
+          <h3>Published Examination Schedules</h3>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Program</th>
+                  <th>Batch</th>
+                  <th>Date</th>
+                  <th>Time</th>
+                  <th>Available / Total</th>
+                  <th>Status</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody id="scheduleTable"></tbody>
+            </table>
+          </div>
+
+          <h3>Submitted Applications</h3>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Applicant</th>
+                  <th>Program</th>
+                  <th>Batch</th>
+                  <th>Schedule</th>
+                  <th>Status</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody id="applicationsTable"></tbody>
+            </table>
+          </div>
+        </div>
       </div>
-      <div class="full">
-        <label for="password">Password</label>
-        <input id="password" type="password" autocomplete="current-password" required>
+    </div>
+  </section>
+
+  <section id="it">
+    <div class="container">
+      <div class="panel">
+        <h2>IT Department Dashboard</h2>
+        <p class="muted">Authorized IT personnel can manage user accounts, access permissions, authentication, and system configuration once the secure backend is connected.</p>
+        <div class="info-box">
+          <h3>System Administration</h3>
+          <p>Role-based access, password resets, audit logs, and account management require Supabase Authentication and server-side authorization.</p>
+          <p>Passwords must never be displayed or stored in plaintext.</p>
+        </div>
       </div>
-      <div class="full"><button type="submit">Sign In</button></div>
-    </form>
-    <div id="loginMessage" aria-live="polite"></div>
-    <div class="notice"><strong>Development Notice:</strong> Authentication is currently a browser-local demonstration. Secure Supabase authentication must be configured before real applicants use this portal.</div>
-  </div>
-</div>
-</section>
-
-<!-- DASHBOARDS -->
-<section id="examinee" class="page">
-<div class="container">
-  <div class="eyebrow">Candidate Portal</div>
-  <h1>Examinee Dashboard</h1>
-  <button class="secondary" onclick="logout()">Sign Out</button>
-  <div id="examineeContent" style="margin-top:25px"></div>
-</div>
-</section>
-
-<section id="admin" class="page">
-<div class="container">
-  <div class="eyebrow">Administration</div>
-  <h1>Administrator Dashboard</h1>
-  <button class="secondary" onclick="logout()">Sign Out</button>
-  <div id="adminContent" style="margin-top:25px"></div>
-</div>
-</section>
-
-<section id="it" class="page">
-<div class="container">
-  <div class="eyebrow">Information Technology</div>
-  <h1>IT Department Dashboard</h1>
-  <button class="secondary" onclick="logout()">Sign Out</button>
-  <div id="itContent" style="margin-top:25px"></div>
-</div>
-</section>
-
+    </div>
+  </section>
 </main>
 
 <footer>
-<div class="container">
-  <h3>GrayVantage Academic & Corporate Services</h3>
-  <p>INNOVATE. LEARN. LEAD.</p>
-  <p>Email: <a href="mailto:acostaaugusto24@gmail.com">acostaaugusto24@gmail.com</a></p>
-  <p>Contact: 0977-394-6417</p>
-  <small>Website front-end prototype. Online database synchronization, secure account authentication, and automatic email notifications require backend integration.</small>
-</div>
+  <div class="container">
+    <strong>GrayVantage Academic &amp; Corporate Services</strong>
+    <p>Innovate. Learn. Lead.</p>
+    <p>Email: <a href="mailto:acostaaugusto24@gmail.com">acostaaugusto24@gmail.com</a></p>
+    <p>Contact: 0977-394-6417</p>
+    <small>Copyright &copy; <span id="year"></span> GrayVantage Academic &amp; Corporate Services.</small>
+  </div>
 </footer>
 
 <script>
 "use strict";
 
 /*
-  GRAYVANTAGE FRONT-END PROTOTYPE
+  SUPABASE INTEGRATION
 
-  This version uses browser-local storage for demonstration.
-  Do not use it to collect real personal information.
+  This is a GitHub Pages-compatible frontend.
 
-  Supabase authentication, Row Level Security, secure account
-  activation, and server-side examination authorization must
-  be configured before production deployment.
+  To activate shared, real-time examination slots:
+  1. Create Supabase tables for examination_schedules
+     and applications.
+  2. Configure Supabase Auth.
+  3. Enforce row-level security (RLS).
+  4. Publish schedules using an authenticated admin role.
+  5. Submit applications through a secure backend function
+     that atomically checks and reserves a slot.
+  6. Configure transactional emails on the backend.
+
+  Never place a Supabase service_role key in this file.
+
+  The localStorage schedule store below is intentionally
+  disabled for public applications. It cannot reliably
+  enforce shared availability across applicants.
 */
 
-const STORAGE_KEY="grayvantage_demo_v3";
+const CONFIG = {
+  apiBaseUrl: "",
+  useBackend: false
+};
 
-function defaultState(){
-  return{
-    applications:[],
-    settings:{
-      zoom:"",
-      examUrl:"",
-      date:"",
-      start:"09:00",
-      end:"12:00",
-      open:false
+const $ = id => document.getElementById(id);
+
+let schedules = [];
+let currentUser = null;
+
+$("year").textContent = new Date().getFullYear();
+$("dob").max = new Date().toISOString().slice(0,10);
+
+function showDetails(type) {
+  $("program-details").classList.add("active");
+  ["cpoa","cjma","training"].forEach(name => {
+    $("detail-" + name).classList.toggle("hidden",name !== type);
+  });
+  $("program-details").scrollIntoView({behavior:"smooth"});
+}
+
+function closeDetails() {
+  $("program-details").classList.remove("active");
+  $("services").scrollIntoView({behavior:"smooth"});
+}
+
+function applyFor(program) {
+  $("program").value = program;
+  updateScheduleOptions();
+  $("apply").scrollIntoView({behavior:"smooth"});
+}
+
+function showStatus(elementId,message,type) {
+  const el = $(elementId);
+  el.textContent = message;
+  el.className = "status " + type;
+}
+
+function formatDate(date) {
+  if (!date) return "";
+  const parts = date.split("-");
+  return parts.length === 3
+    ? `${parts[1]}/${parts[2]}/${parts[0]}`
+    : date;
+}
+
+function formatTime(time) {
+  if (!time) return "";
+  const [hour,minute] = time.split(":").map(Number);
+  return new Date(2000,0,1,hour,minute)
+    .toLocaleTimeString("en-PH",{
+      hour:"numeric",
+      minute:"2-digit",
+      hour12:true
+    });
+}
+
+function scheduleLabel(schedule) {
+  return `${schedule.batch_name} — ${formatDate(schedule.exam_date)} — ${formatTime(schedule.start_time)} to ${formatTime(schedule.end_time)} — ${schedule.available_slots} slot(s) available`;
+}
+
+async function api(path,options={}) {
+  if (!CONFIG.useBackend || !CONFIG.apiBaseUrl) {
+    throw new Error("The secure backend has not been configured.");
+  }
+
+  const response = await fetch(CONFIG.apiBaseUrl + path,{
+    ...options,
+    headers:{
+      "Content-Type":"application/json",
+      ...(options.headers || {})
     }
-  };
+  });
+
+  const data = await response.json().catch(()=>({}));
+
+  if (!response.ok) {
+    throw new Error(data.error || "Request failed.");
+  }
+
+  return data;
 }
 
-let state;
-try{
-  state=JSON.parse(localStorage.getItem(STORAGE_KEY))||defaultState();
-}catch{
-  state=defaultState();
-}
+async function loadSchedules() {
+  if (!CONFIG.useBackend) {
+    schedules = [];
+    updateScheduleOptions();
+    return;
+  }
 
-let session;
-try{
-  session=JSON.parse(sessionStorage.getItem("grayvantage_session"));
-}catch{
-  session=null;
-}
-
-function save(){
-  localStorage.setItem(STORAGE_KEY,JSON.stringify(state));
-}
-
-function escapeHTML(value){
-  return String(value??"").replace(/[&<>"']/g,c=>({
-    "&":"&amp;",
-    "<":"&lt;",
-    ">":"&gt;",
-    '"':"&quot;",
-    "'":"&#39;"
-  })[c]);
-}
-
-function safeURL(value){
-  try{
-    const url=new URL(value);
-    return url.protocol==="https:"?escapeHTML(url.href):"";
-  }catch{
-    return "";
+  try {
+    const data = await api("/public/schedules");
+    schedules = Array.isArray(data) ? data : data.schedules || [];
+    updateScheduleOptions();
+  } catch (error) {
+    schedules = [];
+    updateScheduleOptions();
+    $("slotInformation").textContent =
+      "Unable to retrieve examination schedules. Please try again later.";
   }
 }
 
-function showPage(id){
-  document.querySelectorAll(".page").forEach(page=>{
-    page.classList.remove("active");
-  });
-  const target=document.getElementById(id);
-  if(!target)return;
-  target.classList.add("active");
-  if(id==="examinee")renderExaminee();
-  if(id==="admin")renderAdmin();
-  if(id==="it")renderIT();
-  window.scrollTo(0,0);
-}
+function updateScheduleOptions() {
+  const program = $("program").value;
+  const select = $("examSchedule");
+  const previous = select.value;
 
-function selectProgram(program){
-  showPage("apply");
-  document.getElementById("program").value=program;
-  document.getElementById("applicationFormSection")
-    .scrollIntoView({behavior:"smooth",block:"start"});
-}
+  select.replaceChildren();
 
-/* CERTIFICATION APPLICATION */
+  const placeholder = document.createElement("option");
+  placeholder.value = "";
+  placeholder.textContent = program
+    ? "Select an available examination schedule"
+    : "Select an examination program first";
 
-document.getElementById("applicationForm").addEventListener("submit",function(e){
-  e.preventDefault();
-  const data=Object.fromEntries(new FormData(this).entries());
-  const nameParts=data.fullName.trim().split(/\s+/);
+  select.appendChild(placeholder);
 
-  const duplicate=state.applications.some(app=>
-    app.email.toLowerCase()===data.email.trim().toLowerCase() &&
-    app.program===data.program &&
-    app.status!=="Rejected"
+  const available = schedules.filter(schedule =>
+    schedule.program === program &&
+    schedule.status === "open" &&
+    Number(schedule.available_slots) > 0
   );
 
-  if(duplicate){
-    document.getElementById("applyMessage").innerHTML=
-      '<div class="notice">An application with this email address and certification program already exists in this browser.</div>';
+  available.sort((a,b) =>
+    `${a.exam_date}T${a.start_time}`
+      .localeCompare(`${b.exam_date}T${b.start_time}`)
+  );
+
+  for (const schedule of available) {
+    const option = document.createElement("option");
+    option.value = String(schedule.id);
+    option.textContent = scheduleLabel(schedule);
+    select.appendChild(option);
+  }
+
+  select.disabled = !program || available.length === 0;
+
+  if (available.some(s => String(s.id) === previous)) {
+    select.value = previous;
+  }
+
+  if (!program) {
+    $("slotInformation").textContent =
+      "Please select CPOA or CJMA to view examination availability.";
+  } else if (!CONFIG.useBackend) {
+    $("slotInformation").textContent =
+      "Examination scheduling is awaiting administrator backend configuration. No dates or slots are currently confirmed.";
+  } else if (available.length === 0) {
+    $("slotInformation").textContent =
+      "There are currently no published examination schedules with available slots for this program.";
+  } else {
+    $("slotInformation").textContent =
+      `${available.length} examination schedule(s) currently available. Slots are subject to confirmation at submission.`;
+  }
+}
+
+$("program").addEventListener("change",updateScheduleOptions);
+
+$("examSchedule").addEventListener("change",function() {
+  const selected = schedules.find(s =>
+    String(s.id) === this.value
+  );
+
+  if (selected) {
+    $("slotInformation").textContent =
+      `Selected: ${scheduleLabel(selected)}. Availability will be rechecked when you submit.`;
+  }
+});
+
+$("applicationForm").addEventListener("submit",async event => {
+  event.preventDefault();
+
+  const scheduleId = $("examSchedule").value;
+
+  if (!scheduleId) {
+    showStatus(
+      "applicationStatus",
+      "Please select a valid examination schedule with available slots.",
+      "error"
+    );
     return;
   }
 
-  const app={
-    id:"GACS-"+Date.now().toString(36).toUpperCase(),
-    email:data.email.trim(),
-    fullName:data.fullName.trim(),
-    firstName:nameParts[0]||"",
-    lastName:nameParts[nameParts.length-1]||"",
-    school:data.school.trim(),
-    course:data.course.trim(),
-    dob:data.dob,
-    program:data.program,
-    examMonth:data.examMonth,
-    status:"Pending",
-    username:"",
-    createdAt:new Date().toISOString()
+  const payload = {
+    email:$("email").value.trim(),
+    full_name:$("fullname").value.trim(),
+    school_campus:$("school").value.trim(),
+    company:$("company").value.trim() || null,
+    course_program:$("course").value.trim(),
+    date_of_birth:$("dob").value,
+    examination_program:$("program").value,
+    schedule_id:scheduleId,
+    privacy_consent:$("privacy").checked
   };
 
-  state.applications.push(app);
-  save();
-  this.reset();
+  if (!payload.privacy_consent) {
+    showStatus("applicationStatus","Privacy consent is required.","error");
+    return;
+  }
 
-  document.getElementById("applyMessage").innerHTML=`
-    <div class="status">
-      <h3>Application Recorded — Demonstration</h3>
-      <p>Your application has been saved in this browser for demonstration purposes.</p>
-      <p><strong>Application Reference:</strong> ${escapeHTML(app.id)}</p>
-      <p><strong>Certification Program:</strong> ${escapeHTML(app.program)}</p>
-      <p>Once the live email system is configured, applicants will receive payment instructions and document requirements through their registered email address.</p>
-      <p><strong>Application Status:</strong> Pending Administrative Review</p>
-    </div>
-  `;
+  const button = $("submitApplication");
+  button.disabled = true;
+  button.textContent = "Submitting Application...";
+
+  try {
+    const result = await api("/public/applications",{
+      method:"POST",
+      body:JSON.stringify(payload)
+    });
+
+    showStatus(
+      "applicationStatus",
+      `Application submitted successfully. Reference: ${result.reference || "Pending"}. Please check your email for instructions on submitting proof of payment and other requirements. Your application is subject to administrative review.`,
+      "success"
+    );
+
+    $("applicationForm").reset();
+    await loadSchedules();
+
+  } catch(error) {
+    showStatus(
+      "applicationStatus",
+      error.message,
+      "error"
+    );
+  } finally {
+    button.disabled = false;
+    button.textContent = "10. Submit Application";
+  }
 });
 
-/* USERNAME GENERATION */
+/*
+  Authentication must be implemented through Supabase Auth.
 
-function generateUsername(app){
-  const firstTwo=app.firstName.replace(/[^a-z]/gi,"").slice(0,2);
-  const surname=app.lastName.replace(/[^a-z]/gi,"");
-  const month=app.examMonth.slice(5,7);
-  const base=(firstTwo+surname+month).toUpperCase();
-  let username=base;
-  let counter=2;
+  Do not authenticate by comparing usernames and passwords
+  in browser JavaScript or localStorage.
 
-  while(state.applications.some(other=>
-    other.id!==app.id && other.username===username
-  )){
-    username=base+counter++;
-  }
-  return username;
-}
+  The backend should return only authorized role data.
+*/
 
-/* DEMONSTRATION LOGIN */
+$("loginForm").addEventListener("submit",async event => {
+  event.preventDefault();
 
-document.getElementById("loginForm").addEventListener("submit",function(e){
-  e.preventDefault();
-
-  const username=document.getElementById("username").value.trim().toUpperCase();
-  const password=document.getElementById("password").value;
-
-  const applicant=state.applications.find(app=>{
-    const demoPassword=
-      app.dob.slice(5,7)+"-"+
-      app.dob.slice(8,10)+"-"+
-      app.dob.slice(0,4);
-
-    return app.status==="Approved" &&
-      app.username===username &&
-      password===demoPassword;
-  });
-
-  if(!applicant){
-    document.getElementById("loginMessage").innerHTML=
-      '<div class="notice">Invalid credentials or application not yet approved.</div>';
-    return;
-  }
-
-  session={role:"examinee",applicationId:applicant.id};
-  sessionStorage.setItem("grayvantage_session",JSON.stringify(session));
-  showPage("examinee");
+  showStatus(
+    "loginStatus",
+    "Secure login is awaiting Supabase Authentication configuration. No credentials have been submitted.",
+    "error"
+  );
 });
 
-function logout(){
-  session=null;
-  sessionStorage.removeItem("grayvantage_session");
-  showPage("login");
+function requireAdmin() {
+  return currentUser &&
+    currentUser.authenticated === true &&
+    currentUser.role === "admin";
 }
 
-/* EXAMINEE DASHBOARD */
+$("scheduleForm").addEventListener("submit",async event => {
+  event.preventDefault();
 
-function renderExaminee(){
-  const target=document.getElementById("examineeContent");
-
-  if(!session || session.role!=="examinee"){
-    target.innerHTML=`
-      <div class="notice">Please sign in using your approved examinee account.</div>
-      <button onclick="showPage('login')">Go to Login</button>`;
+  if (!requireAdmin()) {
+    showStatus(
+      "scheduleStatus",
+      "Administrator authentication is required.",
+      "error"
+    );
     return;
   }
 
-  const app=state.applications.find(a=>a.id===session.applicationId);
-  if(!app || app.status!=="Approved"){
-    logout();
+  const payload = {
+    program:$("scheduleProgram").value,
+    batch_name:$("batchName").value.trim(),
+    exam_date:$("examDate").value,
+    start_time:$("startTime").value,
+    end_time:$("endTime").value,
+    total_slots:Number($("totalSlots").value),
+    zoom_link:$("zoomLink").value.trim() || null,
+    assessment_link:$("assessmentLink").value.trim() || null
+  };
+
+  if (payload.end_time <= payload.start_time) {
+    showStatus(
+      "scheduleStatus",
+      "Examination end time must be later than the start time.",
+      "error"
+    );
     return;
   }
 
-  const s=state.settings;
-  const now=new Date();
-  const today=now.getFullYear()+"-"+
-    String(now.getMonth()+1).padStart(2,"0")+"-"+
-    String(now.getDate()).padStart(2,"0");
-  const time=String(now.getHours()).padStart(2,"0")+":"+
-    String(now.getMinutes()).padStart(2,"0");
+  try {
+    await api("/admin/schedules",{
+      method:"POST",
+      body:JSON.stringify(payload)
+    });
 
-  const available=s.open && s.date===today &&
-    time>=s.start && time<=s.end;
+    showStatus(
+      "scheduleStatus",
+      "Examination schedule published successfully.",
+      "success"
+    );
 
-  const zoom=safeURL(s.zoom);
-  const exam=safeURL(s.examUrl);
+    $("scheduleForm").reset();
+    await loadSchedules();
+    renderAdminSchedules();
 
-  target.innerHTML=`
-    <div class="dashboard-grid">
-      <div class="card">
-        <span class="pill">Approved Examinee</span>
-        <h3>${escapeHTML(app.fullName)}</h3>
-        <p><strong>Candidate ID:</strong> ${escapeHTML(app.id)}</p>
-        <p><strong>Program:</strong> ${escapeHTML(app.program)}</p>
-      </div>
-      <div class="card">
-        <h3>Assessment Schedule</h3>
-        <p>${escapeHTML(s.date||"To Be Announced")}</p>
-        <p>${escapeHTML(s.start)} – ${escapeHTML(s.end)}</p>
-        <p class="muted">Philippine Standard Time</p>
-      </div>
-      <div class="card">
-        <h3>Online Lecture</h3>
-        <p>Meeting Platform: Zoom</p>
-        ${zoom
-          ? `<a class="button" href="${zoom}" target="_blank" rel="noopener noreferrer">Join Zoom Meeting</a>`
-          : "<p class='muted'>Meeting link has not been published.</p>"}
-      </div>
-    </div>
-    <div class="card" style="margin-top:25px">
-      <h2>Assessment Examination</h2>
-      <p>${available?"The examination window is currently open.":"The examination is not currently available."}</p>
-      ${available&&exam
-        ? `<a class="button" href="${exam}" target="_blank" rel="noopener noreferrer">Open Examination</a>`
-        : "<button disabled>Examination Unavailable</button>"}
-      <p class="muted" style="margin-top:15px">Demonstration only. Production examination access must be enforced on the server.</p>
-    </div>`;
-}
-
-/* ADMINISTRATION */
-
-function renderAdmin(){
-  const target=document.getElementById("adminContent");
-
-  if(!session || session.role!=="admin"){
-    target.innerHTML=`
-      <div class="notice">This is a browser-local demonstration. Administrator access is not secured until Supabase authentication and role-based permissions are configured.</div>
-      <button onclick="demoAdmin()">Open Demo Administrator Dashboard</button>`;
-    return;
+  } catch(error) {
+    showStatus("scheduleStatus",error.message,"error");
   }
+});
 
-  const apps=state.applications;
-  const pending=apps.filter(a=>a.status==="Pending").length;
-  const approved=apps.filter(a=>a.status==="Approved").length;
+function renderAdminSchedules() {
+  const tbody = $("scheduleTable");
+  tbody.replaceChildren();
 
-  target.innerHTML=`
-    <div class="dashboard-grid">
-      <div class="card"><h3>Total Applications</h3><div class="stat">${apps.length}</div></div>
-      <div class="card"><h3>Pending Review</h3><div class="stat">${pending}</div></div>
-      <div class="card"><h3>Approved Applications</h3><div class="stat">${approved}</div></div>
-    </div>
+  if (!requireAdmin()) return;
 
-    <div class="card" style="margin-top:25px">
-      <h2>Application Management</h2>
-      <div class="table-wrap">
-        <table>
-          <thead><tr>
-            <th>Applicant</th><th>Program</th><th>Batch</th>
-            <th>Status</th><th>Username</th><th>Actions</th>
-          </tr></thead>
-          <tbody>
-            ${apps.map(a=>`
-              <tr>
-                <td>${escapeHTML(a.fullName)}<br><small>${escapeHTML(a.email)}</small></td>
-                <td>${escapeHTML(a.program)}</td>
-                <td>${escapeHTML(a.examMonth)}</td>
-                <td>${escapeHTML(a.status)}</td>
-                <td>${escapeHTML(a.username||"Not Assigned")}</td>
-                <td>${a.status==="Pending"?`
-                  <button onclick="approveApplication('${a.id}')">Approve</button>
-                  <button class="danger" onclick="rejectApplication('${a.id}')">Reject</button>
-                `:"—"}</td>
-              </tr>`).join("")}
-          </tbody>
-        </table>
-      </div>
-    </div>
+  schedules.forEach(schedule => {
+    const row = document.createElement("tr");
 
-    <div class="card" style="margin-top:25px">
-      <h2>Examination Scheduling and Access</h2>
-      <form id="examSettingsForm" class="form-grid">
-        <div class="full">
-          <label>Zoom Meeting Link</label>
-          <input type="url" name="zoom" value="${escapeHTML(state.settings.zoom)}" placeholder="https://zoom.us/j/...">
-        </div>
-        <div>
-          <label>Examination Date</label>
-          <input type="date" name="date" value="${escapeHTML(state.settings.date)}">
-        </div>
-        <div>
-          <label>Start Time</label>
-          <input type="time" name="start" value="${escapeHTML(state.settings.start)}">
-        </div>
-        <div>
-          <label>End Time</label>
-          <input type="time" name="end" value="${escapeHTML(state.settings.end)}">
-        </div>
-        <div class="full">
-          <label>Examination Form Link</label>
-          <input type="url" name="examUrl" value="${escapeHTML(state.settings.examUrl)}">
-        </div>
-        <div class="full">
-          <label><input type="checkbox" name="open" ${state.settings.open?"checked":""}> Enable Examination Access</label>
-        </div>
-        <div class="full"><button type="submit">Save Examination Settings</button></div>
-      </form>
-    </div>`;
+    const values = [
+      schedule.program,
+      schedule.batch_name,
+      formatDate(schedule.exam_date),
+      `${formatTime(schedule.start_time)} - ${formatTime(schedule.end_time)}`,
+      `${schedule.available_slots} / ${schedule.total_slots}`,
+      schedule.status
+    ];
 
-  document.getElementById("examSettingsForm").addEventListener("submit",function(e){
-    e.preventDefault();
-    const data=Object.fromEntries(new FormData(this).entries());
+    values.forEach(value => {
+      const td = document.createElement("td");
+      td.textContent = value == null ? "" : String(value);
+      row.appendChild(td);
+    });
 
-    if(data.end<=data.start){
-      alert("The examination end time must be later than the start time.");
-      return;
-    }
-
-    state.settings={
-      zoom:data.zoom||"",
-      examUrl:data.examUrl||"",
-      date:data.date||"",
-      start:data.start,
-      end:data.end,
-      open:!!data.open
-    };
-    save();
-    renderAdmin();
-    alert("Demonstration examination settings saved.");
+    const action = document.createElement("td");
+    action.textContent = "Manage";
+    row.appendChild(action);
+    tbody.appendChild(row);
   });
 }
 
-function approveApplication(id){
-  const app=state.applications.find(a=>a.id===id);
-  if(!app)return;
-
-  app.username=generateUsername(app);
-  app.status="Approved";
-  save();
-  renderAdmin();
-
-  alert("Application Approved\nUsername: "+app.username+
-    "\nDemo password format: MM-DD-YYYY\n\nSecure account activation is required for production.");
+async function refreshSchedules() {
+  await loadSchedules();
+  renderAdminSchedules();
 }
 
-function rejectApplication(id){
-  const app=state.applications.find(a=>a.id===id);
-  if(!app)return;
-
-  if(confirm("Reject this application?")){
-    app.status="Rejected";
-    save();
-    renderAdmin();
-  }
-}
-
-function demoAdmin(){
-  session={role:"admin"};
-  sessionStorage.setItem("grayvantage_session",JSON.stringify(session));
-  renderAdmin();
-}
-
-/* IT DEPARTMENT */
-
-function renderIT(){
-  const target=document.getElementById("itContent");
-
-  if(!session || session.role!=="it"){
-    target.innerHTML=`
-      <div class="notice">IT Department access requires Supabase authentication and secure role-based authorization. This demonstration is not suitable for managing real accounts.</div>
-      <button onclick="demoIT()">Open Demo IT Dashboard</button>`;
-    return;
-  }
-
-  const approved=state.applications.filter(a=>a.status==="Approved");
-
-  target.innerHTML=`
-    <div class="dashboard-grid">
-      <div class="card"><h3>Registered Examinees</h3><div class="stat">${approved.length}</div></div>
-      <div class="card"><h3>Authentication Service</h3><p>Supabase Integration Pending</p></div>
-      <div class="card"><h3>Website Environment</h3><p>GitHub Pages Front-End</p></div>
-    </div>
-    <div class="card" style="margin-top:25px">
-      <h2>Examinee Account Directory</h2>
-      <p class="muted">Passwords are not displayed. Secure password resets and account management must be performed through Supabase Authentication.</p>
-      <div class="table-wrap">
-        <table>
-          <thead><tr><th>Username</th><th>Email</th><th>Program</th><th>Role</th><th>Status</th></tr></thead>
-          <tbody>${approved.map(a=>`
-            <tr>
-              <td>${escapeHTML(a.username)}</td>
-              <td>${escapeHTML(a.email)}</td>
-              <td>${escapeHTML(a.program)}</td>
-              <td>Examinee</td>
-              <td>Approved</td>
-            </tr>`).join("")}
-          </tbody>
-        </table>
-      </div>
-    </div>`;
-}
-
-function demoIT(){
-  session={role:"it"};
-  sessionStorage.setItem("grayvantage_session",JSON.stringify(session));
-  renderIT();
-}
-
-/* SEMINAR INQUIRY */
-
-document.getElementById("seminarForm").addEventListener("submit",function(e){
-  e.preventDefault();
-
-  const data=Object.fromEntries(new FormData(this).entries());
-
-  const subject="Corporate Training and Seminar Inquiry";
-  const body=[
-    "Applicant Classification: "+data.type,
-    "Full Name: "+data.name,
-    "Email: "+data.email,
-    "Organization: "+(data.organization||"N/A"),
-    "Preferred Training: "+data.training,
-    "Estimated Participants: "+(data.participants||"Not Specified"),
-    "Preferred Date: "+(data.date||"Not Specified"),
-    "",
-    "Additional Information:",
-    data.message||"None"
-  ].join("\n");
-
-  document.getElementById("seminarMessage").innerHTML=`
-    <div class="status">
-      Your training inquiry has been prepared. Please complete the submission using your email application.
-    </div>`;
-
-  window.location.href="mailto:acostaaugusto24@gmail.com"+
-    "?subject="+encodeURIComponent(subject)+
-    "&body="+encodeURIComponent(body);
-});
-
+refreshSchedules();
 </script>
+
 </body>
 </html>
