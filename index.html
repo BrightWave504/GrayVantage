@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -90,6 +89,24 @@ h2 {color:var(--navy);font-size:clamp(28px,3vw,39px);margin:0 0 30px}
   .detail-header img:first-child {justify-self:end}
   .detail-header img:last-child {justify-self:start}
 }
+
+/* Dashboard prototype styles */
+.dashboard-shell{display:grid;grid-template-columns:235px 1fr;gap:24px;max-width:1450px;margin:auto;padding:36px 25px;min-height:70vh}
+.dashboard-sidebar{background:#fff;border:1px solid var(--border);border-radius:16px;padding:20px;align-self:start}
+.dashboard-sidebar h3{color:var(--navy);margin:0 0 20px}
+.dashboard-sidebar button{display:block;width:100%;padding:13px 14px;margin:7px 0;text-align:left;background:#fff;color:var(--navy);border:1px solid var(--border);border-radius:9px}
+.dashboard-sidebar button:hover,.dashboard-sidebar button.selected{background:#e3f1ff;border-color:var(--blue)}
+.dashboard-main{min-width:0}.dashboard-main h1{color:var(--navy);margin-top:0}
+.metric-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;margin:22px 0}
+.metric{background:#fff;border:1px solid var(--border);border-radius:14px;padding:22px}.metric strong{display:block;font-size:28px;margin-top:8px;color:var(--navy)}
+.dashboard-panel{background:#fff;border:1px solid var(--border);border-radius:16px;padding:25px;margin:18px 0;overflow:auto}
+.dashboard-panel h2{font-size:23px;margin-bottom:16px}.dashboard-panel table{width:100%;border-collapse:collapse;min-width:480px}
+.dashboard-panel th,.dashboard-panel td{text-align:left;padding:13px;border-bottom:1px solid var(--border)}
+.dashboard-panel th{background:var(--light)}.dashboard-panel .field{max-width:540px}
+.demo-label{font-size:13px;color:#607b91;background:#eaf3fb;padding:7px 11px;border-radius:8px;display:inline-block}
+.preview-actions{display:flex;flex-wrap:wrap;gap:9px;margin-top:18px}
+.dashboard-tab{display:none}.dashboard-tab.active{display:block}
+@media(max-width:800px){.dashboard-shell{grid-template-columns:1fr}.metric-grid{grid-template-columns:1fr}.dashboard-sidebar{display:flex;flex-wrap:wrap;gap:6px}.dashboard-sidebar h3{width:100%}.dashboard-sidebar button{width:auto}}
 </style>
 </head>
 <body>
@@ -402,55 +419,57 @@ h2 {color:var(--navy);font-size:clamp(28px,3vw,39px);margin:0 0 30px}
 </div>
 </section>
 
-<!-- UPDATED LOGIN SECTION -->
 <section id="login" class="page">
-<div class="container">
-<div class="login-box">
-  <h1>Account Login</h1>
-  <p class="muted">Enter your username and password to access your account.</p>
-
-  <form id="loginForm">
-    <div class="field">
-      <label for="loginUsername">Username *</label>
-      <input
-        type="text"
-        id="loginUsername"
-        name="username"
-        placeholder="Enter your username"
-        autocomplete="username"
-        required
-      >
-    </div>
-
-    <div class="field">
-      <label for="loginPassword">Password *</label>
-      <input
-        type="password"
-        id="loginPassword"
-        name="password"
-        placeholder="Enter your password"
-        autocomplete="current-password"
-        required
-      >
-    </div>
-
-    <button type="submit" class="btn btn-primary">
-      Login
-    </button>
-  </form>
-
-  <div id="loginMessage"
-       class="notice"
-       style="display:none;margin-top:20px"
-       role="status">
-  </div>
-
-  <div class="detail-actions">
-    <a href="#home" class="btn">Back to Homepage</a>
-  </div>
+<div class="container"><div class="login-box">
+<h1>Account Login</h1>
+<p class="muted">Enter your username and password.</p>
+<form id="loginForm">
+<div class="field"><label for="loginUsername">Username *</label><input id="loginUsername" name="username" autocomplete="username" required></div>
+<div class="field"><label for="loginPassword">Password *</label><input id="loginPassword" type="password" name="password" autocomplete="current-password" required></div>
+<button class="btn btn-primary" type="submit">Login</button>
+</form>
+<div id="loginMessage" class="notice" style="display:none;margin-top:18px" role="status"></div>
+<div class="detail-actions"><a href="#home" class="btn">Back to Homepage</a></div>
 </div>
-</div>
-</section>
+<div class="dashboard-panel" style="max-width:760px;margin:25px auto">
+<strong>Dashboard previews</strong><p class="muted">Preview only. These buttons do not sign you in or grant real access.</p>
+<div class="preview-actions"><button class="btn" onclick="previewDashboard('examinee')">Examinee Preview</button><button class="btn" onclick="previewDashboard('admin')">Admin Preview</button><button class="btn" onclick="previewDashboard('it')">IT Department Preview</button></div>
+</div></div></section>
+
+
+<section id="examinee" class="page">
+<div class="dashboard-shell"><aside class="dashboard-sidebar"><h3>Examinee Portal</h3>
+<button onclick="switchTab('examinee','overview')">Overview</button><button onclick="switchTab('examinee','schedule')">Examination Schedule</button><button onclick="switchTab('examinee','materials')">Review Materials</button><button onclick="switchTab('examinee','results')">Results & Certificate</button><button onclick="location.hash='login'">Exit Preview</button></aside>
+<div class="dashboard-main"><span class="demo-label">Prototype preview — no examinee account connected</span><h1>Examinee Dashboard</h1>
+<div class="dashboard-tab active" data-role="examinee" data-tab="overview"><div class="metric-grid"><div class="metric">Application status<strong>Not connected</strong></div><div class="metric">Assigned program<strong>—</strong></div><div class="metric">Examination status<strong>Not scheduled</strong></div></div><div class="dashboard-panel"><h2>Welcome to your portal</h2><p>When authentication and a database are connected, you will see your approved application, upcoming assessment, and certification status here.</p></div></div>
+<div class="dashboard-tab" data-role="examinee" data-tab="schedule"><div class="dashboard-panel"><h2>Examination Schedule</h2><div id="examineeSchedules"></div></div></div>
+<div class="dashboard-tab" data-role="examinee" data-tab="materials"><div class="dashboard-panel"><h2>Review Materials</h2><p>No reviewer materials have been published. A secure backend will be needed to deliver materials only to eligible examinees.</p></div></div>
+<div class="dashboard-tab" data-role="examinee" data-tab="results"><div class="dashboard-panel"><h2>Examination Results & Certificates</h2><p>No results or certificates are available. Individual results must be linked to verified examinee accounts.</p></div></div>
+</div></div></section>
+
+<section id="admin" class="page"><div class="dashboard-shell"><aside class="dashboard-sidebar"><h3>Admin Portal</h3>
+<button onclick="switchTab('admin','overview')">Overview</button><button onclick="switchTab('admin','applications')">Applications</button><button onclick="switchTab('admin','schedules')">Manage Schedules</button><button onclick="switchTab('admin','certificates')">Results & Certificates</button><button onclick="location.hash='login'">Exit Preview</button></aside>
+<div class="dashboard-main"><span class="demo-label">Prototype preview — not an authenticated admin session</span><h1>Administrator Dashboard</h1>
+<div class="dashboard-tab active" data-role="admin" data-tab="overview"><div class="metric-grid"><div class="metric">Applications received<strong>0</strong></div><div class="metric">Approved examinees<strong>0</strong></div><div class="metric">Schedules in this browser<strong id="scheduleCount">0</strong></div></div><div class="dashboard-panel"><h2>Administration</h2><p>Manage examination schedules in this browser for testing. Application approvals, payments, certificates, and real-time availability require a backend.</p></div></div>
+<div class="dashboard-tab" data-role="admin" data-tab="applications"><div class="dashboard-panel"><h2>Application Management</h2><p>There are no submitted applications in a connected database. Once configured, this area can support review, approval, rejection, and payment verification.</p></div></div>
+<div class="dashboard-tab" data-role="admin" data-tab="schedules"><div class="dashboard-panel"><h2>Examination Schedule Management</h2><p class="muted">Local browser prototype only. Changes are not shared with other users or devices.</p>
+<form id="scheduleForm"><div class="field"><label for="adminProgram">Certification Program</label><select id="adminProgram" required><option value="CPOA">CPOA</option><option value="CJMA">CJMA</option></select></div>
+<div class="field"><label for="adminBatch">Batch Name</label><input id="adminBatch" placeholder="e.g. Batch 1" maxlength="80" required></div>
+<div class="field"><label for="adminDate">Examination Date</label><input id="adminDate" type="date" required></div>
+<div class="field"><label for="adminTime">Start Time</label><input id="adminTime" type="time" required></div>
+<div class="field"><label for="adminSlots">Available Slots</label><input id="adminSlots" type="number" min="1" max="10000" required></div>
+<button type="submit" class="btn btn-primary">Add Local Schedule</button></form><div id="adminScheduleList"></div></div></div>
+<div class="dashboard-tab" data-role="admin" data-tab="certificates"><div class="dashboard-panel"><h2>Results & Certificate Management</h2><p>Assessment results and certificate issuance will be available after a secure database and authorized approval workflow are configured.</p></div></div>
+</div></div></section>
+
+<section id="it" class="page"><div class="dashboard-shell"><aside class="dashboard-sidebar"><h3>IT Department</h3>
+<button onclick="switchTab('it','overview')">System Overview</button><button onclick="switchTab('it','users')">User Accounts</button><button onclick="switchTab('it','security')">Security & Audit</button><button onclick="switchTab('it','settings')">System Settings</button><button onclick="location.hash='login'">Exit Preview</button></aside>
+<div class="dashboard-main"><span class="demo-label">Prototype preview — not an authenticated IT session</span><h1>IT Department Dashboard</h1>
+<div class="dashboard-tab active" data-role="it" data-tab="overview"><div class="metric-grid"><div class="metric">Authentication backend<strong>Not connected</strong></div><div class="metric">Connected accounts<strong>0</strong></div><div class="metric">Audit logging<strong>Not enabled</strong></div></div><div class="dashboard-panel"><h2>System Status</h2><p>This static website is running locally. Secure account management, server logs, and access control require backend integration.</p></div></div>
+<div class="dashboard-tab" data-role="it" data-tab="users"><div class="dashboard-panel"><h2>User Account Management</h2><table><thead><tr><th>Account</th><th>Role</th><th>Status</th></tr></thead><tbody><tr><td colspan="3">No authenticated users connected</td></tr></tbody></table><p>Future features: create or disable accounts, assign roles, and send password-reset links. Passwords should never be displayed to IT staff.</p></div></div>
+<div class="dashboard-tab" data-role="it" data-tab="security"><div class="dashboard-panel"><h2>Security & Audit Logs</h2><p>Server-side login history, IP addresses, and security event records are not available in this static prototype.</p><p>Implement audit logging with access restrictions and appropriate data retention before production use.</p></div></div>
+<div class="dashboard-tab" data-role="it" data-tab="settings"><div class="dashboard-panel"><h2>System Settings</h2><p>Connect a trusted authentication provider, configure role-based access control, and secure application data before enabling real dashboards.</p></div></div>
+</div></div></section>
 
 </main>
 
@@ -517,7 +536,13 @@ function applyFor(program) {
 
   Do not publish fictional schedules or slot counts.
 */
-const examinationSchedules = [];
+const SCHEDULE_KEY = "gacs_preview_schedules_v1";
+let examinationSchedules = [];
+try {
+  const stored = JSON.parse(localStorage.getItem(SCHEDULE_KEY) || "[]");
+  if (Array.isArray(stored)) examinationSchedules = stored;
+} catch (error) { examinationSchedules = []; }
+
 
 function updateSchedules() {
   const program = document.getElementById("program").value;
@@ -583,17 +608,80 @@ document.getElementById("seminarForm").addEventListener("submit",function(event)
   message.scrollIntoView({behavior:"smooth",block:"center"});
 });
 
-/* UPDATED LOGIN HANDLER */
-document.getElementById("loginForm").addEventListener("submit",function(event) {
-  event.preventDefault();
 
-  const message = document.getElementById("loginMessage");
-  message.style.display = "block";
-  message.textContent =
-    "Login authentication is not yet configured. Please contact the administrator.";
+/* Dashboard preview navigation and local-only schedule management */
+function previewDashboard(role) {
+  if (!["examinee","admin","it"].includes(role)) return;
+  location.hash = role;
+  if (role === "examinee") renderExamineeSchedules();
+  if (role === "admin") renderAdminSchedules();
+}
+function switchTab(role, tab) {
+  document.querySelectorAll('.dashboard-tab[data-role="'+role+'"]').forEach(el => {
+    el.classList.toggle("active", el.dataset.tab === tab);
+  });
+  if (role === "examinee") renderExamineeSchedules();
+  if (role === "admin") renderAdminSchedules();
+}
+function renderExamineeSchedules() {
+  const target = document.getElementById("examineeSchedules");
+  if (!examinationSchedules.length) {
+    target.textContent = "No examination schedules have been configured in this browser.";
+    return;
+  }
+  const table = document.createElement("table");
+  const header = document.createElement("tr");
+  ["Program","Batch / Date","Slots"].forEach(v => {
+    const th = document.createElement("th"); th.textContent=v;header.append(th);
+  });
+  const head = document.createElement("thead");head.append(header);table.append(head);
+  const body = document.createElement("tbody");
+  examinationSchedules.forEach(item => {
+    const tr = document.createElement("tr");
+    [item.program,item.label,String(item.slotsAvailable)].forEach(v => {
+      const td=document.createElement("td");td.textContent=v;tr.append(td);
+    });body.append(tr);
+  });table.append(body);target.replaceChildren(table);
+}
+function renderAdminSchedules() {
+  document.getElementById("scheduleCount").textContent=examinationSchedules.length;
+  const target=document.getElementById("adminScheduleList");target.replaceChildren();
+  if (!examinationSchedules.length) {
+    const p=document.createElement("p");p.textContent="No schedules added yet.";target.append(p);return;
+  }
+  examinationSchedules.forEach(item => {
+    const row=document.createElement("div");row.className="detail-actions";
+    const label=document.createElement("span");label.textContent=item.program+" — "+item.label+" ("+item.slotsAvailable+" slots)";
+    const button=document.createElement("button");button.className="btn";button.textContent="Delete";
+    button.onclick=()=>{
+      examinationSchedules=examinationSchedules.filter(s=>s.id!==item.id);
+      localStorage.setItem(SCHEDULE_KEY,JSON.stringify(examinationSchedules));
+      updateSchedules();renderAdminSchedules();renderExamineeSchedules();
+    };
+    row.append(label,button);target.append(row);
+  });
+}
+document.getElementById("scheduleForm").addEventListener("submit",event=>{
+  event.preventDefault();
+  const program=document.getElementById("adminProgram").value;
+  const batch=document.getElementById("adminBatch").value.trim();
+  const date=document.getElementById("adminDate").value;
+  const time=document.getElementById("adminTime").value;
+  const slots=Number(document.getElementById("adminSlots").value);
+  if (!batch || !date || !time || !Number.isInteger(slots) || slots<1) return;
+  examinationSchedules.push({id:crypto.randomUUID ? crypto.randomUUID() : String(Date.now()),program,label:batch+" — "+date+" "+time,slotsAvailable:slots});
+  localStorage.setItem(SCHEDULE_KEY,JSON.stringify(examinationSchedules));
+  event.target.reset();updateSchedules();renderAdminSchedules();renderExamineeSchedules();
+});
+document.getElementById("loginForm").addEventListener("submit",event=>{
+  event.preventDefault();
+  const msg=document.getElementById("loginMessage");msg.style.display="block";
+  msg.textContent="Secure authentication is not connected yet. Use the dashboard preview buttons below to explore the prototype.";
+  document.getElementById("loginPassword").value="";
 });
 
 updateSchedules();
+renderAdminSchedules();
 </script>
 </body>
 </html>
