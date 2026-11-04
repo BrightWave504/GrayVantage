@@ -1,0 +1,599 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#123e63">
+<title>GrayVantage Academic & Corporate Services</title>
+<style>
+:root {
+  --navy:#103b60;
+  --blue:#287eb9;
+  --light:#f3f8fc;
+  --border:#d8e5ef;
+  --text:#183b57;
+}
+* {box-sizing:border-box}
+html {scroll-behavior:smooth}
+body {margin:0;font-family:Arial,Helvetica,sans-serif;color:var(--text);background:var(--light)}
+button,input,select {font:inherit}
+button,a {cursor:pointer}
+a {text-decoration:none;color:inherit}
+.header {background:#fff;position:sticky;top:0;z-index:100;border-bottom:1px solid var(--border)}
+.nav {max-width:1450px;margin:auto;padding:14px 32px;display:flex;align-items:center;justify-content:space-between;gap:20px}
+.brand {display:flex;align-items:center;gap:15px;color:var(--navy);font-weight:800;font-size:23px;line-height:1.3}
+.brand img {width:72px;height:72px;object-fit:contain}
+.btn {display:inline-block;border:1px solid var(--blue);border-radius:11px;padding:15px 25px;background:#fff;color:var(--navy);font-weight:700;transition:.2s}
+.btn:hover,.btn:focus-visible {background:var(--blue);color:white}
+.btn-primary {background:var(--blue);color:white}
+.btn-primary:hover {background:#145a90}
+.page {display:none}
+.page.active {display:block}
+.hero {background:linear-gradient(110deg,#174266,#3183bd);color:white;padding:75px 5%}
+.hero-inner {max-width:1450px;margin:auto;display:grid;grid-template-columns:1.15fr .85fr;align-items:center;gap:40px}
+.hero h1 {font-size:clamp(44px,5.5vw,82px);line-height:1.13;margin:0 0 28px;letter-spacing:-2px}
+.hero p {font-size:clamp(18px,1.6vw,23px);line-height:1.8;max-width:780px}
+.hero-actions {margin-top:32px}
+.hero-logo {display:flex;justify-content:center;align-items:center}
+.hero-logo img {width:min(100%,460px);aspect-ratio:1;object-fit:contain;border-radius:50%;background:#fff;box-shadow:0 24px 45px #06243d66}
+.container {max-width:1450px;margin:auto;padding:65px 32px}
+h2 {color:var(--navy);font-size:clamp(28px,3vw,39px);margin:0 0 30px}
+.cards {display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:25px}
+.card {background:#fff;border:1px solid var(--border);border-radius:20px;padding:32px;display:flex;flex-direction:column;align-items:flex-start;min-height:350px;box-shadow:0 8px 25px #103b6008}
+.tag {background:#e3f1ff;color:#125b91;padding:10px 15px;border-radius:30px;font-weight:700;font-size:14px}
+.card h3 {font-size:25px;color:var(--navy);line-height:1.35}
+.card p {font-size:18px;line-height:1.8;flex:1}
+.card .btn {margin-top:auto}
+.detail {background:#fff;border:1px solid var(--border);border-radius:20px;padding:40px;max-width:1050px;margin:auto}
+.detail-header {display:grid;grid-template-columns:125px 1fr 125px;align-items:center;gap:25px;text-align:center;border-bottom:1px solid var(--border);padding-bottom:30px}
+.detail-header img {width:120px;max-width:100%;object-fit:contain}
+.detail-header h1 {color:var(--navy);font-size:clamp(24px,3vw,35px);margin:0 0 12px}
+.detail h2 {font-size:25px;margin-top:32px}
+.detail p,.detail li {font-size:17px;line-height:1.8}
+.detail ul {padding-left:25px}
+.detail-actions {display:flex;gap:12px;flex-wrap:wrap;margin-top:30px}
+.info {background:var(--light);border-radius:12px;padding:22px;margin:22px 0}
+.form-wrap {max-width:780px;margin:auto;background:white;padding:38px;border-radius:20px;border:1px solid var(--border)}
+.form-wrap h1 {color:var(--navy)}
+.field {margin:20px 0}
+.field label {display:block;font-weight:700;margin-bottom:9px}
+.field input,.field select {width:100%;border:1px solid #c6d5e2;border-radius:9px;padding:14px;background:#fff;color:var(--text)}
+.field input:focus,.field select:focus {outline:2px solid #77b5e5}
+.checkbox {display:flex;gap:12px;align-items:flex-start;line-height:1.6}
+.checkbox input {width:20px;height:20px;flex-shrink:0}
+.notice {background:#edf5fc;padding:18px;border-radius:10px;line-height:1.7}
+.footer {background:#103b60;color:white;text-align:center;padding:45px 20px;line-height:1.8}
+.footer strong {font-size:19px}
+.login-box {max-width:460px;margin:auto;background:white;border:1px solid var(--border);border-radius:16px;padding:35px}
+.muted {color:#667e91}
+@media(max-width:900px){
+  .hero-inner {grid-template-columns:1fr;text-align:center}
+  .hero p {margin-left:auto;margin-right:auto}
+  .hero-logo img {width:min(75%,340px)}
+  .cards {grid-template-columns:1fr}
+  .card {min-height:auto}
+  .detail-header {grid-template-columns:80px 1fr 80px;gap:10px}
+  .detail-header img {width:80px}
+}
+@media(max-width:550px){
+  .nav {padding:12px 15px}
+  .brand {font-size:15px;gap:8px}
+  .brand img {width:52px;height:52px}
+  .nav .btn {padding:11px 15px}
+  .hero {padding:55px 20px}
+  .hero h1 {letter-spacing:-1px}
+  .container {padding:42px 16px}
+  .detail,.form-wrap {padding:22px}
+  .detail-header {grid-template-columns:1fr 1fr}
+  .detail-header div {grid-column:1/-1;grid-row:2}
+  .detail-header img:first-child {justify-self:end}
+  .detail-header img:last-child {justify-self:start}
+}
+</style>
+</head>
+<body>
+
+<header class="header">
+  <nav class="nav">
+    <a class="brand" href="#home">
+      <img src="assets/GVACS-logo.png" alt="GrayVantage Logo">
+      <span>GrayVantage Academic Corporate Services</span>
+    </a>
+    <a href="#login" class="btn">Login</a>
+  </nav>
+</header>
+
+<main>
+
+<section id="home" class="page active">
+  <div class="hero">
+    <div class="hero-inner">
+      <div>
+        <h1>Build your skills.<br>Validate your expertise.</h1>
+        <p>GrayVantage Academic &amp; Corporate Services provides professional training, seminars, webinars, and competency-based assessment programs for students and working professionals.</p>
+        <div class="hero-actions">
+          <a class="btn" href="#apply">Apply for Assessment</a>
+        </div>
+      </div>
+      <div class="hero-logo">
+        <img src="assets/GVACS-logo.png" alt="GrayVantage Academic and Corporate Services Logo">
+      </div>
+    </div>
+  </div>
+
+  <!-- PROGRAMS ARE PART OF THE MAIN HOMEPAGE -->
+  <div id="services" class="container">
+    <h2>Our Programs and Services</h2>
+    <div class="cards">
+
+      <article class="card">
+        <span class="tag">Assessment &amp; Certification</span>
+        <h3>Certified Professional Office Administrator (CPOA)</h3>
+        <p>Office administration, records management, communication, customer relations, and professional ethics.</p>
+        <a class="btn" href="#cpoa">See Details</a>
+      </article>
+
+      <article class="card">
+        <span class="tag">Assessment &amp; Certification</span>
+        <h3>Certified Junior Marketing Associate (CJMA)</h3>
+        <p>Branding, digital marketing, consumer behavior, market research, and marketing communication.</p>
+        <a class="btn" href="#cjma">See Details</a>
+      </article>
+
+      <article class="card">
+        <span class="tag">Professional Development</span>
+        <h3>Corporate Training &amp; Seminars</h3>
+        <p>Leadership, office administration, cashiering, customer service, operations management, and marketing.</p>
+        <a class="btn" href="#training">See Details</a>
+      </article>
+
+    </div>
+  </div>
+</section>
+
+<section id="cpoa" class="page">
+<div class="container">
+<article class="detail">
+  <div class="detail-header">
+    <img src="assets/GVACS-logo.png" alt="GrayVantage Logo">
+    <div>
+      <h1>Certified Professional Office Administrator (CPOA)</h1>
+      <strong>GrayVantage Academic &amp; Corporate Services</strong>
+    </div>
+    <img src="assets/CPOA-logo.png" alt="CPOA Logo">
+  </div>
+
+  <p class="muted">DTI Registration No. 7316721 | BIR Registration No. 487617982</p>
+  <p>With international partnership from Reccsar Private Limited, Madurai, Tamil Nadu, India.</p>
+  <h2>CPOA: Learn First, Excel Later</h2>
+  <p>A Learning-First Approach Before Assessment.</p>
+  <p>CPOA is a micro-credential that recognizes individuals with advanced competence in office management, administrative support, and organizational operations.</p>
+  <p>The program equips participants with essential skills in communication, records management, customer relations, and professional ethics.</p>
+  <p>The CPOA Program is open to all courses and disciplines since effective office administration, communication, records management, coordination, and professional workplace skills are essential across all industries and organizations.</p>
+
+  <h2>Examination Details</h2>
+  <div class="info">
+    <p><strong>Platform:</strong> Zoom</p>
+    <p><strong>Investment Fee:</strong> ₱900.00</p>
+    <p><strong>Inclusions:</strong> Training Materials (Reviewer), Comprehensive Discussion, and certification upon successful assessment.</p>
+    <p><strong>Schedule:</strong> Subject to available examination batches announced by the administrator.</p>
+  </div>
+
+  <h2>Payment Details</h2>
+  <p><strong>GCash:</strong> 0905-5416-372 — Riza A.</p>
+  <p><strong>GoTyme:</strong> 0115-4420-5645 — Riza Abinal</p>
+
+  <h2>Resource Speaker</h2>
+  <p><strong>Mr. Augusto M. Acosta</strong><br>Founder &amp; Lead Consultant<br>CPOA Lecturer</p>
+
+  <h2>Contact Information</h2>
+  <p>Email: <a href="mailto:acostaaugusto24@gmail.com">acostaaugusto24@gmail.com</a></p>
+  <p>Contact: 0977-394-6417 / 0905-5416-372</p>
+
+  <div class="detail-actions">
+    <button class="btn btn-primary" onclick="applyFor('CPOA')">Apply for CPOA</button>
+    <a class="btn" href="#home">Back to Homepage</a>
+  </div>
+</article>
+</div>
+</section>
+
+<section id="cjma" class="page">
+<div class="container">
+<article class="detail">
+  <div class="detail-header">
+    <img src="assets/GVACS-logo.png" alt="GrayVantage Logo">
+    <div>
+      <h1>Certified Junior Marketing Associate (CJMA)</h1>
+      <strong>GrayVantage Academic &amp; Corporate Services</strong>
+    </div>
+    <img src="assets/CJMA-logo.png" alt="CJMA Logo">
+  </div>
+
+  <p class="muted">DTI Registration No. 7316721 | BIR Registration No. 487617982</p>
+  <p>In partnership with Reccsar Private Limited, Madurai, Tamil Nadu, India.</p>
+
+  <h2>CJMA: Learn First, Excel Later</h2>
+  <p>A Learning-First Approach Before Assessment.</p>
+  <p>The Certified Junior Marketing Associate is a private competency-based certification program designed for students and professionals seeking to strengthen and validate their competencies in modern marketing practice.</p>
+  <p>The program develops practical expertise in branding, digital marketing, consumer behavior, market research, and marketing communication strategies.</p>
+  <p>Participants develop the ability to create impactful campaigns, understand target markets, and apply data-driven marketing decisions.</p>
+
+  <h2>Examination Details</h2>
+  <div class="info">
+    <p><strong>Platform:</strong> Zoom</p>
+    <p><strong>Investment Fee:</strong> ₱900.00</p>
+    <p><strong>Inclusions:</strong> Training Materials, Comprehensive Discussion (Batch 1), and CJMA Certification upon successful assessment.</p>
+    <p><strong>Schedule:</strong> Subject to available examination batches announced by the administrator.</p>
+  </div>
+
+  <h2>Payment Details</h2>
+  <p><strong>GCash:</strong> 0905-5416-372 — Riza A.</p>
+  <p><strong>GoTyme:</strong> 0115-4420-5645 — Riza Abinal</p>
+
+  <h2>Resource Speaker</h2>
+  <p><strong>Mr. Augusto M. Acosta</strong><br>Founder &amp; Lead Consultant<br>Corporate Marketing Trainer</p>
+
+  <h2>Important Disclaimer</h2>
+  <p>The CJMA is a private competency-based certification and is not equivalent to a government-issued license, PRC accreditation, or professional regulatory certification. Certificate issuance is subject to completion of the training and successful passing of the assessment.</p>
+
+  <h2>Contact Information</h2>
+  <p>Email: <a href="mailto:acostaaugusto24@gmail.com">acostaaugusto24@gmail.com</a></p>
+  <p>Contact: 0977-394-6417 / 0905-5416-372</p>
+
+  <div class="detail-actions">
+    <button class="btn btn-primary" onclick="applyFor('CJMA')">Apply for CJMA</button>
+    <a class="btn" href="#home">Back to Homepage</a>
+  </div>
+</article>
+</div>
+</section>
+
+<section id="training" class="page">
+<div class="container">
+<article class="detail">
+  <h1>Corporate Training &amp; Seminars</h1>
+  <h2>Elevate Your Skills. Empower Your Career.</h2>
+  <p>GrayVantage Academic &amp; Corporate Services offers professional training programs designed to equip students, employees, and organizations with practical knowledge and industry-relevant competencies.</p>
+
+  <h2>Our Training Programs</h2>
+  <ul>
+    <li><strong>Cashiering Operations:</strong> Retail operations, cash handling, and transaction processing.</li>
+    <li><strong>Leadership and Supervisory Skills:</strong> Team management, communication, and decision-making.</li>
+    <li><strong>Office Administration:</strong> Office procedures, schedules, documentation, and administrative operations.</li>
+    <li><strong>Customer Service:</strong> Customer engagement, relationship management, and problem-solving.</li>
+    <li><strong>Operations Management:</strong> Process optimization, resource allocation, and operational efficiency.</li>
+    <li><strong>Marketing Management:</strong> Marketing strategies, market opportunities, and organizational growth.</li>
+  </ul>
+
+  <h2>Professional Certification Programs</h2>
+  <ul>
+    <li>Certified Professional Office Administrator (CPOA)</li>
+    <li>Certified Junior Marketing Associate (CJMA)</li>
+  </ul>
+
+  <h2>Partnership Opportunities</h2>
+  <p>We welcome partnerships with schools, colleges, universities, companies, government agencies, and other organizations interested in customized training and professional development programs.</p>
+
+  <h2>Inquiries</h2>
+  <p>Email: <a href="mailto:acostaaugusto24@gmail.com">acostaaugusto24@gmail.com</a></p>
+
+  <div class="detail-actions">
+    <a class="btn btn-primary" href="#seminar-apply">Apply for a Seminar</a>
+    <a class="btn" href="#home">Back to Homepage</a>
+  </div>
+</article>
+</div>
+</section>
+
+<section id="apply" class="page">
+<div class="container">
+<div class="form-wrap">
+  <h1>Certification Examination Application</h1>
+  <p>Complete the unified application form for CPOA or CJMA. Available examination schedules are determined by the administrator.</p>
+
+  <form id="applicationForm">
+    <div class="field">
+      <label for="email">Email Address *</label>
+      <input id="email" type="email" required autocomplete="email">
+    </div>
+    <div class="field">
+      <label for="fullname">Full Name *</label>
+      <input id="fullname" required placeholder="Juan A. Cruz" autocomplete="name">
+    </div>
+    <div class="field">
+      <label for="school">School &amp; Campus *</label>
+      <input id="school" required placeholder="STI College – Lipa">
+    </div>
+    <div class="field">
+      <label for="company">Company (if applicable)</label>
+      <input id="company" placeholder="Company or organization">
+    </div>
+    <div class="field">
+      <label for="course">Course or Program *</label>
+      <input id="course" required placeholder="BS Business Administration">
+    </div>
+    <div class="field">
+      <label for="birthdate">Date of Birth *</label>
+      <input id="birthdate" type="date" required>
+    </div>
+    <div class="field">
+      <label for="program">Examination Program *</label>
+      <select id="program" required>
+        <option value="">Select examination program</option>
+        <option value="CPOA">Certified Professional Office Administrator (CPOA)</option>
+        <option value="CJMA">Certified Junior Marketing Associate (CJMA)</option>
+      </select>
+    </div>
+    <div class="field">
+      <label for="schedule">Examination Batch or Month *</label>
+      <select id="schedule" required disabled>
+        <option value="">Select an examination program first</option>
+      </select>
+      <p class="muted" id="scheduleNote">Schedules and available slots will appear when configured by the administrator.</p>
+    </div>
+    <div class="field">
+      <label>Privacy Consent *</label>
+      <div class="checkbox">
+        <input id="consent" type="checkbox" required>
+        <label for="consent">I consent to the collection and processing of my personal information for registration, examination coordination, communication, and certification purposes.</label>
+      </div>
+    </div>
+    <button type="submit" class="btn btn-primary">Submit Application</button>
+  </form>
+
+  <div id="applicationMessage" class="notice" style="display:none;margin-top:22px" role="status"></div>
+</div>
+</div>
+</section>
+
+<section id="seminar-apply" class="page">
+<div class="container">
+<div class="form-wrap">
+  <h1>Corporate Training &amp; Seminar Application</h1>
+  <p>For individuals, groups, and organizations interested in training programs.</p>
+  <form id="seminarForm">
+    <div class="field">
+      <label for="seminarType">Applicant Type *</label>
+      <select id="seminarType" required>
+        <option value="">Select type</option>
+        <option>Individual</option>
+        <option>Group</option>
+        <option>Organization</option>
+      </select>
+    </div>
+    <div class="field">
+      <label for="seminarName">Full Name / Contact Person *</label>
+      <input id="seminarName" required>
+    </div>
+    <div class="field">
+      <label for="seminarEmail">Email Address *</label>
+      <input id="seminarEmail" type="email" required>
+    </div>
+    <div class="field">
+      <label for="seminarOrg">School, Company, or Organization</label>
+      <input id="seminarOrg">
+    </div>
+    <div class="field">
+      <label for="seminarProgram">Preferred Training Program *</label>
+      <select id="seminarProgram" required>
+        <option value="">Select training program</option>
+        <option>Cashiering Operations</option>
+        <option>Leadership and Supervisory Skills</option>
+        <option>Office Administration</option>
+        <option>Customer Service</option>
+        <option>Operations Management</option>
+        <option>Marketing Management</option>
+      </select>
+    </div>
+    <div class="field">
+      <label for="participants">Estimated Participants *</label>
+      <input id="participants" type="number" min="1" required>
+    </div>
+    <div class="checkbox">
+      <input id="seminarConsent" type="checkbox" required>
+      <label for="seminarConsent">I consent to the processing of the information provided for seminar coordination.</label>
+    </div>
+    <p><button class="btn btn-primary" type="submit">Submit Seminar Inquiry</button></p>
+  </form>
+  <div id="seminarMessage" class="notice" style="display:none" role="status"></div>
+</div>
+</div>
+</section>
+
+<!-- UPDATED LOGIN SECTION -->
+<section id="login" class="page">
+<div class="container">
+<div class="login-box">
+  <h1>Account Login</h1>
+  <p class="muted">Enter your username and password to access your account.</p>
+
+  <form id="loginForm">
+    <div class="field">
+      <label for="loginUsername">Username *</label>
+      <input
+        type="text"
+        id="loginUsername"
+        name="username"
+        placeholder="Enter your username"
+        autocomplete="username"
+        required
+      >
+    </div>
+
+    <div class="field">
+      <label for="loginPassword">Password *</label>
+      <input
+        type="password"
+        id="loginPassword"
+        name="password"
+        placeholder="Enter your password"
+        autocomplete="current-password"
+        required
+      >
+    </div>
+
+    <button type="submit" class="btn btn-primary">
+      Login
+    </button>
+  </form>
+
+  <div id="loginMessage"
+       class="notice"
+       style="display:none;margin-top:20px"
+       role="status">
+  </div>
+
+  <div class="detail-actions">
+    <a href="#home" class="btn">Back to Homepage</a>
+  </div>
+</div>
+</div>
+</section>
+
+</main>
+
+<footer class="footer">
+  <strong>GrayVantage Academic &amp; Corporate Services</strong>
+  <p>INNOVATE. LEARN. LEAD.</p>
+  <p>&copy; 2026 GrayVantage Academic &amp; Corporate Services. All rights reserved.</p>
+</footer>
+
+<script>
+"use strict";
+
+const pages = [...document.querySelectorAll(".page")];
+
+function navigate() {
+  let id = location.hash.slice(1) || "home";
+
+  if (id === "services") {
+    id = "home";
+    pages.forEach(page => {
+      page.classList.toggle("active", page.id === id);
+    });
+    requestAnimationFrame(() => {
+      document.getElementById("services").scrollIntoView({
+        behavior:"smooth"
+      });
+    });
+    return;
+  }
+
+  if (!pages.some(page => page.id === id)) id = "home";
+
+  pages.forEach(page => {
+    page.classList.toggle("active", page.id === id);
+  });
+
+  window.scrollTo({top:0,behavior:"instant"});
+}
+
+window.addEventListener("hashchange",navigate);
+window.addEventListener("DOMContentLoaded",navigate);
+
+function applyFor(program) {
+  document.getElementById("program").value = program;
+  updateSchedules();
+  location.hash = "apply";
+  if (location.hash === "#apply") navigate();
+}
+
+/*
+  ADMINISTRATOR-CONTROLLED SCHEDULE DATA
+
+  This static configuration is intentionally empty.
+  A real administrator dashboard and database must provide
+  verified dates, times, capacity, and live available slots.
+
+  Example structure for future backend integration:
+  {
+    id: "batch-id",
+    program: "CPOA",
+    label: "Batch 32 — December 12, 2026, 9:00 AM",
+    slotsAvailable: 25
+  }
+
+  Do not publish fictional schedules or slot counts.
+*/
+const examinationSchedules = [];
+
+function updateSchedules() {
+  const program = document.getElementById("program").value;
+  const select = document.getElementById("schedule");
+  const note = document.getElementById("scheduleNote");
+
+  select.replaceChildren();
+  const placeholder = document.createElement("option");
+  placeholder.value = "";
+
+  if (!program) {
+    placeholder.textContent = "Select an examination program first";
+    select.append(placeholder);
+    select.disabled = true;
+    note.textContent = "Select CPOA or CJMA to view available examination schedules.";
+    return;
+  }
+
+  const available = examinationSchedules.filter(item =>
+    item.program === program && item.slotsAvailable > 0
+  );
+
+  if (!available.length) {
+    placeholder.textContent = "No examination schedules available";
+    select.append(placeholder);
+    select.disabled = true;
+    note.textContent = "Please check again when the administrator announces examination dates and available slots.";
+    return;
+  }
+
+  placeholder.textContent = "Choose an examination schedule";
+  select.append(placeholder);
+
+  available.forEach(item => {
+    const option = document.createElement("option");
+    option.value = item.id;
+    option.textContent = `${item.label} — ${item.slotsAvailable} slots available`;
+    select.append(option);
+  });
+
+  select.disabled = false;
+  note.textContent = "Slots are subject to confirmation by the administrator.";
+}
+
+document.getElementById("program").addEventListener("change",updateSchedules);
+
+document.getElementById("birthdate").max =
+  new Date().toLocaleDateString("en-CA");
+
+document.getElementById("applicationForm").addEventListener("submit",function(event) {
+  event.preventDefault();
+  const message = document.getElementById("applicationMessage");
+  message.style.display = "block";
+  message.textContent = "Online submission is not yet enabled. The application has not been sent or recorded. Please contact acostaaugusto24@gmail.com for registration assistance. A secure backend is required for submission, slot reservation, and confirmation emails.";
+  message.scrollIntoView({behavior:"smooth",block:"center"});
+});
+
+document.getElementById("seminarForm").addEventListener("submit",function(event) {
+  event.preventDefault();
+  const message = document.getElementById("seminarMessage");
+  message.style.display = "block";
+  message.textContent = "Online seminar submissions are not yet enabled. Your inquiry has not been sent. Please contact acostaaugusto24@gmail.com for assistance.";
+  message.scrollIntoView({behavior:"smooth",block:"center"});
+});
+
+/* UPDATED LOGIN HANDLER */
+document.getElementById("loginForm").addEventListener("submit",function(event) {
+  event.preventDefault();
+
+  const message = document.getElementById("loginMessage");
+  message.style.display = "block";
+  message.textContent =
+    "Login authentication is not yet configured. Please contact the administrator.";
+});
+
+updateSchedules();
+</script>
+</body>
+</html>
