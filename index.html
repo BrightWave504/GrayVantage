@@ -487,10 +487,19 @@ const backend = window.supabase.createClient("https://hbiobqfhamiqtikkdyuu.supab
 let currentProfile = null;
 let authReady = false;
 let setupToken = null;
-const initialHash = new URLSearchParams(location.hash.replace(/^#setup\?/, ""));
-if (location.hash.startsWith("#setup?")) {
-  setupToken = initialHash.get("token_hash");
-  history.replaceState(null,"",location.pathname + location.search + "#setup");
+const rawHash = location.hash;
+const recoveryParams = new URLSearchParams(rawHash.startsWith("#setup?") ? rawHash.slice(7) : rawHash.slice(1));
+let recoverySession = null;
+let recoveryError = null;
+if (rawHash.startsWith("#setup?")) {
+  setupToken = recoveryParams.get("token_hash");
+  history.replaceState(null, "", location.pathname + location.search + "#setup");
+} else if (recoveryParams.get("type") === "recovery" && recoveryParams.has("access_token") && recoveryParams.has("refresh_token")) {
+  recoverySession = { access_token: recoveryParams.get("access_token"), refresh_token: recoveryParams.get("refresh_token") };
+  history.replaceState(null, "", location.pathname + location.search + "#setup");
+} else if (recoveryParams.has("error_code")) {
+  recoveryError = recoveryParams.get("error_description") || "The password recovery link is invalid or expired.";
+  history.replaceState(null, "", location.pathname + location.search + "#setup");
 }
 const pages = [...document.querySelectorAll(".page")];
 
@@ -764,7 +773,24 @@ document.getElementById("passwordForm").addEventListener("submit",async event=>{
 backend.auth.onAuthStateChange((event)=>{
   if(event==="SIGNED_OUT"){currentProfile=null;authReady=true;navigate();}
 });
-refreshProfile().catch(()=>{authReady=true;currentProfile=null;navigate();});
+(async()=>{
+  if (recoveryError) {
+    document.getElementById("passwordMessage").textContent=recoveryError.replace(/\\+/g," ");
+    authReady=true;navigate();return;
+  }
+  if (recoverySession) {
+    const tokens=recoverySession;recoverySession=null;
+    const {error}=await backend.auth.setSession(tokens);
+    authReady=true;
+    if(error) document.getElementById("passwordMessage").textContent="Recovery link expired. Request a new one.";
+    navigate();return;
+  }
+  await refreshProfile();
+})().catch(()=>{
+  authReady=true;currentProfile=null;
+  if(location.hash==="#setup") document.getElementById("passwordMessage").textContent="Unable to verify recovery link. Request a new one.";
+  navigate();
+});
 
 updateSchedules();
 renderAdminSchedules();
