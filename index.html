@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -109,6 +108,25 @@ h2 {color:var(--navy);font-size:clamp(28px,3vw,39px);margin:0 0 30px}
 .preview-actions{display:flex;flex-wrap:wrap;gap:9px;margin-top:18px}
 .dashboard-tab{display:none}.dashboard-tab.active{display:block}
 @media(max-width:800px){.dashboard-shell{grid-template-columns:1fr}.metric-grid{grid-template-columns:1fr}.dashboard-sidebar{display:flex;flex-wrap:wrap;gap:6px}.dashboard-sidebar h3{width:100%}.dashboard-sidebar button{width:auto}}
+
+/* Administrator application management */
+.gv-app-toolbar{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin:16px 0}
+.gv-app-group{border:1px solid var(--border);border-radius:14px;background:#f8fbfe;padding:18px;margin:18px 0}
+.gv-app-group h3{margin:0 0 12px;color:var(--navy)}
+.gv-applicant{border:1px solid var(--border);border-radius:10px;background:white;margin:10px 0;overflow:hidden}
+.gv-applicant>summary{padding:16px 18px;font-weight:600;color:var(--navy);cursor:pointer;list-style-position:inside}
+.gv-applicant>summary:hover{background:#edf6fc}
+.gv-applicant[open]>summary{border-bottom:1px solid var(--border)}
+.gv-app-details{padding:16px 18px}
+.gv-app-details dl{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:14px;margin:0 0 18px}
+.gv-app-details dt{font-size:.83rem;color:#56718a;margin-bottom:4px}
+.gv-app-details dd{margin:0;overflow-wrap:anywhere;font-weight:500}
+.gv-app-status{display:inline-block;padding:5px 10px;border-radius:999px;background:#e8f1fa;color:#18486a;font-weight:600;text-transform:capitalize}
+.gv-app-status[data-status="approved"]{background:#e1f4e8;color:#17663a}
+.gv-app-status[data-status="rejected"]{background:#fbe9e9;color:#a12626}
+.gv-app-actions{display:flex;gap:10px;flex-wrap:wrap}
+.gv-app-actions button:disabled{opacity:.5;cursor:not-allowed}
+.gv-app-delete{background:#fff!important;color:#a12626!important;border:1px solid #d89999!important}
 </style>
 <style>
 .gv-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px}.gv-panel{background:white;border:1px solid #d8e5ef;border-radius:16px;padding:22px;margin:16px 0}.gv-panel h3{margin-top:0;color:#103b60}.gv-field{display:flex;flex-direction:column;gap:6px;margin:12px 0}.gv-field input,.gv-field select,.gv-field textarea{width:100%;border:1px solid #c9dbe9;border-radius:9px;padding:12px;background:white;color:#183b57}.gv-field textarea{min-height:95px}.gv-msg{padding:10px 0;color:#155e85;white-space:pre-wrap}.gv-row{border-bottom:1px solid #e1eaf1;padding:12px 0;overflow-wrap:anywhere}.gv-row:last-child{border:0}.gv-small{color:#5c7388;font-size:14px}.gv-table{width:100%;border-collapse:collapse;min-width:500px}.gv-table td,.gv-table th{border-bottom:1px solid #d8e5ef;text-align:left;padding:10px;vertical-align:top}.gv-scroll{overflow:auto}.gv-choice{display:block;margin:8px 0;padding:10px;border:1px solid #d8e5ef;border-radius:9px}.gv-choice input{margin-right:9px}.gv-pill{padding:4px 10px;border-radius:20px;background:#e3f1ff;display:inline-block}.gv-timer{font-size:22px;font-weight:700;color:#b91c1c}
@@ -454,7 +472,9 @@ h2 {color:var(--navy);font-size:clamp(28px,3vw,39px);margin:0 0 30px}
 <button onclick="switchTab('admin','overview')">Overview</button><button onclick="switchTab('admin','applications')">Applications</button><button onclick="switchTab('admin','schedules')">Manage Schedules</button><button onclick="switchTab('admin','certificates')">Results & Certificates</button><button onclick="switchTab('admin','posts')">Posts & Zoom Links</button><button onclick="switchTab('admin','exams')">Examination Portal</button><button onclick="switchTab('admin','analytics')">Results Summary</button><button onclick="logout()">Logout</button></aside>
 <div class="dashboard-main"><span class="demo-label">Authenticated administrator session</span><h1>Administrator Dashboard</h1>
 <div class="dashboard-tab active" data-role="admin" data-tab="overview"><div class="metric-grid"><div class="metric">Applications received<strong id="gvApplicationCount">0</strong></div><div class="metric">Approved examinees<strong id="gvApprovedCount">0</strong></div><div class="metric">Published schedules<strong id="scheduleCount">0</strong></div></div><div class="dashboard-panel"><h2>Administration</h2><p>Manage examination schedules shared through Supabase. Application approvals, payments, certificates, and real-time availability require a backend.</p></div></div>
-<div class="dashboard-tab" data-role="admin" data-tab="applications"><div class="dashboard-panel"><h2>Application Management — CPOA &amp; CJMA</h2><p class='muted'>Select an applicant name to review the submitted information.</p><button type='button' class='btn' onclick='gvLoadApplications()'>Refresh applications</button><div id='gvApplicationList'>Loading applications...</div></div></div>
+<div class="dashboard-tab" data-role="admin" data-tab="applications"><div class="dashboard-panel"><h2>Application Management</h2><p class="muted">Applicants are grouped by certification. Select a name to review the complete submission and take action.</p>
+<div class="gv-app-toolbar"><button type="button" class="btn" onclick="gvLoadApplications()">Refresh Applications</button><span id="gvApplicationNotice" role="status" aria-live="polite"></span></div>
+<div id="gvApplicationList">Loading applications...</div></div></div>
 <div class="dashboard-tab" data-role="admin" data-tab="schedules"><div class="dashboard-panel"><h2>Examination Schedule Management</h2><p class="muted">Schedules are stored securely in Supabase and visible to applicants across devices.</p>
 <form id="scheduleForm"><div class="field"><label for="adminProgram">Certification Program</label><select id="adminProgram" required><option value="CPOA">CPOA</option><option value="CJMA">CJMA</option></select></div>
 <div class="field"><label for="adminBatch">Batch Name</label><input id="adminBatch" placeholder="e.g. Batch 1" maxlength="80" required></div>
@@ -713,36 +733,52 @@ document.getElementById("seminarForm").addEventListener("submit",function(event)
 /* Shared Supabase examination schedules */
 async function gvLoadApplications(){
  const box=document.getElementById("gvApplicationList");if(!box)return;
+ const notice=document.getElementById("gvApplicationNotice");
  box.textContent="Loading applications...";
  const fields="id,full_name,email,school_campus,company,course_program,date_of_birth,examination_program,examination_batch,privacy_consent,status,created_at,email_sent_at";
  const {data,error}=await backend.from("applications").select(fields).order("created_at",{ascending:false});
- if(error){box.textContent="Could not load applications: "+error.message;return}
+ if(error){box.textContent="Unable to load applications: "+error.message;return}
  const apps=data||[];box.replaceChildren();
  const total=document.getElementById("gvApplicationCount"),approved=document.getElementById("gvApprovedCount");
  if(total)total.textContent=String(apps.length);
  if(approved)approved.textContent=String(apps.filter(a=>a.status==="approved").length);
+ if(notice)notice.textContent=apps.length+" application(s)";
  for(const program of ["CPOA","CJMA"]){
-  const section=document.createElement("section");section.style.marginTop="20px";
-  const heading=document.createElement("h3");heading.textContent=program+" Applicants ("+apps.filter(a=>a.examination_program===program).length+")";section.append(heading);
   const group=apps.filter(a=>a.examination_program===program);
-  if(!group.length){const empty=document.createElement("p");empty.textContent="No applications yet.";section.append(empty)}
+  const section=document.createElement("section");section.className="gv-app-group";
+  const heading=document.createElement("h3");heading.textContent=program+" Applicants ("+group.length+")";section.append(heading);
+  if(!group.length){const empty=document.createElement("p");empty.className="muted";empty.textContent="No applications yet.";section.append(empty)}
   for(const a of group){
-   const detail=document.createElement("details");detail.style.cssText="background:#fff;border:1px solid #d8e5ef;border-radius:12px;padding:14px 18px;margin:10px 0";
-   const summary=document.createElement("summary");summary.style.cssText="cursor:pointer;font-weight:600;color:#103b60";summary.textContent=a.full_name;detail.append(summary);
-   const body=document.createElement("div");body.style.paddingTop="14px";
+   const detail=document.createElement("details");detail.className="gv-applicant";
+   const summary=document.createElement("summary");summary.textContent=a.full_name||"Unnamed applicant";detail.append(summary);
+   const body=document.createElement("div");body.className="gv-app-details";
    const schedule=examinationSchedules.find(x=>x.id===a.examination_batch);
-   const values=[["Full Name",a.full_name],["Email",a.email],["School & Campus",a.school_campus],["Company",a.company],["Course or Program",a.course_program],["Date of Birth",a.date_of_birth],["Certification",a.examination_program],["Examination Batch",schedule?.label||a.examination_batch],["Privacy Consent",a.privacy_consent?"Yes":"No"],["Application Status",a.status],["Submitted",new Date(a.created_at).toLocaleString()],["Confirmation Email",a.email_sent_at?"Sent":"Not confirmed"]];
-   for(const [label,value] of values){const p=document.createElement("p");p.style.margin="7px 0";const strong=document.createElement("strong");strong.textContent=label+": ";p.append(strong,document.createTextNode(value||"—"));body.append(p)}
-   const actions=document.createElement("div");actions.style.cssText="display:flex;flex-wrap:wrap;gap:10px;margin-top:18px";
+   const fields=[
+    ["Full Name",a.full_name],["Email",a.email],["School / Campus",a.school_campus],
+    ["Company",a.company],["Course / Program",a.course_program],["Date of Birth",a.date_of_birth],
+    ["Certification",a.examination_program],["Examination Batch",schedule?.label||a.examination_batch],
+    ["Privacy Consent",a.privacy_consent?"Yes":"No"],["Application Status",a.status],
+    ["Submitted",a.created_at?new Date(a.created_at).toLocaleString():"—"],
+    ["Registration Email",a.email_sent_at?"Sent":"Not confirmed"]
+   ];
+   const dl=document.createElement("dl");
+   for(const [label,value] of fields){const wrapper=document.createElement("div"),dt=document.createElement("dt"),dd=document.createElement("dd");dt.textContent=label;dd.textContent=value||"—";
+    if(label==="Application Status"){dd.className="gv-app-status";dd.dataset.status=a.status||"pending"}
+    wrapper.append(dt,dd);dl.append(wrapper)}
+   body.append(dl);
+   const actions=document.createElement("div");actions.className="gv-app-actions";
    for(const [label,status] of [["Approve","approved"],["Decline","rejected"],["Delete Application","delete"]]){
-    const button=document.createElement("button");button.type="button";button.className="btn";button.textContent=label;button.disabled=a.status===status;
-    button.onclick=async()=>{if(!confirm(label+" application for "+a.full_name+"?"+(status==="approved"?" Confirm that requirements and payment have been verified.":"")))return;
-     button.disabled=true;
+    const button=document.createElement("button");button.type="button";button.className="btn"+(status==="delete"?" gv-app-delete":"");button.textContent=label;button.disabled=a.status===status;
+    button.onclick=async()=>{
+     const message=status==="delete"?"Permanently delete the application for "+a.full_name+"? This cannot be undone.":
+      status==="approved"?"Approve "+a.full_name+"? Verify the requirements and payment first. Approval changes the application status only.":"Decline the application for "+a.full_name+"?";
+     if(!confirm(message))return;
+     [...actions.querySelectorAll("button")].forEach(b=>b.disabled=true);
      const query=backend.from("applications");
-     const {error:changeError}=status==="delete"?await query.delete().eq("id",a.id):await query.update({status}).eq("id",a.id);
-     if(changeError){alert("Action failed: "+changeError.message);button.disabled=false}else await gvLoadApplications();
-    };
-    actions.append(button);
+     const result=status==="delete"?await query.delete().eq("id",a.id).select("id"):await query.update({status}).eq("id",a.id).select("id");
+     if(result.error||!result.data?.length){alert("Action could not be completed: "+(result.error?.message||"No record was changed. Check administrator permissions."));[...actions.querySelectorAll("button")].forEach(b=>b.disabled=false);return}
+     await gvLoadApplications();
+    };actions.append(button);
    }
    body.append(actions);detail.append(body);section.append(detail);
   }
