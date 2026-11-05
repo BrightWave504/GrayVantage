@@ -586,7 +586,7 @@ async function gvLoadExaminee(){
 async function gvStartExam(id){
  if(!confirm("Start/resume exam? Timer starts on first access and cannot be paused."))return;
  const {data,error}=await backend.rpc("start_exam",{p_exam_id:id});if(error){gvMsg("gvRunnerMsg",gvErr(error));return}
- gvActiveAttempt={exam_id:id,...data};gvAttemptAnswers={};gv$("gvRunnerMsg").textContent="";
+ if(data?.expired){gvMsg("gvRunnerMsg","Your examination time has expired. The attempt has been recorded as zero.");await gvLoadExaminee();return}if(!Array.isArray(data?.questions)){gvMsg("gvRunnerMsg","Unable to load examination questions.");return}gvActiveAttempt={exam_id:id,...data};gvAttemptAnswers={};gv$("gvRunnerMsg").textContent="";
  const box=gv$("gvExamRunner");box.replaceChildren();const form=document.createElement("form");form.id="gvTakingForm";
  const clock=document.createElement("div");clock.className="gv-timer";form.append(clock);
  data.questions.forEach((q,i)=>{const wrap=document.createElement("fieldset");wrap.className="gv-panel";const legend=document.createElement("legend");legend.textContent=(i+1)+". "+q.question;wrap.append(legend);q.options.forEach((opt,j)=>{const label=document.createElement("label");label.className="gv-choice";const input=document.createElement("input");input.type="radio";input.name="q_"+q.id;input.value=j;input.onchange=()=>gvAttemptAnswers[q.id]=j;label.append(input,document.createTextNode(opt));wrap.append(label)});form.append(wrap)});
