@@ -453,7 +453,7 @@ h2 {color:var(--navy);font-size:clamp(28px,3vw,39px);margin:0 0 30px}
 <section id="admin" class="page"><div class="dashboard-shell"><aside class="dashboard-sidebar"><h3>Admin Portal</h3>
 <button onclick="switchTab('admin','overview')">Overview</button><button onclick="switchTab('admin','applications')">Applications</button><button onclick="switchTab('admin','schedules')">Manage Schedules</button><button onclick="switchTab('admin','certificates')">Results & Certificates</button><button onclick="switchTab('admin','posts')">Posts & Zoom Links</button><button onclick="switchTab('admin','exams')">Examination Portal</button><button onclick="switchTab('admin','analytics')">Results Summary</button><button onclick="logout()">Logout</button></aside>
 <div class="dashboard-main"><span class="demo-label">Authenticated administrator session</span><h1>Administrator Dashboard</h1>
-<div class="dashboard-tab active" data-role="admin" data-tab="overview"><div class="metric-grid"><div class="metric">Applications received<strong>0</strong></div><div class="metric">Approved examinees<strong>0</strong></div><div class="metric">Published schedules<strong id="scheduleCount">0</strong></div></div><div class="dashboard-panel"><h2>Administration</h2><p>Manage examination schedules shared through Supabase. Application approvals, payments, certificates, and real-time availability require a backend.</p></div></div>
+<div class="dashboard-tab active" data-role="admin" data-tab="overview"><div class="metric-grid"><div class="metric">Applications received<strong id="gvApplicationCount">0</strong></div><div class="metric">Approved examinees<strong id="gvApprovedCount">0</strong></div><div class="metric">Published schedules<strong id="scheduleCount">0</strong></div></div><div class="dashboard-panel"><h2>Administration</h2><p>Manage examination schedules shared through Supabase. Application approvals, payments, certificates, and real-time availability require a backend.</p></div></div>
 <div class="dashboard-tab" data-role="admin" data-tab="applications"><div class="dashboard-panel"><h2>Application Management</h2><p><button type='button' onclick='gvLoadApplications()'>Refresh applications</button><div id='gvApplicationList'>Loading applications...</div></p></div></div>
 <div class="dashboard-tab" data-role="admin" data-tab="schedules"><div class="dashboard-panel"><h2>Examination Schedule Management</h2><p class="muted">Schedules are stored securely in Supabase and visible to applicants across devices.</p>
 <form id="scheduleForm"><div class="field"><label for="adminProgram">Certification Program</label><select id="adminProgram" required><option value="CPOA">CPOA</option><option value="CJMA">CJMA</option></select></div>
@@ -711,10 +711,33 @@ document.getElementById("seminarForm").addEventListener("submit",function(event)
 
 
 /* Shared Supabase examination schedules */
+async function gvLoadApplications(){
+const box=document.getElementById("gvApplicationList");if(!box)return;
+box.textContent="Loading...";
+const {data,error}=await backend.from("applications").select("id,full_name,email,school_campus,course_program,examination_program,examination_batch,status,created_at,email_sent_at").order("created_at",{ascending:false});
+if(error){box.textContent="Could not load applications: "+error.message;return}
+const apps=data||[];box.replaceChildren();
+const total=document.getElementById("gvApplicationCount"),approved=document.getElementById("gvApprovedCount");
+if(total)total.textContent=apps.length;
+if(approved)approved.textContent=apps.filter(x=>x.status==="approved").length;
+if(!apps.length){box.textContent="No applications recorded.";return}
+for(const a of apps){
+const card=document.createElement("div");card.className="dashboard-panel";card.style.marginTop="12px";
+const title=document.createElement("h3");title.textContent=a.full_name+" — "+a.examination_program+" ("+a.status+")";card.append(title);
+const info=document.createElement("p");info.style.whiteSpace="pre-line";info.textContent="Email: "+a.email+"\nSchool: "+(a.school_campus||"—")+"\nCourse: "+(a.course_program||"—")+"\nBatch: "+(examinationSchedules.find(x=>x.id===a.examination_batch)?.label||a.examination_batch||"—")+"\nSubmitted: "+new Date(a.created_at).toLocaleString()+"\nConfirmation email: "+(a.email_sent_at?"Sent":"Not confirmed");card.append(info);
+for(const [label,status] of [["Approve","approved"],["Decline","rejected"],["Delete Application","delete"]]){
+const b=document.createElement("button");b.type="button";b.className="btn";b.style.marginRight="8px";b.textContent=label;
+b.disabled=a.status===status;
+b.onclick=async()=>{if(!confirm(label+" application for "+a.full_name+"?"+(status==="approved"?" Verify payment and requirements first.":"")))return;
+const query=backend.from("applications");
+const {error:err}=status==="delete"?await query.delete().eq("id",a.id):await query.update({status}).eq("id",a.id);
+if(err)alert("Action failed: "+err.message);else await gvLoadApplications();};card.append(b)}
+box.append(card);
+}}
 function switchTab(role,tab) {
   document.querySelectorAll('.dashboard-tab[data-role="'+role+'"]').forEach(el=>el.classList.toggle("active",el.dataset.tab===tab));
   if(role==="examinee") renderExamineeSchedules();
-  if(role==="admin") { renderAdminSchedules(); if(tab==="schedules") loadExaminationSchedules(); }
+  if(role==="admin") { renderAdminSchedules(); if(tab==="schedules") loadExaminationSchedules(); if(tab==="applications"||tab==="overview") gvLoadApplications(); }
 }
 function renderExamineeSchedules() {
   const target=document.getElementById("examineeSchedules");
