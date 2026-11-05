@@ -139,7 +139,7 @@ h2 {color:var(--navy);font-size:clamp(28px,3vw,39px);margin:0 0 30px}
       <img src="assets/GVACS-logo.png" alt="GrayVantage Logo">
       <span>GrayVantage Academic Corporate Services</span>
     </a>
-    <a href="#login" class="btn">Login</a>
+    <a href="#login" class="btn" id="gvHeaderAuthButton">Login</a>
   </nav>
 </header>
 
@@ -526,6 +526,15 @@ h2 {color:var(--navy);font-size:clamp(28px,3vw,39px);margin:0 0 30px}
 const backend = window.supabase.createClient("https://hbiobqfhamiqtikkdyuu.supabase.co", "sb_publishable_6fYXJirNEjLhTeGmrriqew_T7GnxkWW", { auth: { storage: window.sessionStorage, persistSession: true, autoRefreshToken: true, detectSessionInUrl: false } });
 let currentProfile = null;
 let authReady = false;
+function gvUpdateHeaderAuth(){
+  const button=document.getElementById("gvHeaderAuthButton");
+  if(!button)return;
+  const signedIn=Boolean(currentProfile?.approved);
+  button.textContent=signedIn?"Logout":"Login";
+  button.href=signedIn?"#":"#login";
+  button.onclick=signedIn?function(event){event.preventDefault();logout();}:null;
+}
+
 let setupToken = null;
 const rawHash = location.hash;
 const recoveryParams = new URLSearchParams(rawHash.startsWith("#setup?") ? rawHash.slice(7) : rawHash.slice(1));
@@ -876,6 +885,7 @@ async function refreshProfile() {
     if (result.data.approved) currentProfile = result.data;
   }
   authReady = true;
+  gvUpdateHeaderAuth();
   navigate();
   if (currentProfile) await renderConnectedDashboard();
 }
@@ -910,6 +920,7 @@ async function logout() {
   const {error} = await backend.auth.signOut();
   if(error){document.querySelector('#'+currentProfile.role+' .demo-label').textContent="Logout failed. Please try again.";return;}
   currentProfile = null;
+  gvUpdateHeaderAuth();
   document.querySelector('#it table tbody').replaceChildren();
   document.querySelector('#admin [data-tab="applications"] .dashboard-panel').replaceChildren();
   location.hash="login";navigate();
@@ -947,7 +958,7 @@ document.getElementById("passwordForm").addEventListener("submit",async event=>{
   finally{button.disabled=false;}
 });
 backend.auth.onAuthStateChange((event)=>{
-  if(event==="SIGNED_OUT"){currentProfile=null;authReady=true;navigate();}
+  if(event==="SIGNED_OUT"){currentProfile=null;authReady=true;gvUpdateHeaderAuth();navigate();}
 });
 (async()=>{
   if (recoveryError) {
@@ -963,7 +974,7 @@ backend.auth.onAuthStateChange((event)=>{
   }
   await refreshProfile();
 })().catch(()=>{
-  authReady=true;currentProfile=null;
+  authReady=true;currentProfile=null;gvUpdateHeaderAuth();
   if(location.hash==="#setup") document.getElementById("passwordMessage").textContent="Unable to verify recovery link. Request a new one.";
   navigate();
 });
