@@ -130,7 +130,7 @@ h2 {color:var(--navy);font-size:clamp(28px,3vw,39px);margin:0 0 30px}
 
 /* Examinee announcement dashboard */
 .gv-materials-page{padding:12px 4px 24px}.gv-materials-page>h2{font-size:clamp(27px,3vw,39px);margin:0 0 16px;color:#123d60}.gv-materials-page .gv-app-toolbar{margin:0 0 18px;display:flex;flex-wrap:wrap;align-items:center;gap:10px}.gv-announcement-hero{background:#fff;border:1px solid #dbe6ee;border-radius:22px;padding:28px 26px;box-shadow:0 4px 7px #102e441c;text-align:center;margin-bottom:30px}.gv-announcement-hero h3{font-size:19px;margin:0 0 10px;color:#185f96}.gv-announcement-hero p{font-size:18px;color:#205b89;margin:0;white-space:pre-wrap}.gv-materials-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:24px}.gv-materials-card{background:#fff;border:1px solid #e0e9f0;border-radius:28px;padding:22px 20px;box-shadow:0 4px 8px #123d601a;min-height:210px}.gv-materials-card>h3{text-align:center;color:#176ba7;font-size:22px;font-weight:500;margin:0 0 14px}.gv-materials-entry{border-top:1px solid #edf2f6;padding:14px 0}.gv-materials-entry:first-of-type{border-top:0;padding-top:0}.gv-materials-entry h4{font-size:16px;margin:0 0 8px;color:#143e60;overflow-wrap:anywhere}.gv-materials-entry p{font-size:15px;color:#275b82;white-space:pre-wrap;overflow-wrap:anywhere}.gv-materials-empty{color:#6a8295;font-size:15px}.gv-materials-action{display:inline-block;border:0;border-radius:9px;background:#237bb8;color:#fff!important;padding:10px 19px;text-decoration:none;font-size:15px;cursor:pointer;box-shadow:0 3px 6px #123d6026;margin-top:8px}.gv-materials-action:hover{background:#155c91}.gv-more-announcements{margin-top:24px;padding:22px;border:1px solid #dbe6ee;border-radius:20px;background:#fff}.gv-more-announcements h3{margin-top:0;color:#123d60}@media(max-width:900px){.gv-materials-grid{grid-template-columns:1fr;gap:16px}.gv-materials-card{min-height:0}.gv-announcement-hero{padding:22px 18px}}
-</style>
+.gv-examinee-home{max-width:1380px;margin:0 auto;padding:34px 26px 70px;min-height:calc(100vh - 160px)}#examinee .gv-examinee-home .gv-materials-page>h2{font-size:clamp(30px,3vw,42px)}body:has(#examinee.active) #gvPublicBoard,body:has(#admin.active) #gvPublicBoard{display:none!important}@media(max-width:640px){.gv-examinee-home{padding:22px 16px 48px}}</style>
 <style>
 .gv-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px}.gv-panel{background:white;border:1px solid #d8e5ef;border-radius:16px;padding:22px;margin:16px 0}.gv-panel h3{margin-top:0;color:#103b60}.gv-field{display:flex;flex-direction:column;gap:6px;margin:12px 0}.gv-field input,.gv-field select,.gv-field textarea{width:100%;border:1px solid #c9dbe9;border-radius:9px;padding:12px;background:white;color:#183b57}.gv-field textarea{min-height:95px}.gv-msg{padding:10px 0;color:#155e85;white-space:pre-wrap}.gv-row{border-bottom:1px solid #e1eaf1;padding:12px 0;overflow-wrap:anywhere}.gv-row:last-child{border:0}.gv-small{color:#5c7388;font-size:14px}.gv-table{width:100%;border-collapse:collapse;min-width:500px}.gv-table td,.gv-table th{border-bottom:1px solid #d8e5ef;text-align:left;padding:10px;vertical-align:top}.gv-scroll{overflow:auto}.gv-choice{display:block;margin:8px 0;padding:10px;border:1px solid #d8e5ef;border-radius:9px}.gv-choice input{margin-right:9px}.gv-pill{padding:4px 10px;border-radius:20px;background:#e3f1ff;display:inline-block}.gv-timer{font-size:22px;font-weight:700;color:#b91c1c}
 </style></head>
@@ -461,13 +461,13 @@ h2 {color:var(--navy);font-size:clamp(28px,3vw,39px);margin:0 0 30px}
 
 
 <section class="container" id="gvPublicBoard"><h2>Latest Announcements & Examination Updates</h2><div id="gvPublicPosts">Loading announcements…</div></section>
-<section id="examinee" class="page">
-<div class="dashboard-shell"><aside class="dashboard-sidebar"><h3>Examinee Portal</h3>
+<section id="examinee" class="page"><div class="gv-examinee-home"><div class="gv-materials-page"><h2>Announcements</h2><div id="gvExamineeProgramSelector" class="gv-app-toolbar"></div><div id="gvReviewerMaterials">Loading announcements...</div></div></div>
+<div class="dashboard-shell gv-examinee-legacy" style="display:none"><aside class="dashboard-sidebar"><h3>Examinee Portal</h3>
 <button onclick="switchTab('examinee','overview')">Overview</button><button onclick="switchTab('examinee','schedule')">Examination Schedule</button><button onclick="switchTab('examinee','materials')">Review Materials</button><button onclick="switchTab('examinee','results')">Results & Certificate</button><button onclick="switchTab('examinee','exam')">Take Examination</button><button onclick="logout()">Logout</button></aside>
 <div class="dashboard-main"><span class="demo-label">Authenticated examinee session</span><h1>Examinee Dashboard</h1>
 <div class="dashboard-tab active" data-role="examinee" data-tab="overview"><div class="metric-grid"><div class="metric">Application status<strong>Not connected</strong></div><div class="metric">Assigned program<strong>—</strong></div><div class="metric">Examination status<strong>Not scheduled</strong></div></div><div class="dashboard-panel"><h2>Welcome to your portal</h2><p>When authentication and a database are connected, you will see your approved application, upcoming assessment, and certification status here.</p></div></div>
 <div class="dashboard-tab" data-role="examinee" data-tab="schedule"><div class="dashboard-panel"><h2>Examination Schedule</h2><div id="examineeSchedules"></div></div></div>
-<div class="dashboard-tab" data-role="examinee" data-tab="materials"><div class="gv-materials-page"><h2>Announcements</h2><div id="gvExamineeProgramSelector" class="gv-app-toolbar"></div><div id="gvReviewerMaterials">Loading announcements...</div></div></div>
+
 <div class="dashboard-tab" data-role="examinee" data-tab="results"><div class="dashboard-panel"><h2>Examination Results & Certificates</h2><p>No results or certificates are available. Individual results must be linked to verified examinee accounts.</p></div></div>
 <div class="dashboard-tab" data-role="examinee" data-tab="exam"><div class="dashboard-panel"><h2>My Examination Portal</h2><p>Only approved examinees can start an open examination. One attempt per examination; the countdown starts on first access.</p><div id="gvExamineeExamList"></div><div id="gvExamRunner"></div><div class="gv-msg" id="gvRunnerMsg" role="status"></div></div></div></div></div></section>
 
@@ -577,6 +577,7 @@ function navigate() {
     page.classList.toggle("active", page.id === id);
   });
   gvUpdateHeaderAuth();
+  if(id==="examinee"&&typeof gvReviewerMaterials==="function")gvReviewerMaterials().catch(console.error);
 
   window.scrollTo({top:0,behavior:"instant"});
 }
