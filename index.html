@@ -464,12 +464,12 @@ h2 {color:var(--navy);font-size:clamp(28px,3vw,39px);margin:0 0 30px}
 <div class="dashboard-main"><span class="demo-label">Authenticated examinee session</span><h1>Examinee Dashboard</h1>
 <div class="dashboard-tab active" data-role="examinee" data-tab="overview"><div class="metric-grid"><div class="metric">Application status<strong>Not connected</strong></div><div class="metric">Assigned program<strong>—</strong></div><div class="metric">Examination status<strong>Not scheduled</strong></div></div><div class="dashboard-panel"><h2>Welcome to your portal</h2><p>When authentication and a database are connected, you will see your approved application, upcoming assessment, and certification status here.</p></div></div>
 <div class="dashboard-tab" data-role="examinee" data-tab="schedule"><div class="dashboard-panel"><h2>Examination Schedule</h2><div id="examineeSchedules"></div></div></div>
-<div class="dashboard-tab" data-role="examinee" data-tab="materials"><div class="dashboard-panel"><h2>Review Materials</h2><p>No reviewer materials have been published. A secure backend will be needed to deliver materials only to eligible examinees.</p></div></div>
+<div class="dashboard-tab" data-role="examinee" data-tab="materials"><div class="dashboard-panel"><h2>Review Materials</h2><div id="gvReviewerMaterials">Loading reviewer materials...</div></div></div>
 <div class="dashboard-tab" data-role="examinee" data-tab="results"><div class="dashboard-panel"><h2>Examination Results & Certificates</h2><p>No results or certificates are available. Individual results must be linked to verified examinee accounts.</p></div></div>
 <div class="dashboard-tab" data-role="examinee" data-tab="exam"><div class="dashboard-panel"><h2>My Examination Portal</h2><p>Only approved examinees can start an open examination. One attempt per examination; the countdown starts on first access.</p><div id="gvExamineeExamList"></div><div id="gvExamRunner"></div><div class="gv-msg" id="gvRunnerMsg" role="status"></div></div></div></div></div></section>
 
 <section id="admin" class="page"><div class="dashboard-shell"><aside class="dashboard-sidebar"><h3>Admin Portal</h3>
-<button onclick="switchTab('admin','overview')">Overview</button><button onclick="switchTab('admin','applications')">Applications</button><button onclick="switchTab('admin','examinees')">Examinees</button><button onclick="switchTab('admin','schedules')">Manage Schedules</button><button onclick="switchTab('admin','certificates')">Results & Certificates</button><button onclick="switchTab('admin','posts')">Posts & Zoom Links</button><button onclick="switchTab('admin','exams')">Examination Portal</button><button onclick="switchTab('admin','analytics')">Results Summary</button><button onclick="logout()">Logout</button></aside>
+<button onclick="switchTab('admin','overview')">Overview</button><button onclick="switchTab('admin','applications')">Applications</button><button onclick="switchTab('admin','examinees')">Examinees</button><button onclick="switchTab('admin','schedules')">Manage Schedules</button><button onclick="switchTab('admin','certificates')">Results & Certificates</button><button onclick="switchTab('admin','posts')">POST</button><button onclick="switchTab('admin','exams')">Examination Portal</button><button onclick="switchTab('admin','analytics')">Results Summary</button><button onclick="logout()">Logout</button></aside>
 <div class="dashboard-main"><span class="demo-label">Authenticated administrator session</span><h1>Administrator Dashboard</h1>
 <div class="dashboard-tab active" data-role="admin" data-tab="overview"><div class="metric-grid"><div class="metric">Applications received<strong id="gvApplicationCount">0</strong></div><div class="metric">Approved examinees<strong id="gvApprovedCount">0</strong></div><div class="metric">Published schedules<strong id="scheduleCount">0</strong></div></div><div class="dashboard-panel"><h2>Administration</h2><p>Manage examination schedules shared through Supabase. Application approvals, payments, certificates, and real-time availability require a backend.</p></div></div>
 <div class="dashboard-tab" data-role="admin" data-tab="applications"><div class="dashboard-panel"><h2>Application Management</h2><p class="muted">Applicants are grouped by certification. Select a name to review the complete submission and take action.</p>
@@ -485,12 +485,12 @@ h2 {color:var(--navy);font-size:clamp(28px,3vw,39px);margin:0 0 30px}
 <button type="submit" class="btn btn-primary">Publish Schedule</button></form><div id="adminScheduleList"></div></div></div>
 <div class="dashboard-tab" data-role="admin" data-tab="certificates"><div class="dashboard-panel"><h2>Results & Certificate Management</h2><p>Assessment results and certificate issuance will be available after a secure database and authorized approval workflow are configured.</p></div></div>
 
-<div class="dashboard-tab" data-role="admin" data-tab="posts"><div class="dashboard-panel"><h2>Posts, Announcements & Zoom Links</h2><form id="gvPostForm">
-<div class="gv-field"><label>Post Type</label><select name="category"><option value="announcement">Announcement</option><option value="zoom">Zoom Meeting</option><option value="exam_portal">Examination Portal Link</option></select></div>
+<div class="dashboard-tab" data-role="admin" data-tab="posts"><div class="dashboard-panel"><h2>POST — Announcements & Reviewer Materials</h2><form id="gvPostForm">
+<div class="gv-field"><label>Post Type</label><select name="category"><option value="announcement">Announcement</option><option value="zoom">Zoom Meeting</option><option value="exam_portal">Examination Portal Link</option><option value="reviewer">Reviewer Material</option></select></div>
 <div class="gv-field"><label>Title</label><input name="title" required minlength="3" maxlength="160"></div>
-<div class="gv-field"><label>Details / Instructions</label><textarea name="body" required maxlength="8000"></textarea></div>
+<div class="gv-field"><label>Details / Instructions</label><textarea name="body" maxlength="8000" placeholder="Description / instructions"></textarea></div>
 <div class="gv-field"><label>HTTPS Link (optional)</label><input name="link_url" type="url" placeholder="https://..."></div>
-<button class="btn btn-primary" type="submit">Publish Post</button><div class="gv-msg" id="gvPostMsg" role="status"></div></form><h3>Published Posts</h3><div id="gvAdminPosts"></div></div></div>
+<div class="gv-field"><label>Reviewer File (PDF, DOC, DOCX, PPT, PPTX, XLS, XLSX; max 20 MB)</label><input name="reviewer_file" type="file" accept=".pdf,.doc,.docx,.ppt,.pptx,.xls,.xlsx"></div><button class="btn btn-primary" type="submit">Publish Post</button><div class="gv-msg" id="gvPostMsg" role="status"></div></form><h3>Published Posts</h3><div id="gvAdminPosts"></div></div></div>
 <div class="dashboard-tab" data-role="admin" data-tab="exams"><div class="dashboard-panel"><h2>Examination Portal Management</h2><p>Create an examination, add four-choice questions, and manually open or close it. The timer starts separately for each examinee when they begin.</p>
 <form id="gvExamForm"><div class="gv-grid"><div class="gv-field"><label>Exam Title</label><input name="title" required minlength="3" maxlength="180"></div><div class="gv-field"><label>Program</label><select name="program"><option>CPOA</option><option>CJMA</option></select></div><div class="gv-field"><label>Time Limit (minutes)</label><input name="duration_minutes" type="number" min="1" max="240" value="60" required></div><div class="gv-field"><label>Passing Percentage</label><input name="pass_percentage" type="number" min="0" max="100" step="0.01" value="75" required></div></div>
 <button type="submit" class="btn btn-primary">Create Closed Exam</button><div class="gv-msg" id="gvExamMsg" role="status"></div></form>
@@ -1031,20 +1031,78 @@ let gvExams=[],gvActiveAttempt=null,gvTimer=null,gvAttemptAnswers={};
 const gvRole=()=>currentProfile?.role;
 const gvMsg=(id,s)=>{if(gv$(id))gv$(id).textContent=s};
 const gvAdmin=()=>gvRole()==="admin"&&currentProfile.approved;
+async function gvReviewerMaterials(){
+ const box=gv$("gvReviewerMaterials");
+ if(!box||!currentProfile||currentProfile.role!=="examinee")return;
+ box.textContent="Loading reviewer materials...";
+ const {data,error}=await backend.from("announcements").select("title,body,material_path").eq("published",true).eq("category","reviewer").order("created_at",{ascending:false});
+ if(error){box.textContent=gvErr(error);return}
+ box.replaceChildren();
+ if(!data?.length){box.textContent="No reviewer materials published yet.";return}
+ for(const p of data){
+  const card=document.createElement("article");card.className="gv-panel";
+  const title=document.createElement("h3");title.textContent=p.title;
+  const description=document.createElement("p");description.textContent=p.body;
+  const button=document.createElement("button");button.className="btn";button.textContent="Open / Download Reviewer";
+  button.onclick=()=>gvOpenReviewer(p.material_path);
+  card.append(title,description,button);box.append(card);
+ }
+}
+async function gvOpenReviewer(path){
+ if(!path)return;
+ const {data,error}=await backend.storage.from("reviewer-materials").createSignedUrl(path,120);
+ if(error||!data?.signedUrl){alert("Unable to open file: "+gvErr(error));return}
+ const opened=window.open(data.signedUrl,"_blank","noopener,noreferrer");
+ if(!opened)window.location.href=data.signedUrl;
+}
 async function gvPosts(){
  const {data,error}=await backend.from("announcements").select("*").eq("published",true).order("created_at",{ascending:false}).limit(100);
  if(error)throw error;
- const cards=(data||[]).map(p=>'<article class="gv-panel"><span class="gv-pill">'+gvEsc(p.category.replace("_"," "))+'</span><h3>'+gvEsc(p.title)+'</h3><p style="white-space:pre-wrap">'+gvEsc(p.body)+'</p>'+(p.link_url?'<a class="btn" target="_blank" rel="noopener noreferrer" href="'+gvEsc(p.link_url)+'">Open Link</a>':"")+'<p class="gv-small">'+new Date(p.created_at).toLocaleString()+'</p>'+(gvAdmin()?'<button class="btn" data-delete-post="'+p.id+'">Delete</button>':"")+'</article>').join("");
+ const cards=(data||[]).filter(p=>p.category!=="reviewer").map(p=>'<article class="gv-panel"><span class="gv-pill">'+gvEsc(p.category.replace("_"," "))+'</span><h3>'+gvEsc(p.title)+'</h3><p style="white-space:pre-wrap">'+gvEsc(p.body)+'</p>'+(p.link_url?'<a class="btn" target="_blank" rel="noopener noreferrer" href="'+gvEsc(p.link_url)+'">Open Link</a>':"")+'<p class="gv-small">'+new Date(p.created_at).toLocaleString()+'</p>'+(gvAdmin()?'<button class="btn" data-delete-post="'+p.id+'">Delete</button>':"")+'</article>').join("");
  gv$("gvPublicPosts").innerHTML=cards||"<p>No announcements published yet.</p>";
  gv$("gvAdminPosts").innerHTML=cards||"<p>No published posts.</p>";
+ const reviewerPosts=(data||[]).filter(p=>p.category==="reviewer");
+ for(const p of reviewerPosts){
+  const card=document.createElement("article");card.className="gv-panel";
+  const h=document.createElement("h3");h.textContent=p.title;
+  const description=document.createElement("p");description.textContent=p.body;
+  const open=document.createElement("button");open.className="btn";open.textContent="Open Reviewer File";open.onclick=()=>gvOpenReviewer(p.material_path);
+  const remove=document.createElement("button");remove.className="btn";remove.textContent="Delete";remove.onclick=async()=>{
+   if(!confirm("Delete reviewer post and file?"))return;
+   const {error}=await backend.from("announcements").delete().eq("id",p.id);
+   if(error){alert(gvErr(error));return}
+   if(p.material_path)await backend.storage.from("reviewer-materials").remove([p.material_path]);
+   await gvPosts();
+  };
+  card.append(h,description,open,remove);gv$("gvAdminPosts").append(card);
+ }
  gv$("gvAdminPosts").querySelectorAll("[data-delete-post]").forEach(b=>b.onclick=async()=>{if(!confirm("Delete this post?"))return;const {error}=await backend.from("announcements").delete().eq("id",b.dataset.deletePost);if(error)alert(gvErr(error));else await gvPosts()});
 }
 gv$("gvPostForm").onsubmit=async ev=>{
  ev.preventDefault();if(!gvAdmin())return;
- const f=new FormData(ev.target);const link=String(f.get("link_url")||"").trim();
+ const form=ev.target,button=form.querySelector('button[type="submit"]'),f=new FormData(form);
+ const category=String(f.get("category")),link=String(f.get("link_url")||"").trim(),file=f.get("reviewer_file");
+ const hasFile=file instanceof File&&file.size>0;
  if(link&&!/^https:\/\/\S+$/i.test(link)){gvMsg("gvPostMsg","Use an HTTPS link.");return}
- const {error}=await backend.from("announcements").insert({title:String(f.get("title")).trim(),body:String(f.get("body")).trim(),category:f.get("category"),link_url:link||null,created_by:currentProfile.id});
- gvMsg("gvPostMsg",error?gvErr(error):"Post published.");if(!error){ev.target.reset();await gvPosts()}
+ if(category==="reviewer"&&!hasFile){gvMsg("gvPostMsg","Choose a reviewer file.");return}
+ if(category!=="reviewer"&&hasFile){gvMsg("gvPostMsg","Select Reviewer Material to upload files.");return}
+ const types={pdf:"application/pdf",doc:"application/msword",docx:"application/vnd.openxmlformats-officedocument.wordprocessingml.document",ppt:"application/vnd.ms-powerpoint",pptx:"application/vnd.openxmlformats-officedocument.presentationml.presentation",xls:"application/vnd.ms-excel",xlsx:"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"};
+ const ext=hasFile?file.name.split(".").pop().toLowerCase():"";
+ if(hasFile&&(!types[ext]||file.size>20971520)){gvMsg("gvPostMsg","Only supported documents up to 20 MB are allowed.");return}
+ const title=String(f.get("title")||"").trim(),body=String(f.get("body")||"").trim()||"Reviewer material";
+ button.disabled=true;let path=null;
+ try{
+  if(hasFile){
+   path=crypto.randomUUID()+"."+ext;
+   gvMsg("gvPostMsg","Uploading file...");
+   const {error}=await backend.storage.from("reviewer-materials").upload(path,file,{contentType:types[ext],upsert:false});
+   if(error)throw error;
+  }
+  const {error}=await backend.from("announcements").insert({title,body,category,link_url:link||null,material_path:path,created_by:currentProfile.id});
+  if(error)throw error;
+  form.reset();gvMsg("gvPostMsg","Post published.");await gvPosts();
+ }catch(error){if(path)await backend.storage.from("reviewer-materials").remove([path]);gvMsg("gvPostMsg","Publishing failed: "+gvErr(error))}
+ finally{button.disabled=false}
 };
 async function gvLoadExams(){
  if(!gvAdmin())return;
@@ -1124,7 +1182,7 @@ async function gvSubmitExam(){
  if(!error){gv$("gvExamRunner").replaceChildren();await gvLoadExaminee()}
 }
 const gvOldSwitch=switchTab;
-switchTab=function(role,tab){gvOldSwitch(role,tab);if(role==="admin"&&gvAdmin()){if(tab==="posts")gvPosts().catch(console.error);if(tab==="exams"||tab==="analytics")gvLoadExams().catch(console.error)}if(role==="examinee"&&tab==="exam")gvLoadExaminee().catch(console.error)};
+switchTab=function(role,tab){gvOldSwitch(role,tab);if(role==="admin"&&gvAdmin()){if(tab==="posts")gvPosts().catch(console.error);if(tab==="exams"||tab==="analytics")gvLoadExams().catch(console.error)}if(role==="examinee"&&tab==="exam")gvLoadExaminee().catch(console.error);if(role==="examinee"&&tab==="materials")gvReviewerMaterials().catch(console.error)};
 backend.auth.onAuthStateChange((event)=>{if(event==="SIGNED_OUT"){clearInterval(gvTimer);gvActiveAttempt=null}});
 gvPosts().catch(e=>gv$("gvPublicPosts").textContent=gvErr(e));
 
