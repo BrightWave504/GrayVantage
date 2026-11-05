@@ -130,7 +130,26 @@ h2 {color:var(--navy);font-size:clamp(28px,3vw,39px);margin:0 0 30px}
 
 /* Examinee announcement dashboard */
 .gv-materials-page{padding:12px 4px 24px}.gv-materials-page>h2{font-size:clamp(27px,3vw,39px);margin:0 0 16px;color:#123d60}.gv-materials-page .gv-app-toolbar{margin:0 0 18px;display:flex;flex-wrap:wrap;align-items:center;gap:10px}.gv-announcement-hero{background:#fff;border:1px solid #dbe6ee;border-radius:22px;padding:28px 26px;box-shadow:0 4px 7px #102e441c;text-align:center;margin-bottom:30px}.gv-announcement-hero h3{font-size:19px;margin:0 0 10px;color:#185f96}.gv-announcement-hero p{font-size:18px;color:#205b89;margin:0;white-space:pre-wrap}.gv-materials-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:24px}.gv-materials-card{background:#fff;border:1px solid #e0e9f0;border-radius:28px;padding:22px 20px;box-shadow:0 4px 8px #123d601a;min-height:210px}.gv-materials-card>h3{text-align:center;color:#176ba7;font-size:22px;font-weight:500;margin:0 0 14px}.gv-materials-entry{border-top:1px solid #edf2f6;padding:14px 0}.gv-materials-entry:first-of-type{border-top:0;padding-top:0}.gv-materials-entry h4{font-size:16px;margin:0 0 8px;color:#143e60;overflow-wrap:anywhere}.gv-materials-entry p{font-size:15px;color:#275b82;white-space:pre-wrap;overflow-wrap:anywhere}.gv-materials-empty{color:#6a8295;font-size:15px}.gv-materials-action{display:inline-block;border:0;border-radius:9px;background:#237bb8;color:#fff!important;padding:10px 19px;text-decoration:none;font-size:15px;cursor:pointer;box-shadow:0 3px 6px #123d6026;margin-top:8px}.gv-materials-action:hover{background:#155c91}.gv-more-announcements{margin-top:24px;padding:22px;border:1px solid #dbe6ee;border-radius:20px;background:#fff}.gv-more-announcements h3{margin-top:0;color:#123d60}@media(max-width:900px){.gv-materials-grid{grid-template-columns:1fr;gap:16px}.gv-materials-card{min-height:0}.gv-announcement-hero{padding:22px 18px}}
-.gv-examinee-home{max-width:1380px;margin:0 auto;padding:34px 26px 70px;min-height:calc(100vh - 160px)}#examinee .gv-examinee-home .gv-materials-page>h2{font-size:clamp(30px,3vw,42px)}body:has(#examinee.active) #gvPublicBoard,body:has(#admin.active) #gvPublicBoard{display:none!important}@media(max-width:640px){.gv-examinee-home{padding:22px 16px 48px}}</style>
+.gv-examinee-home{max-width:1380px;margin:0 auto;padding:34px 26px 70px;min-height:calc(100vh - 160px)}#examinee .gv-examinee-home .gv-materials-page>h2{font-size:clamp(30px,3vw,42px)}body:has(#examinee.active) #gvPublicBoard,body:has(#admin.active) #gvPublicBoard{display:none!important}@media(max-width:640px){.gv-examinee-home{padding:22px 16px 48px}}body:has(#examinee.active) .header,body:has(#examinee.active) #gvPublicBoard,body:has(#examinee.active) footer{display:none!important}
+#examinee.active{min-height:100vh;background:#f1f7fc;color:#113e63}
+#examinee .gv-examinee-topbar{min-height:100px;background:#fff;display:flex;align-items:center;justify-content:space-between;gap:20px;padding:12px 35px;border-bottom:1px solid #e0eaf1}
+#examinee .gv-examinee-identity{display:flex;align-items:center;gap:14px;min-width:0}
+#examinee .gv-examinee-identity img{height:72px;width:72px;object-fit:contain;flex-shrink:0}
+#examinee .gv-examinee-identity strong{font-size:clamp(17px,1.8vw,26px);font-weight:800;color:#103c60;line-height:1.2}
+#examinee .gv-examinee-account{display:flex;align-items:center;gap:22px;flex-shrink:0}
+#examinee .gv-examinee-person{display:flex;align-items:center;gap:12px;color:#336f9f;font-size:18px}
+#examinee .gv-examinee-switch select{background:#fff;color:#245f8d;border:1px solid #c5ddeb;border-radius:8px;padding:8px;font:inherit}
+#examinee .gv-examinee-logout{background:#fff;color:#153e5e;border:1px solid #89b7d8;border-radius:11px;padding:14px 24px;font-size:16px;font-weight:700;cursor:pointer}
+#examinee .gv-examinee-home{max-width:none;margin:0;padding:12px 30px 65px;min-height:calc(100vh - 100px)}
+#examinee .gv-materials-page{padding:0}
+#examinee .gv-materials-page>h2{font-size:clamp(31px,3vw,40px);font-weight:800;margin:0 0 14px;color:#103c60}
+#examinee .gv-announcement-hero{margin:0 0 36px;min-height:96px;border-radius:18px;display:flex;justify-content:center;align-items:center;padding:24px;background:#fff;box-shadow:0 4px 6px #123d6033}
+#examinee .gv-announcement-hero p{font-size:19px;color:#296b9b}
+#examinee .gv-materials-grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:30px;max-width:1060px}
+#examinee .gv-materials-card{min-height:200px;border-radius:30px;padding:22px 20px;box-shadow:0 4px 7px #123d6030}
+#examinee .gv-materials-card>h3{font-size:21px;font-weight:500;text-transform:none}
+#examinee .gv-materials-action{background:linear-gradient(#3b9cda,#07518b);border-radius:9px;padding:10px 23px}
+@media(max-width:780px){#examinee .gv-examinee-topbar{height:auto;min-height:86px;padding:10px 15px;flex-wrap:wrap}#examinee .gv-examinee-identity img{width:56px;height:56px}#examinee .gv-examinee-account{gap:10px;flex-wrap:wrap}#examinee .gv-examinee-person{font-size:14px}#examinee .gv-examinee-logout{padding:10px 15px}#examinee .gv-examinee-home{padding:18px 16px 40px}#examinee .gv-materials-grid{grid-template-columns:1fr;max-width:none;gap:18px}#examinee .gv-materials-card{min-height:0}}</style>
 <style>
 .gv-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px}.gv-panel{background:white;border:1px solid #d8e5ef;border-radius:16px;padding:22px;margin:16px 0}.gv-panel h3{margin-top:0;color:#103b60}.gv-field{display:flex;flex-direction:column;gap:6px;margin:12px 0}.gv-field input,.gv-field select,.gv-field textarea{width:100%;border:1px solid #c9dbe9;border-radius:9px;padding:12px;background:white;color:#183b57}.gv-field textarea{min-height:95px}.gv-msg{padding:10px 0;color:#155e85;white-space:pre-wrap}.gv-row{border-bottom:1px solid #e1eaf1;padding:12px 0;overflow-wrap:anywhere}.gv-row:last-child{border:0}.gv-small{color:#5c7388;font-size:14px}.gv-table{width:100%;border-collapse:collapse;min-width:500px}.gv-table td,.gv-table th{border-bottom:1px solid #d8e5ef;text-align:left;padding:10px;vertical-align:top}.gv-scroll{overflow:auto}.gv-choice{display:block;margin:8px 0;padding:10px;border:1px solid #d8e5ef;border-radius:9px}.gv-choice input{margin-right:9px}.gv-pill{padding:4px 10px;border-radius:20px;background:#e3f1ff;display:inline-block}.gv-timer{font-size:22px;font-weight:700;color:#b91c1c}
 </style></head>
@@ -461,16 +480,14 @@ h2 {color:var(--navy);font-size:clamp(28px,3vw,39px);margin:0 0 30px}
 
 
 <section class="container" id="gvPublicBoard"><h2>Latest Announcements & Examination Updates</h2><div id="gvPublicPosts">Loading announcements…</div></section>
-<section id="examinee" class="page"><div class="gv-examinee-home"><div class="gv-materials-page"><h2>Announcements</h2><div id="gvExamineeProgramSelector" class="gv-app-toolbar"></div><div id="gvReviewerMaterials">Loading announcements...</div></div></div>
-<div class="dashboard-shell gv-examinee-legacy" style="display:none"><aside class="dashboard-sidebar"><h3>Examinee Portal</h3>
-<button onclick="switchTab('examinee','overview')">Overview</button><button onclick="switchTab('examinee','schedule')">Examination Schedule</button><button onclick="switchTab('examinee','materials')">Review Materials</button><button onclick="switchTab('examinee','results')">Results & Certificate</button><button onclick="switchTab('examinee','exam')">Take Examination</button><button onclick="logout()">Logout</button></aside>
-<div class="dashboard-main"><span class="demo-label">Authenticated examinee session</span><h1>Examinee Dashboard</h1>
-<div class="dashboard-tab active" data-role="examinee" data-tab="overview"><div class="metric-grid"><div class="metric">Application status<strong>Not connected</strong></div><div class="metric">Assigned program<strong>—</strong></div><div class="metric">Examination status<strong>Not scheduled</strong></div></div><div class="dashboard-panel"><h2>Welcome to your portal</h2><p>When authentication and a database are connected, you will see your approved application, upcoming assessment, and certification status here.</p></div></div>
-<div class="dashboard-tab" data-role="examinee" data-tab="schedule"><div class="dashboard-panel"><h2>Examination Schedule</h2><div id="examineeSchedules"></div></div></div>
-
-<div class="dashboard-tab" data-role="examinee" data-tab="results"><div class="dashboard-panel"><h2>Examination Results & Certificates</h2><p>No results or certificates are available. Individual results must be linked to verified examinee accounts.</p></div></div>
-<div class="dashboard-tab" data-role="examinee" data-tab="exam"><div class="dashboard-panel"><h2>My Examination Portal</h2><p>Only approved examinees can start an open examination. One attempt per examination; the countdown starts on first access.</p><div id="gvExamineeExamList"></div><div id="gvExamRunner"></div><div class="gv-msg" id="gvRunnerMsg" role="status"></div></div></div></div></div></section>
-
+<section id="examinee" class="page">
+<div class="gv-examinee-topbar">
+ <div class="gv-examinee-identity"><img id="gvExamineeBrandLogo" src="assets/CPOA-Logo.png" alt="Certification logo"><strong id="gvExamineeBrandName">Certified Professional Office Administrator</strong></div>
+ <div class="gv-examinee-account"><div class="gv-examinee-person"><svg width="25" height="25" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21v-2a8 8 0 0 1 16 0v2"/></svg><span id="gvExamineeDisplayName">Examinee</span></div><div id="gvExamineeProgramSelector" class="gv-examinee-switch"></div><button type="button" class="gv-examinee-logout" onclick="logout()">Logout</button></div>
+</div>
+<div class="gv-examinee-home"><div class="gv-materials-page"><h2>Announcements</h2><div id="gvReviewerMaterials">Loading announcements...</div></div></div>
+<div class="gv-examinee-legacy" hidden><div id="examineeSchedules"></div><div id="gvExamineeExamList"></div><div id="gvExamRunner"></div><div id="gvRunnerMsg"></div></div>
+</section>
 <section id="admin" class="page"><div class="dashboard-shell"><aside class="dashboard-sidebar"><h3>Admin Portal</h3>
 <button onclick="switchTab('admin','overview')">Overview</button><button onclick="switchTab('admin','applications')">Applications</button><button onclick="switchTab('admin','examinees')">Examinees</button><button onclick="switchTab('admin','schedules')">Manage Schedules</button><button onclick="switchTab('admin','certificates')">Results & Certificates</button><button onclick="switchTab('admin','posts')">POST</button><button onclick="switchTab('admin','exams')">Examination Portal</button><button onclick="switchTab('admin','analytics')">Results Summary</button><button onclick="logout()">Logout</button></aside>
 <div class="dashboard-main"><span class="demo-label">Authenticated administrator session</span><h1>Administrator Dashboard</h1>
@@ -1069,27 +1086,27 @@ async function gvReviewerMaterials(){
   selector.replaceChildren();
   if(!programs.length){box.textContent="No approved CPOA or CJMA program is linked to your account.";return}
   if(!programs.includes(gvActiveExamineeProgram))gvActiveExamineeProgram=programs.length===1?programs[0]:null;
+  const displayName=gv$("gvExamineeDisplayName");
+  if(displayName)displayName.textContent=currentProfile.full_name||currentProfile.username||"Examinee";
+  const logo=gv$("gvExamineeBrandLogo"),brand=gv$("gvExamineeBrandName");
   if(programs.length>1){
-   const label=document.createElement("span");label.textContent="Choose your certification portal: ";selector.append(label);
-   for(const program of ["CPOA","CJMA"]){
-    if(!programs.includes(program))continue;
-    const button=document.createElement("button");button.type="button";button.className="btn"+(gvActiveExamineeProgram===program?" btn-primary":"");
-    button.textContent=program;button.onclick=()=>gvSetExamineeProgram(program);selector.append(button);
-   }
-  }else{
-   const label=document.createElement("p");label.textContent="Certification: "+programs[0];selector.append(label);
+   const select=document.createElement("select");select.setAttribute("aria-label","Select certification portal");
+   for(const program of programs){const option=document.createElement("option");option.value=program;option.textContent=program;select.append(option)}
+   if(!gvActiveExamineeProgram)gvActiveExamineeProgram=programs[0];
+   select.value=gvActiveExamineeProgram;select.onchange=()=>gvSetExamineeProgram(select.value);selector.append(select);
   }
+  if(logo)logo.src=gvActiveExamineeProgram==="CJMA"?"assets/CJMA-logo.png":"assets/CPOA-Logo.png";
+  if(brand)brand.textContent=gvActiveExamineeProgram==="CJMA"?"Certified Junior Marketing Associate":"Certified Professional Office Administrator";
   if(!gvActiveExamineeProgram){box.textContent="Select CPOA or CJMA above to view only that program's posts and reviewer materials.";return}
   const activeProgram=gvActiveExamineeProgram;
   const {data,error}=await backend.from("announcements").select("title,body,material_path,target_program,link_url,category").eq("published",true).eq("target_program",activeProgram).order("created_at",{ascending:false});
   if(error)throw error;
   box.replaceChildren();
   const hero=document.createElement("section");hero.className="gv-announcement-hero";
-  const heroTitle=document.createElement("h3");heroTitle.textContent="Announcements for "+activeProgram;
   const heroText=document.createElement("p");
   const announcementPosts=(data||[]).filter(p=>p.category==="announcement");
   heroText.textContent=announcementPosts.length?announcementPosts[0].title+" — "+(announcementPosts[0].body||""):"No announcements have been posted yet.";
-  hero.append(heroTitle,heroText);box.append(hero);
+  hero.append(heroText);box.append(hero);
   const grid=document.createElement("div");grid.className="gv-materials-grid";
   const sections=[
    {key:"zoom",title:"Zoom",empty:"No Zoom meeting details posted.",action:"Open Meeting"},
