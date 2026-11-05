@@ -1050,5 +1050,118 @@ gvPosts().catch(e=>gv$("gvPublicPosts").textContent=gvErr(e));
 
 
 </script>
+  
+<script>
+"use strict";
+
+// Preserve the complete Applications Management panel.
+// The original dashboard initialization was replacing
+// the grouped applicant list with plain text.
+
+renderConnectedDashboard = async function () {
+  if (!currentProfile) return;
+
+  const role = currentProfile.role;
+  const target = document.querySelector(
+    "#" + role + " .demo-label"
+  );
+
+  if (target) {
+    target.textContent =
+      "Signed in as " +
+      (currentProfile.username || role);
+  }
+
+  if (role === "admin") {
+    await gvLoadApplications();
+    return;
+  }
+
+  if (role === "it") {
+    const { data, error } = await backend
+      .from("profiles")
+      .select("username,full_name,role,approved")
+      .order("created_at");
+
+    if (error) throw error;
+
+    const body = document.querySelector(
+      "#it table tbody"
+    );
+
+    if (body) {
+      body.replaceChildren();
+
+      (data || []).forEach(profile => {
+        const row = document.createElement("tr");
+
+        [
+          profile.username ||
+            profile.full_name ||
+            "Pending account",
+          profile.role,
+          profile.approved ? "Approved" : "Pending"
+        ].forEach(value => {
+          const cell = document.createElement("td");
+          cell.textContent = value;
+          row.append(cell);
+        });
+
+        body.append(row);
+      });
+    }
+
+    const metrics = document.querySelectorAll(
+      "#it .metric strong"
+    );
+
+    if (metrics[0]) {
+      metrics[0].textContent = "Connected";
+    }
+
+    if (metrics[1]) {
+      metrics[1].textContent =
+        String((data || []).length);
+    }
+  }
+};
+
+// Keep the Applications interface intact on logout.
+logout = async function () {
+  const { error } = await backend.auth.signOut();
+
+  if (error) {
+    alert("Logout failed. Please try again.");
+    return;
+  }
+
+  currentProfile = null;
+
+  const itBody = document.querySelector(
+    "#it table tbody"
+  );
+
+  if (itBody) itBody.replaceChildren();
+
+  const applicationList = document.getElementById(
+    "gvApplicationList"
+  );
+
+  if (applicationList) {
+    applicationList.textContent =
+      "Sign in as administrator to view applications.";
+  }
+
+  const notice = document.getElementById(
+    "gvApplicationNotice"
+  );
+
+  if (notice) notice.textContent = "";
+
+  location.hash = "login";
+  navigate();
+};
+</script>
+
 </body>
 </html>
