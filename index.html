@@ -464,7 +464,7 @@ h2 {color:var(--navy);font-size:clamp(28px,3vw,39px);margin:0 0 30px}
 <div class="dashboard-main"><span class="demo-label">Authenticated examinee session</span><h1>Examinee Dashboard</h1>
 <div class="dashboard-tab active" data-role="examinee" data-tab="overview"><div class="metric-grid"><div class="metric">Application status<strong>Not connected</strong></div><div class="metric">Assigned program<strong>—</strong></div><div class="metric">Examination status<strong>Not scheduled</strong></div></div><div class="dashboard-panel"><h2>Welcome to your portal</h2><p>When authentication and a database are connected, you will see your approved application, upcoming assessment, and certification status here.</p></div></div>
 <div class="dashboard-tab" data-role="examinee" data-tab="schedule"><div class="dashboard-panel"><h2>Examination Schedule</h2><div id="examineeSchedules"></div></div></div>
-<div class="dashboard-tab" data-role="examinee" data-tab="materials"><div class="dashboard-panel"><h2>Review Materials</h2><div id="gvReviewerMaterials">Loading reviewer materials...</div></div></div>
+<div class="dashboard-tab" data-role="examinee" data-tab="materials"><div class="dashboard-panel"><h2>Review Materials</h2><div id="gvExamineeProgramSelector" class="gv-app-toolbar"></div><div id="gvReviewerMaterials">Loading reviewer materials...</div></div></div>
 <div class="dashboard-tab" data-role="examinee" data-tab="results"><div class="dashboard-panel"><h2>Examination Results & Certificates</h2><p>No results or certificates are available. Individual results must be linked to verified examinee accounts.</p></div></div>
 <div class="dashboard-tab" data-role="examinee" data-tab="exam"><div class="dashboard-panel"><h2>My Examination Portal</h2><p>Only approved examinees can start an open examination. One attempt per examination; the countdown starts on first access.</p><div id="gvExamineeExamList"></div><div id="gvExamRunner"></div><div class="gv-msg" id="gvRunnerMsg" role="status"></div></div></div></div></div></section>
 
@@ -1049,17 +1049,38 @@ async function gvExamineeProgram(){
  if(error)throw error;
  return Array.isArray(data)?data.filter(p=>p==="CPOA"||p==="CJMA"):[];
 }
+let gvActiveExamineeProgram=null;
+function gvSetExamineeProgram(program){
+ if(!["CPOA","CJMA"].includes(program))return;
+ gvActiveExamineeProgram=program;
+ gvReviewerMaterials().catch(console.error);
+}
 async function gvReviewerMaterials(){
  const box=gv$("gvReviewerMaterials");
  if(!box||!currentProfile||currentProfile.role!=="examinee")return;
  box.textContent="Loading your program's reviewer materials...";
  try{
   const programs=await gvExamineeProgram();
+  const selector=gv$("gvExamineeProgramSelector");
+  selector.replaceChildren();
   if(!programs.length){box.textContent="No approved CPOA or CJMA program is linked to your account.";return}
-  const {data,error}=await backend.from("announcements").select("title,body,material_path,target_program,link_url,category").eq("published",true).in("target_program",programs).order("created_at",{ascending:false});
+  if(!programs.includes(gvActiveExamineeProgram))gvActiveExamineeProgram=programs.length===1?programs[0]:null;
+  if(programs.length>1){
+   const label=document.createElement("span");label.textContent="Choose your certification portal: ";selector.append(label);
+   for(const program of ["CPOA","CJMA"]){
+    if(!programs.includes(program))continue;
+    const button=document.createElement("button");button.type="button";button.className="btn"+(gvActiveExamineeProgram===program?" btn-primary":"");
+    button.textContent=program;button.onclick=()=>gvSetExamineeProgram(program);selector.append(button);
+   }
+  }else{
+   const label=document.createElement("p");label.textContent="Certification: "+programs[0];selector.append(label);
+  }
+  if(!gvActiveExamineeProgram){box.textContent="Select CPOA or CJMA above to view only that program's posts and reviewer materials.";return}
+  const activeProgram=gvActiveExamineeProgram;
+  const {data,error}=await backend.from("announcements").select("title,body,material_path,target_program,link_url,category").eq("published",true).eq("target_program",activeProgram).order("created_at",{ascending:false});
   if(error)throw error;
   box.replaceChildren();
-  if(!data?.length){box.textContent="No posts or reviewer materials published for "+programs.join(" / ")+" yet.";return}
+  if(!data?.length){box.textContent="No posts or reviewer materials published for "+activeProgram+" yet.";return}
   for(const p of data){
    const card=document.createElement("article");card.className="gv-panel";
    const heading=document.createElement("h3");heading.textContent=p.title;
