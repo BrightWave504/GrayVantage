@@ -110,7 +110,9 @@ h2 {color:var(--navy);font-size:clamp(28px,3vw,39px);margin:0 0 30px}
 .dashboard-tab{display:none}.dashboard-tab.active{display:block}
 @media(max-width:800px){.dashboard-shell{grid-template-columns:1fr}.metric-grid{grid-template-columns:1fr}.dashboard-sidebar{display:flex;flex-wrap:wrap;gap:6px}.dashboard-sidebar h3{width:100%}.dashboard-sidebar button{width:auto}}
 </style>
-</head>
+<style>
+.gv-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px}.gv-panel{background:white;border:1px solid #d8e5ef;border-radius:16px;padding:22px;margin:16px 0}.gv-panel h3{margin-top:0;color:#103b60}.gv-field{display:flex;flex-direction:column;gap:6px;margin:12px 0}.gv-field input,.gv-field select,.gv-field textarea{width:100%;border:1px solid #c9dbe9;border-radius:9px;padding:12px;background:white;color:#183b57}.gv-field textarea{min-height:95px}.gv-msg{padding:10px 0;color:#155e85;white-space:pre-wrap}.gv-row{border-bottom:1px solid #e1eaf1;padding:12px 0;overflow-wrap:anywhere}.gv-row:last-child{border:0}.gv-small{color:#5c7388;font-size:14px}.gv-table{width:100%;border-collapse:collapse;min-width:500px}.gv-table td,.gv-table th{border-bottom:1px solid #d8e5ef;text-align:left;padding:10px;vertical-align:top}.gv-scroll{overflow:auto}.gv-choice{display:block;margin:8px 0;padding:10px;border:1px solid #d8e5ef;border-radius:9px}.gv-choice input{margin-right:9px}.gv-pill{padding:4px 10px;border-radius:20px;background:#e3f1ff;display:inline-block}.gv-timer{font-size:22px;font-weight:700;color:#b91c1c}
+</style></head>
 <body>
 
 <header class="header">
@@ -437,18 +439,19 @@ h2 {color:var(--navy);font-size:clamp(28px,3vw,39px);margin:0 0 30px}
 </div></section>
 
 
+<section class="container" id="gvPublicBoard"><h2>Latest Announcements & Examination Updates</h2><div id="gvPublicPosts">Loading announcements…</div></section>
 <section id="examinee" class="page">
 <div class="dashboard-shell"><aside class="dashboard-sidebar"><h3>Examinee Portal</h3>
-<button onclick="switchTab('examinee','overview')">Overview</button><button onclick="switchTab('examinee','schedule')">Examination Schedule</button><button onclick="switchTab('examinee','materials')">Review Materials</button><button onclick="switchTab('examinee','results')">Results & Certificate</button><button onclick="logout()">Logout</button></aside>
+<button onclick="switchTab('examinee','overview')">Overview</button><button onclick="switchTab('examinee','schedule')">Examination Schedule</button><button onclick="switchTab('examinee','materials')">Review Materials</button><button onclick="switchTab('examinee','results')">Results & Certificate</button><button onclick="switchTab('examinee','exam')">Take Examination</button><button onclick="logout()">Logout</button></aside>
 <div class="dashboard-main"><span class="demo-label">Authenticated examinee session</span><h1>Examinee Dashboard</h1>
 <div class="dashboard-tab active" data-role="examinee" data-tab="overview"><div class="metric-grid"><div class="metric">Application status<strong>Not connected</strong></div><div class="metric">Assigned program<strong>—</strong></div><div class="metric">Examination status<strong>Not scheduled</strong></div></div><div class="dashboard-panel"><h2>Welcome to your portal</h2><p>When authentication and a database are connected, you will see your approved application, upcoming assessment, and certification status here.</p></div></div>
 <div class="dashboard-tab" data-role="examinee" data-tab="schedule"><div class="dashboard-panel"><h2>Examination Schedule</h2><div id="examineeSchedules"></div></div></div>
 <div class="dashboard-tab" data-role="examinee" data-tab="materials"><div class="dashboard-panel"><h2>Review Materials</h2><p>No reviewer materials have been published. A secure backend will be needed to deliver materials only to eligible examinees.</p></div></div>
 <div class="dashboard-tab" data-role="examinee" data-tab="results"><div class="dashboard-panel"><h2>Examination Results & Certificates</h2><p>No results or certificates are available. Individual results must be linked to verified examinee accounts.</p></div></div>
-</div></div></section>
+<div class="dashboard-tab" data-role="examinee" data-tab="exam"><div class="dashboard-panel"><h2>My Examination Portal</h2><p>Only approved examinees can start an open examination. One attempt per examination; the countdown starts on first access.</p><div id="gvExamineeExamList"></div><div id="gvExamRunner"></div><div class="gv-msg" id="gvRunnerMsg" role="status"></div></div></div></div></div></section>
 
 <section id="admin" class="page"><div class="dashboard-shell"><aside class="dashboard-sidebar"><h3>Admin Portal</h3>
-<button onclick="switchTab('admin','overview')">Overview</button><button onclick="switchTab('admin','applications')">Applications</button><button onclick="switchTab('admin','schedules')">Manage Schedules</button><button onclick="switchTab('admin','certificates')">Results & Certificates</button><button onclick="logout()">Logout</button></aside>
+<button onclick="switchTab('admin','overview')">Overview</button><button onclick="switchTab('admin','applications')">Applications</button><button onclick="switchTab('admin','schedules')">Manage Schedules</button><button onclick="switchTab('admin','certificates')">Results & Certificates</button><button onclick="switchTab('admin','posts')">Posts & Zoom Links</button><button onclick="switchTab('admin','exams')">Examination Portal</button><button onclick="switchTab('admin','analytics')">Results Summary</button><button onclick="logout()">Logout</button></aside>
 <div class="dashboard-main"><span class="demo-label">Authenticated administrator session</span><h1>Administrator Dashboard</h1>
 <div class="dashboard-tab active" data-role="admin" data-tab="overview"><div class="metric-grid"><div class="metric">Applications received<strong>0</strong></div><div class="metric">Approved examinees<strong>0</strong></div><div class="metric">Schedules in this browser<strong id="scheduleCount">0</strong></div></div><div class="dashboard-panel"><h2>Administration</h2><p>Manage examination schedules in this browser for testing. Application approvals, payments, certificates, and real-time availability require a backend.</p></div></div>
 <div class="dashboard-tab" data-role="admin" data-tab="applications"><div class="dashboard-panel"><h2>Application Management</h2><p>There are no submitted applications in a connected database. Once configured, this area can support review, approval, rejection, and payment verification.</p></div></div>
@@ -460,7 +463,23 @@ h2 {color:var(--navy);font-size:clamp(28px,3vw,39px);margin:0 0 30px}
 <div class="field"><label for="adminSlots">Available Slots</label><input id="adminSlots" type="number" min="1" max="10000" required></div>
 <button type="submit" class="btn btn-primary">Add Local Schedule</button></form><div id="adminScheduleList"></div></div></div>
 <div class="dashboard-tab" data-role="admin" data-tab="certificates"><div class="dashboard-panel"><h2>Results & Certificate Management</h2><p>Assessment results and certificate issuance will be available after a secure database and authorized approval workflow are configured.</p></div></div>
-</div></div></section>
+
+<div class="dashboard-tab" data-role="admin" data-tab="posts"><div class="dashboard-panel"><h2>Posts, Announcements & Zoom Links</h2><form id="gvPostForm">
+<div class="gv-field"><label>Post Type</label><select name="category"><option value="announcement">Announcement</option><option value="zoom">Zoom Meeting</option><option value="exam_portal">Examination Portal Link</option></select></div>
+<div class="gv-field"><label>Title</label><input name="title" required minlength="3" maxlength="160"></div>
+<div class="gv-field"><label>Details / Instructions</label><textarea name="body" required maxlength="8000"></textarea></div>
+<div class="gv-field"><label>HTTPS Link (optional)</label><input name="link_url" type="url" placeholder="https://..."></div>
+<button class="btn btn-primary" type="submit">Publish Post</button><div class="gv-msg" id="gvPostMsg" role="status"></div></form><h3>Published Posts</h3><div id="gvAdminPosts"></div></div></div>
+<div class="dashboard-tab" data-role="admin" data-tab="exams"><div class="dashboard-panel"><h2>Examination Portal Management</h2><p>Create an examination, add four-choice questions, and manually open or close it. The timer starts separately for each examinee when they begin.</p>
+<form id="gvExamForm"><div class="gv-grid"><div class="gv-field"><label>Exam Title</label><input name="title" required minlength="3" maxlength="180"></div><div class="gv-field"><label>Program</label><select name="program"><option>CPOA</option><option>CJMA</option></select></div><div class="gv-field"><label>Time Limit (minutes)</label><input name="duration_minutes" type="number" min="1" max="240" value="60" required></div><div class="gv-field"><label>Passing Percentage</label><input name="pass_percentage" type="number" min="0" max="100" step="0.01" value="75" required></div></div>
+<button type="submit" class="btn btn-primary">Create Closed Exam</button><div class="gv-msg" id="gvExamMsg" role="status"></div></form>
+<div class="gv-field"><label>Select Exam to Manage</label><select id="gvExamSelect"></select></div>
+<div id="gvExamDetails"></div>
+<form id="gvQuestionForm"><h3>Add Multiple-Choice Question</h3><div class="gv-field"><label>Question</label><textarea name="question" required maxlength="2000"></textarea></div>
+<div class="gv-grid"><div class="gv-field"><label>Option A</label><input name="option0" required></div><div class="gv-field"><label>Option B</label><input name="option1" required></div><div class="gv-field"><label>Option C</label><input name="option2" required></div><div class="gv-field"><label>Option D</label><input name="option3" required></div></div>
+<div class="gv-field"><label>Correct Answer</label><select name="correct_index"><option value="0">A</option><option value="1">B</option><option value="2">C</option><option value="3">D</option></select></div>
+<button type="submit" class="btn btn-primary">Save Question</button><div class="gv-msg" id="gvQuestionMsg" role="status"></div></form><div id="gvQuestionList"></div></div></div>
+<div class="dashboard-tab" data-role="admin" data-tab="analytics"><div class="dashboard-panel"><h2>Examination Results & Analytics</h2><div class="gv-field"><label>Filter Exam</label><select id="gvResultsExam"></select></div><div class="gv-grid" id="gvMetrics"></div><div id="gvResultsTable" class="gv-scroll"></div><h3>Examinee Answer Review</h3><div id="gvAnswerReview">Select an examinee to review answers.</div></div></div></div></div></section>
 
 <section id="it" class="page"><div class="dashboard-shell"><aside class="dashboard-sidebar"><h3>IT Department</h3>
 <button onclick="switchTab('it','overview')">System Overview</button><button onclick="switchTab('it','users')">User Accounts</button><button onclick="switchTab('it','security')">Security & Audit</button><button onclick="switchTab('it','settings')">System Settings</button><button onclick="logout()">Logout</button></aside>
@@ -479,7 +498,113 @@ h2 {color:var(--navy);font-size:clamp(28px,3vw,39px);margin:0 0 30px}
   <p>&copy; 2026 GrayVantage Academic &amp; Corporate Services. All rights reserved.</p>
 </footer>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.95.0/dist/umd/supabase.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.95.0/dist/umd/supabase.js">
+/* GrayVantage secure examination & publishing module */
+const gv$=id=>document.getElementById(id);
+const gvEsc=v=>String(v??"").replace(/[&<>"']/g,ch=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[ch]));
+const gvErr=e=>e?.message||"Unable to complete request.";
+let gvExams=[],gvActiveAttempt=null,gvTimer=null,gvAttemptAnswers={};
+const gvRole=()=>currentProfile?.role;
+const gvMsg=(id,s)=>{if(gv$(id))gv$(id).textContent=s};
+const gvAdmin=()=>gvRole()==="admin"&&currentProfile.approved;
+async function gvPosts(){
+ const {data,error}=await backend.from("announcements").select("*").eq("published",true).order("created_at",{ascending:false}).limit(100);
+ if(error)throw error;
+ const cards=(data||[]).map(p=>'<article class="gv-panel"><span class="gv-pill">'+gvEsc(p.category.replace("_"," "))+'</span><h3>'+gvEsc(p.title)+'</h3><p style="white-space:pre-wrap">'+gvEsc(p.body)+'</p>'+(p.link_url?'<a class="btn" target="_blank" rel="noopener noreferrer" href="'+gvEsc(p.link_url)+'">Open Link</a>':"")+'<p class="gv-small">'+new Date(p.created_at).toLocaleString()+'</p>'+(gvAdmin()?'<button class="btn" data-delete-post="'+p.id+'">Delete</button>':"")+'</article>').join("");
+ gv$("gvPublicPosts").innerHTML=cards||"<p>No announcements published yet.</p>";
+ gv$("gvAdminPosts").innerHTML=cards||"<p>No published posts.</p>";
+ gv$("gvAdminPosts").querySelectorAll("[data-delete-post]").forEach(b=>b.onclick=async()=>{if(!confirm("Delete this post?"))return;const {error}=await backend.from("announcements").delete().eq("id",b.dataset.deletePost);if(error)alert(gvErr(error));else await gvPosts()});
+}
+gv$("gvPostForm").onsubmit=async ev=>{
+ ev.preventDefault();if(!gvAdmin())return;
+ const f=new FormData(ev.target);const link=String(f.get("link_url")||"").trim();
+ if(link&&!/^https:\/\/\S+$/i.test(link)){gvMsg("gvPostMsg","Use an HTTPS link.");return}
+ const {error}=await backend.from("announcements").insert({title:String(f.get("title")).trim(),body:String(f.get("body")).trim(),category:f.get("category"),link_url:link||null,created_by:currentProfile.id});
+ gvMsg("gvPostMsg",error?gvErr(error):"Post published.");if(!error){ev.target.reset();await gvPosts()}
+};
+async function gvLoadExams(){
+ if(!gvAdmin())return;
+ const {data,error}=await backend.from("exams").select("*").order("created_at",{ascending:false});
+ if(error)throw error;gvExams=data||[];
+ const old=gv$("gvExamSelect").value;
+ for(const id of ["gvExamSelect","gvResultsExam"]){const el=gv$(id),prior=id==="gvExamSelect"?old:el.value;el.replaceChildren();gvExams.forEach(e=>{const opt=new Option(e.title+" ("+e.program+") "+(e.is_open?"OPEN":"CLOSED"),e.id);el.add(opt)});if(gvExams.some(e=>e.id===prior))el.value=prior}
+ await gvShowExam();await gvLoadResults();
+}
+gv$("gvExamForm").onsubmit=async ev=>{
+ ev.preventDefault();if(!gvAdmin())return;const f=new FormData(ev.target);
+ const {error}=await backend.from("exams").insert({title:String(f.get("title")).trim(),program:f.get("program"),duration_minutes:Number(f.get("duration_minutes")),pass_percentage:Number(f.get("pass_percentage")),created_by:currentProfile.id});
+ gvMsg("gvExamMsg",error?gvErr(error):"Closed exam created. Add questions, then open it manually.");if(!error){ev.target.reset();await gvLoadExams()}
+};
+gv$("gvExamSelect").onchange=gvShowExam;
+async function gvShowExam(){
+ const e=gvExams.find(x=>x.id===gv$("gvExamSelect").value);gv$("gvQuestionList").replaceChildren();gv$("gvExamDetails").replaceChildren();if(!e)return;
+ const {data,error}=await backend.from("exam_questions").select("*").eq("exam_id",e.id).order("created_at");
+ if(error){gvMsg("gvQuestionMsg",gvErr(error));return}
+ const wrap=gv$("gvExamDetails");const desc=document.createElement("p");desc.textContent=e.program+" • "+e.duration_minutes+" minutes • Passing "+e.pass_percentage+"% • "+(data||[]).length+" questions • "+(e.is_open?"OPEN":"CLOSED");
+ const toggle=document.createElement("button");toggle.className="btn btn-primary";toggle.textContent=e.is_open?"Close Examination":"Open Examination";
+ toggle.onclick=async()=>{if(!e.is_open&&!(data||[]).length){alert("Add questions first.");return}if(!confirm((e.is_open?"Close":"Open")+" examination?"))return;const {error}=await backend.from("exams").update({is_open:!e.is_open}).eq("id",e.id);if(error)alert(gvErr(error));else await gvLoadExams()};
+ wrap.append(desc,toggle);
+ gv$("gvQuestionList").innerHTML="<h3>Question Bank ("+(data||[]).length+")</h3>"+(data||[]).map((q,i)=>'<div class="gv-row"><b>'+(i+1)+'. '+gvEsc(q.question)+'</b><p class="gv-small">Correct: '+gvEsc(q.options[q.correct_index])+'</p><button class="btn" data-del-question="'+q.id+'">Delete Question</button></div>').join("");
+ gv$("gvQuestionList").querySelectorAll("[data-del-question]").forEach(b=>b.onclick=async()=>{if(!confirm("Delete question?"))return;const {error}=await backend.from("exam_questions").delete().eq("id",b.dataset.delQuestion);if(error)alert(gvErr(error));else await gvShowExam()});
+}
+gv$("gvQuestionForm").onsubmit=async ev=>{
+ ev.preventDefault();if(!gvAdmin())return;const exam_id=gv$("gvExamSelect").value;if(!exam_id){gvMsg("gvQuestionMsg","Create an exam first.");return}
+ const f=new FormData(ev.target),options=[0,1,2,3].map(i=>String(f.get("option"+i)).trim());
+ const {error}=await backend.from("exam_questions").insert({exam_id,question:String(f.get("question")).trim(),options,correct_index:Number(f.get("correct_index"))});
+ gvMsg("gvQuestionMsg",error?gvErr(error):"Question saved.");if(!error){ev.target.reset();await gvShowExam()}
+};
+gv$("gvResultsExam").onchange=gvLoadResults;
+let gvResultAttempts=[],gvResultQuestions=[];
+async function gvLoadResults(){
+ if(!gvAdmin())return;const id=gv$("gvResultsExam").value;
+ gv$("gvMetrics").replaceChildren();gv$("gvResultsTable").replaceChildren();gv$("gvAnswerReview").textContent="Select an examinee to review answers.";if(!id)return;
+ const [ar,qr]=await Promise.all([backend.from("exam_attempts").select("*").eq("exam_id",id).order("started_at",{ascending:false}),backend.from("exam_questions").select("*").eq("exam_id",id)]);
+ if(ar.error||qr.error){gv$("gvResultsTable").textContent=gvErr(ar.error||qr.error);return}
+ gvResultAttempts=ar.data||[];gvResultQuestions=qr.data||[];
+ const completed=gvResultAttempts.filter(a=>a.submitted_at),pass=completed.filter(a=>a.passed).length,avg=completed.length?completed.reduce((sum,a)=>sum+(a.total?100*a.score/a.total:0),0)/completed.length:0;
+ gv$("gvMetrics").innerHTML=[["Total Attempts",gvResultAttempts.length],["Submitted",completed.length],["Passers",pass],["Average Score",avg.toFixed(2)+"%"]].map(([label,v])=>'<div class="gv-panel"><div>'+label+'</div><h2>'+v+'</h2></div>').join("");
+ const ids=[...new Set(gvResultAttempts.map(a=>a.examinee_id))];let names={};
+ if(ids.length){const p=await backend.from("profiles").select("id,username,full_name").in("id",ids);if(!p.error)(p.data||[]).forEach(x=>names[x.id]=x.full_name||x.username||x.id)}
+ const table=document.createElement("table");table.className="gv-table";table.innerHTML="<thead><tr><th>Examinee</th><th>Score</th><th>Percentage</th><th>Result</th><th>Answers</th></tr></thead>";
+ const body=document.createElement("tbody");gvResultAttempts.forEach(a=>{const tr=document.createElement("tr");[names[a.examinee_id]||a.examinee_id,a.submitted_at?a.score+" / "+a.total:"In progress",a.submitted_at&&a.total?(100*a.score/a.total).toFixed(2)+"%":"—",a.submitted_at?(a.passed?"PASS":"FAIL"):"Not submitted"].forEach(t=>{const td=document.createElement("td");td.textContent=t;tr.append(td)});const td=document.createElement("td");const btn=document.createElement("button");btn.className="btn";btn.textContent="Review";btn.disabled=!a.submitted_at;btn.onclick=()=>gvReview(a);td.append(btn);tr.append(td);body.append(tr)});table.append(body);gv$("gvResultsTable").append(table);
+}
+function gvReview(a){
+ const answers=a.answers||{};const box=gv$("gvAnswerReview");box.replaceChildren();
+ const title=document.createElement("p");title.textContent="Attempt "+a.id+" — "+a.score+"/"+a.total;box.append(title);
+ (a.question_order||[]).forEach((id,i)=>{const q=gvResultQuestions.find(x=>x.id===id);if(!q)return;const chosen=answers[id],ok=String(chosen)===String(q.correct_index);const row=document.createElement("div");row.className="gv-row";row.innerHTML="<b>"+(i+1)+". "+gvEsc(q.question)+"</b><p>Examinee: "+gvEsc(chosen===undefined?"Not answered":q.options[Number(chosen)]||"Invalid answer")+"</p><p>Correct: "+gvEsc(q.options[q.correct_index])+"</p><strong style='color:"+(ok?"green":"#b91c1c")+"'>"+(ok?"CORRECT":"WRONG")+"</strong>";box.append(row)});
+}
+async function gvLoadExaminee(){
+ if(gvRole()!=="examinee")return;
+ const [er,ar]=await Promise.all([backend.from("exams").select("id,title,program,duration_minutes,pass_percentage").eq("is_open",true),backend.from("exam_attempts").select("exam_id,submitted_at,score,total,passed")]);
+ if(er.error||ar.error){gv$("gvExamineeExamList").textContent=gvErr(er.error||ar.error);return}
+ const attempts=ar.data||[];const box=gv$("gvExamineeExamList");box.replaceChildren();
+ (er.data||[]).forEach(e=>{const a=attempts.find(x=>x.exam_id===e.id),row=document.createElement("div");row.className="gv-row";const label=document.createElement("p");label.textContent=e.title+" • "+e.program+" • "+e.duration_minutes+" minutes";row.append(label);
+ if(a?.submitted_at){const p=document.createElement("p");p.textContent="Submitted: "+a.score+"/"+a.total+" — "+(a.passed?"PASS":"FAIL");row.append(p)}
+ else {const b=document.createElement("button");b.className="btn btn-primary";b.textContent=a?"Resume Exam":"Start Exam";b.onclick=()=>gvStartExam(e.id);row.append(b)}box.append(row)});
+ if(!(er.data||[]).length)box.textContent="No open examinations at this time.";
+}
+async function gvStartExam(id){
+ if(!confirm("Start/resume exam? Timer starts on first access and cannot be paused."))return;
+ const {data,error}=await backend.rpc("start_exam",{p_exam_id:id});if(error){gvMsg("gvRunnerMsg",gvErr(error));return}
+ gvActiveAttempt={exam_id:id,...data};gvAttemptAnswers={};gv$("gvRunnerMsg").textContent="";
+ const box=gv$("gvExamRunner");box.replaceChildren();const form=document.createElement("form");form.id="gvTakingForm";
+ const clock=document.createElement("div");clock.className="gv-timer";form.append(clock);
+ data.questions.forEach((q,i)=>{const wrap=document.createElement("fieldset");wrap.className="gv-panel";const legend=document.createElement("legend");legend.textContent=(i+1)+". "+q.question;wrap.append(legend);q.options.forEach((opt,j)=>{const label=document.createElement("label");label.className="gv-choice";const input=document.createElement("input");input.type="radio";input.name="q_"+q.id;input.value=j;input.onchange=()=>gvAttemptAnswers[q.id]=j;label.append(input,document.createTextNode(opt));wrap.append(label)});form.append(wrap)});
+ const btn=document.createElement("button");btn.type="submit";btn.className="btn btn-primary";btn.textContent="Submit Final Answers";form.append(btn);form.onsubmit=async ev=>{ev.preventDefault();if(!confirm("Submit final answers? This cannot be undone."))return;await gvSubmitExam()};box.append(form);
+ clearInterval(gvTimer);const tick=()=>{if(!gvActiveAttempt)return;const left=Math.max(0,Math.ceil((new Date(gvActiveAttempt.expires_at).getTime()-Date.now())/1000));clock.textContent="Time remaining: "+Math.floor(left/60)+":"+String(left%60).padStart(2,"0");if(!left){clearInterval(gvTimer);gvSubmitExam()}};tick();gvTimer=setInterval(tick,1000);
+}
+async function gvSubmitExam(){
+ if(!gvActiveAttempt)return;clearInterval(gvTimer);const id=gvActiveAttempt.exam_id;gvActiveAttempt=null;
+ const {data,error}=await backend.rpc("submit_exam",{p_exam_id:id,p_answers:gvAttemptAnswers});
+ gvMsg("gvRunnerMsg",error?gvErr(error):"Submitted. Score: "+data.score+"/"+data.total+" — "+(data.passed?"PASS":"FAIL")+(data.late?" (Time expired; late submission scored zero.)":""));
+ if(!error){gv$("gvExamRunner").replaceChildren();await gvLoadExaminee()}
+}
+const gvOldSwitch=switchTab;
+switchTab=function(role,tab){gvOldSwitch(role,tab);if(role==="admin"&&gvAdmin()){if(tab==="posts")gvPosts().catch(console.error);if(tab==="exams"||tab==="analytics")gvLoadExams().catch(console.error)}if(role==="examinee"&&tab==="exam")gvLoadExaminee().catch(console.error)};
+backend.auth.onAuthStateChange((event)=>{if(event==="SIGNED_OUT"){clearInterval(gvTimer);gvActiveAttempt=null}});
+gvPosts().catch(e=>gv$("gvPublicPosts").textContent=gvErr(e));
+
+</script>
 <script>
 "use strict";
 
