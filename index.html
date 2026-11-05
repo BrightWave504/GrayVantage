@@ -453,15 +453,15 @@ h2 {color:var(--navy);font-size:clamp(28px,3vw,39px);margin:0 0 30px}
 <section id="admin" class="page"><div class="dashboard-shell"><aside class="dashboard-sidebar"><h3>Admin Portal</h3>
 <button onclick="switchTab('admin','overview')">Overview</button><button onclick="switchTab('admin','applications')">Applications</button><button onclick="switchTab('admin','schedules')">Manage Schedules</button><button onclick="switchTab('admin','certificates')">Results & Certificates</button><button onclick="switchTab('admin','posts')">Posts & Zoom Links</button><button onclick="switchTab('admin','exams')">Examination Portal</button><button onclick="switchTab('admin','analytics')">Results Summary</button><button onclick="logout()">Logout</button></aside>
 <div class="dashboard-main"><span class="demo-label">Authenticated administrator session</span><h1>Administrator Dashboard</h1>
-<div class="dashboard-tab active" data-role="admin" data-tab="overview"><div class="metric-grid"><div class="metric">Applications received<strong>0</strong></div><div class="metric">Approved examinees<strong>0</strong></div><div class="metric">Schedules in this browser<strong id="scheduleCount">0</strong></div></div><div class="dashboard-panel"><h2>Administration</h2><p>Manage examination schedules in this browser for testing. Application approvals, payments, certificates, and real-time availability require a backend.</p></div></div>
+<div class="dashboard-tab active" data-role="admin" data-tab="overview"><div class="metric-grid"><div class="metric">Applications received<strong>0</strong></div><div class="metric">Approved examinees<strong>0</strong></div><div class="metric">Published schedules<strong id="scheduleCount">0</strong></div></div><div class="dashboard-panel"><h2>Administration</h2><p>Manage examination schedules shared through Supabase. Application approvals, payments, certificates, and real-time availability require a backend.</p></div></div>
 <div class="dashboard-tab" data-role="admin" data-tab="applications"><div class="dashboard-panel"><h2>Application Management</h2><p>There are no submitted applications in a connected database. Once configured, this area can support review, approval, rejection, and payment verification.</p></div></div>
-<div class="dashboard-tab" data-role="admin" data-tab="schedules"><div class="dashboard-panel"><h2>Examination Schedule Management</h2><p class="muted">Local browser prototype only. Changes are not shared with other users or devices.</p>
+<div class="dashboard-tab" data-role="admin" data-tab="schedules"><div class="dashboard-panel"><h2>Examination Schedule Management</h2><p class="muted">Schedules are stored securely in Supabase and visible to applicants across devices.</p>
 <form id="scheduleForm"><div class="field"><label for="adminProgram">Certification Program</label><select id="adminProgram" required><option value="CPOA">CPOA</option><option value="CJMA">CJMA</option></select></div>
 <div class="field"><label for="adminBatch">Batch Name</label><input id="adminBatch" placeholder="e.g. Batch 1" maxlength="80" required></div>
 <div class="field"><label for="adminDate">Examination Date</label><input id="adminDate" type="date" required></div>
 <div class="field"><label for="adminTime">Start Time</label><input id="adminTime" type="time" required></div>
 <div class="field"><label for="adminSlots">Available Slots</label><input id="adminSlots" type="number" min="1" max="10000" required></div>
-<button type="submit" class="btn btn-primary">Add Local Schedule</button></form><div id="adminScheduleList"></div></div></div>
+<button type="submit" class="btn btn-primary">Publish Schedule</button></form><div id="adminScheduleList"></div></div></div>
 <div class="dashboard-tab" data-role="admin" data-tab="certificates"><div class="dashboard-panel"><h2>Results & Certificate Management</h2><p>Assessment results and certificate issuance will be available after a secure database and authorized approval workflow are configured.</p></div></div>
 
 <div class="dashboard-tab" data-role="admin" data-tab="posts"><div class="dashboard-panel"><h2>Posts, Announcements & Zoom Links</h2><form id="gvPostForm">
@@ -685,12 +685,21 @@ function applyFor(program) {
 
   Do not publish fictional schedules or slot counts.
 */
-const SCHEDULE_KEY = "gacs_preview_schedules_v1";
 let examinationSchedules = [];
-try {
-  const stored = JSON.parse(localStorage.getItem(SCHEDULE_KEY) || "[]");
-  if (Array.isArray(stored)) examinationSchedules = stored;
-} catch (error) { examinationSchedules = []; }
+async function loadExaminationSchedules() {
+  const {data,error}=await backend.from("examination_schedules").select("id,program,batch_name,examination_date,start_time,capacity,published").order("examination_date",{ascending:true});
+  if(error) {
+    console.error("Could not load schedules:",error.message);
+    document.getElementById("scheduleNote").textContent="Unable to load examination schedules. Please try refreshing.";
+    return;
+  }
+  examinationSchedules=(data||[]).map(item=>({
+    ...item,
+    label:item.batch_name+" — "+item.examination_date+" "+item.start_time.slice(0,5),
+    slotsAvailable:item.capacity
+  }));
+  updateSchedules();renderAdminSchedules();renderExamineeSchedules();
+}
 
 
 function updateSchedules() {
@@ -758,63 +767,58 @@ document.getElementById("seminarForm").addEventListener("submit",function(event)
 });
 
 
-/* Dashboard preview navigation and local-only schedule management */
-function switchTab(role, tab) {
-  document.querySelectorAll('.dashboard-tab[data-role="'+role+'"]').forEach(el => {
-    el.classList.toggle("active", el.dataset.tab === tab);
-  });
-  if (role === "examinee") renderExamineeSchedules();
-  if (role === "admin") renderAdminSchedules();
+/* Shared Supabase examination schedules */
+function switchTab(role,tab) {
+  document.querySelectorAll('.dashboard-tab[data-role="'+role+'"]').forEach(el=>el.classList.toggle("active",el.dataset.tab===tab));
+  if(role==="examinee") renderExamineeSchedules();
+  if(role==="admin") { renderAdminSchedules(); if(tab==="schedules") loadExaminationSchedules(); }
 }
 function renderExamineeSchedules() {
-  const target = document.getElementById("examineeSchedules");
-  if (!examinationSchedules.length) {
-    target.textContent = "No examination schedules have been configured in this browser.";
-    return;
-  }
-  const table = document.createElement("table");
-  const header = document.createElement("tr");
-  ["Program","Batch / Date","Slots"].forEach(v => {
-    const th = document.createElement("th"); th.textContent=v;header.append(th);
-  });
-  const head = document.createElement("thead");head.append(header);table.append(head);
-  const body = document.createElement("tbody");
-  examinationSchedules.forEach(item => {
-    const tr = document.createElement("tr");
-    [item.program,item.label,String(item.slotsAvailable)].forEach(v => {
-      const td=document.createElement("td");td.textContent=v;tr.append(td);
-    });body.append(tr);
-  });table.append(body);target.replaceChildren(table);
+  const target=document.getElementById("examineeSchedules");
+  target.replaceChildren();
+  if(!examinationSchedules.length){target.textContent="No published examination schedules available.";return;}
+  const table=document.createElement("table"),head=document.createElement("thead"),row=document.createElement("tr");
+  ["Program","Batch / Date","Capacity"].forEach(x=>{const th=document.createElement("th");th.textContent=x;row.append(th);});
+  head.append(row);table.append(head);
+  const body=document.createElement("tbody");
+  examinationSchedules.forEach(item=>{const tr=document.createElement("tr");[item.program,item.label,String(item.capacity)].forEach(x=>{const td=document.createElement("td");td.textContent=x;tr.append(td);});body.append(tr);});
+  table.append(body);target.append(table);
 }
 function renderAdminSchedules() {
-  document.getElementById("scheduleCount").textContent=examinationSchedules.length;
+  const count=document.getElementById("scheduleCount");if(count)count.textContent=examinationSchedules.length;
   const target=document.getElementById("adminScheduleList");target.replaceChildren();
-  if (!examinationSchedules.length) {
-    const p=document.createElement("p");p.textContent="No schedules added yet.";target.append(p);return;
-  }
-  examinationSchedules.forEach(item => {
+  if(!examinationSchedules.length){target.textContent="No published schedules in Supabase.";return;}
+  examinationSchedules.forEach(item=>{
     const row=document.createElement("div");row.className="detail-actions";
-    const label=document.createElement("span");label.textContent=item.program+" — "+item.label+" ("+item.slotsAvailable+" slots)";
-    const button=document.createElement("button");button.className="btn";button.textContent="Delete";
-    button.onclick=()=>{
-      examinationSchedules=examinationSchedules.filter(s=>s.id!==item.id);
-      localStorage.setItem(SCHEDULE_KEY,JSON.stringify(examinationSchedules));
-      updateSchedules();renderAdminSchedules();renderExamineeSchedules();
+    const label=document.createElement("span");label.textContent=item.program+" — "+item.label+" ("+item.capacity+" slots)";
+    const button=document.createElement("button");button.type="button";button.className="btn";button.textContent="Delete";
+    button.onclick=async()=>{
+      if(!confirm("Delete this examination schedule?"))return;
+      button.disabled=true;
+      const {error}=await backend.from("examination_schedules").delete().eq("id",item.id);
+      if(error)alert("Could not delete schedule: "+error.message);
+      await loadExaminationSchedules();
     };
     row.append(label,button);target.append(row);
   });
 }
-document.getElementById("scheduleForm").addEventListener("submit",event=>{
+document.getElementById("scheduleForm").addEventListener("submit",async event=>{
   event.preventDefault();
+  const form=event.currentTarget;
   const program=document.getElementById("adminProgram").value;
-  const batch=document.getElementById("adminBatch").value.trim();
-  const date=document.getElementById("adminDate").value;
-  const time=document.getElementById("adminTime").value;
-  const slots=Number(document.getElementById("adminSlots").value);
-  if (!batch || !date || !time || !Number.isInteger(slots) || slots<1) return;
-  examinationSchedules.push({id:crypto.randomUUID ? crypto.randomUUID() : String(Date.now()),program,label:batch+" — "+date+" "+time,slotsAvailable:slots});
-  localStorage.setItem(SCHEDULE_KEY,JSON.stringify(examinationSchedules));
-  event.target.reset();updateSchedules();renderAdminSchedules();renderExamineeSchedules();
+  const batch_name=document.getElementById("adminBatch").value.trim();
+  const examination_date=document.getElementById("adminDate").value;
+  const start_time=document.getElementById("adminTime").value;
+  const capacity=Number(document.getElementById("adminSlots").value);
+  if(!batch_name||!examination_date||!start_time||!Number.isInteger(capacity)||capacity<1)return;
+  const button=form.querySelector('button[type="submit"]');button.disabled=true;
+  try {
+    const {error}=await backend.from("examination_schedules").insert({program,batch_name,examination_date,start_time,capacity,published:true});
+    if(error)throw error;
+    form.reset();await loadExaminationSchedules();
+    alert("Schedule published to Supabase. Applicants can now see it.");
+  } catch(error){alert("Schedule could not be saved: "+error.message);}
+  finally{button.disabled=false;}
 });
 async function refreshProfile() {
   currentProfile = null;
@@ -917,7 +921,7 @@ backend.auth.onAuthStateChange((event)=>{
   navigate();
 });
 
-updateSchedules();
+loadExaminationSchedules();
 renderAdminSchedules();
 </script>
 </body>
