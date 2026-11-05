@@ -521,7 +521,9 @@ let authReady = false;
 function gvUpdateHeaderAuth(){
   const button=document.getElementById("gvHeaderAuthButton");
   if(!button)return;
-  const signedIn=Boolean(currentProfile?.approved);
+  const page=location.hash.slice(1).split("?")[0];
+  const onApplicationForm=page==="apply"||page==="seminar-apply";
+  const signedIn=Boolean(currentProfile?.approved)&&!onApplicationForm;
   button.textContent=signedIn?"Logout":"Login";
   button.href=signedIn?"#":"#login";
   button.onclick=signedIn?function(event){event.preventDefault();logout();}:null;
@@ -570,6 +572,7 @@ function navigate() {
   pages.forEach(page => {
     page.classList.toggle("active", page.id === id);
   });
+  gvUpdateHeaderAuth();
 
   window.scrollTo({top:0,behavior:"instant"});
 }
