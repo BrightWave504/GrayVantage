@@ -149,7 +149,9 @@ h2 {color:var(--navy);font-size:clamp(28px,3vw,39px);margin:0 0 30px}
 #examinee .gv-materials-card{min-height:200px;border-radius:30px;padding:22px 20px;box-shadow:0 4px 7px #123d6030}
 #examinee .gv-materials-card>h3{font-size:21px;font-weight:500;text-transform:none}
 #examinee .gv-materials-action{background:linear-gradient(#3b9cda,#07518b);border-radius:9px;padding:10px 23px}
-@media(max-width:780px){#examinee .gv-examinee-topbar{height:auto;min-height:86px;padding:10px 15px;flex-wrap:wrap}#examinee .gv-examinee-identity img{width:56px;height:56px}#examinee .gv-examinee-account{gap:10px;flex-wrap:wrap}#examinee .gv-examinee-person{font-size:14px}#examinee .gv-examinee-logout{padding:10px 15px}#examinee .gv-examinee-home{padding:18px 16px 40px}#examinee .gv-materials-grid{grid-template-columns:1fr;max-width:none;gap:18px}#examinee .gv-materials-card{min-height:0}}</style>
+@media(max-width:780px){#examinee .gv-examinee-topbar{height:auto;min-height:86px;padding:10px 15px;flex-wrap:wrap}#examinee .gv-examinee-identity img{width:56px;height:56px}#examinee .gv-examinee-account{gap:10px;flex-wrap:wrap}#examinee .gv-examinee-person{font-size:14px}#examinee .gv-examinee-logout{padding:10px 15px}#examinee .gv-examinee-home{padding:18px 16px 40px}#examinee .gv-materials-grid{grid-template-columns:1fr;max-width:none;gap:18px}#examinee .gv-materials-card{min-height:0}}/* Force-hide legacy certification selectors on examinee portal */
+#examinee #gvExamineeProgramSelector,#examinee .gv-examinee-switch,#examinee .gv-examinee-account select{display:none!important;visibility:hidden!important}
+</style>
 <style>
 .gv-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px}.gv-panel{background:white;border:1px solid #d8e5ef;border-radius:16px;padding:22px;margin:16px 0}.gv-panel h3{margin-top:0;color:#103b60}.gv-field{display:flex;flex-direction:column;gap:6px;margin:12px 0}.gv-field input,.gv-field select,.gv-field textarea{width:100%;border:1px solid #c9dbe9;border-radius:9px;padding:12px;background:white;color:#183b57}.gv-field textarea{min-height:95px}.gv-msg{padding:10px 0;color:#155e85;white-space:pre-wrap}.gv-row{border-bottom:1px solid #e1eaf1;padding:12px 0;overflow-wrap:anywhere}.gv-row:last-child{border:0}.gv-small{color:#5c7388;font-size:14px}.gv-table{width:100%;border-collapse:collapse;min-width:500px}.gv-table td,.gv-table th{border-bottom:1px solid #d8e5ef;text-align:left;padding:10px;vertical-align:top}.gv-scroll{overflow:auto}.gv-choice{display:block;margin:8px 0;padding:10px;border:1px solid #d8e5ef;border-radius:9px}.gv-choice input{margin-right:9px}.gv-pill{padding:4px 10px;border-radius:20px;background:#e3f1ff;display:inline-block}.gv-timer{font-size:22px;font-weight:700;color:#b91c1c}
 </style></head>
@@ -1082,8 +1084,6 @@ async function gvReviewerMaterials(){
  box.textContent="Loading your program's reviewer materials...";
  try{
   const programs=await gvExamineeProgram();
-  const selector=gv$("gvExamineeProgramSelector");
-  if(selector)selector.replaceChildren();
   if(!programs.length){box.textContent="No approved CPOA or CJMA program is linked to your account.";return}
   if(!programs.includes(gvActiveExamineeProgram))gvActiveExamineeProgram=programs.length===1?programs[0]:null;
   const displayName=gv$("gvExamineeDisplayName");
