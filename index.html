@@ -761,18 +761,22 @@ async function gvDownloadExamineesExcel(){
    return /^[\\s]*[=+@-]/.test(text)?"'"+text:text;
   };
   const dateTime=value=>value?new Date(value).toLocaleString("en-PH",{timeZone:"Asia/Manila"}):"";
-  const rows=all.map(a=>{
-   const schedule=examinationSchedules.find(s=>s.id===a.examination_batch);
-   return [a.id,a.full_name,a.email,a.school_campus,a.company,a.course_program,a.date_of_birth,a.examination_program,schedule?.label||a.examination_batch,a.privacy_consent?"Yes":"No",a.status,dateTime(a.created_at),dateTime(a.email_sent_at),a.user_id].map(safe);
-  });
-  const sheet=XLSX.utils.aoa_to_sheet([columns,...rows]);
-  sheet["!cols"]=columns.map((label,i)=>({wch:Math.min(48,Math.max(label.length+3,...rows.map(row=>String(row[i]||"").length+2)))}));
-  sheet["!autofilter"]={ref:sheet["!ref"]};
   const workbook=XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(workbook,sheet,"Approved Examinees");
+  const counts={CPOA:0,CJMA:0};
+  for(const program of ["CPOA","CJMA"]){
+   const rows=all.filter(a=>a.examination_program===program).map(a=>{
+    const schedule=examinationSchedules.find(s=>s.id===a.examination_batch);
+    return [a.id,a.full_name,a.email,a.school_campus,a.company,a.course_program,a.date_of_birth,a.examination_program,schedule?.label||a.examination_batch,a.privacy_consent?"Yes":"No",a.status,dateTime(a.created_at),dateTime(a.email_sent_at),a.user_id].map(safe);
+   });
+   counts[program]=rows.length;
+   const sheet=XLSX.utils.aoa_to_sheet([columns,...rows]);
+   sheet["!cols"]=columns.map((label,i)=>({wch:Math.min(48,Math.max(label.length+3,...rows.map(row=>String(row[i]||"").length+2)))}));
+   sheet["!autofilter"]={ref:sheet["!ref"]};
+   XLSX.utils.book_append_sheet(workbook,sheet,program+" Examinees");
+  }
   const today=new Date().toLocaleDateString("en-CA",{timeZone:"Asia/Manila"});
   XLSX.writeFile(workbook,"GrayVantage_Approved_Examinees_"+today+".xlsx");
-  if(notice)notice.textContent="Downloaded "+all.length+" approved examinee record(s).";
+  if(notice)notice.textContent="Downloaded "+(counts.CPOA+counts.CJMA)+" approved examinees (CPOA: "+counts.CPOA+", CJMA: "+counts.CJMA+").";
  }catch(error){
   const message="Excel export failed: "+(error?.message||"Unknown error");
   if(notice)notice.textContent=message;
