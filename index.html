@@ -475,7 +475,7 @@ h2 {color:var(--navy);font-size:clamp(28px,3vw,39px);margin:0 0 30px}
 <div class="dashboard-tab" data-role="admin" data-tab="applications"><div class="dashboard-panel"><h2>Application Management</h2><p class="muted">Applicants are grouped by certification. Select a name to review the complete submission and take action.</p>
 <div class="gv-app-toolbar"><button type="button" class="btn" onclick="gvLoadApplications()">Refresh Applications</button><span id="gvApplicationNotice" role="status" aria-live="polite"></span></div>
 <div id="gvApplicationList">Loading applications...</div></div></div>
-<div class="dashboard-tab" data-role="admin" data-tab="examinees"><div class="dashboard-panel"><h2>Approved Examinees</h2><p class="muted">Approved applicants are moved here automatically. Select a name to view their submitted details and resend the account activation email.</p><div class="gv-app-toolbar"><button type="button" class="btn" onclick="gvLoadApplications()">Refresh Examinees</button><span id="gvExamineeNotice" role="status" aria-live="polite"></span></div><div id="gvApprovedExamineeList">Loading approved examinees...</div></div></div>
+<div class="dashboard-tab" data-role="admin" data-tab="examinees"><div class="dashboard-panel"><h2>Approved Examinees</h2><p class="muted">Approved applicants are moved here automatically. Select a name to view their submitted details and resend the account activation email.</p><div class="gv-app-toolbar"><button type="button" class="btn" onclick="gvLoadApplications()">Refresh Examinees</button><button type="button" class="btn" id="gvExportExamineesButton" onclick="gvDownloadExamineesExcel()">Download Excel (.xlsx)</button><span id="gvExamineeNotice" role="status" aria-live="polite"></span></div><div id="gvApprovedExamineeList">Loading approved examinees...</div></div></div>
 <div class="dashboard-tab" data-role="admin" data-tab="schedules"><div class="dashboard-panel"><h2>Examination Schedule Management</h2><p class="muted">Schedules are stored securely in Supabase and visible to applicants across devices.</p>
 <form id="scheduleForm"><div class="field"><label for="adminProgram">Certification Program</label><select id="adminProgram" required><option value="CPOA">CPOA</option><option value="CJMA">CJMA</option></select></div>
 <div class="field"><label for="adminBatch">Batch Name</label><input id="adminBatch" placeholder="e.g. Batch 1" maxlength="80" required></div>
@@ -511,6 +511,7 @@ h2 {color:var(--navy);font-size:clamp(28px,3vw,39px);margin:0 0 30px}
 </footer>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.95.0/dist/umd/supabase.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 
 <script>
 "use strict";
@@ -735,6 +736,49 @@ document.getElementById("seminarForm").addEventListener("submit",function(event)
 
 
 /* Shared Supabase examination schedules */
+async function gvDownloadExamineesExcel(){
+ const button=document.getElementById("gvExportExamineesButton");
+ const notice=document.getElementById("gvExamineeNotice");
+ if(!currentProfile||currentProfile.role!=="admin"||!currentProfile.approved){alert("Administrator access required.");return;}
+ if(!window.XLSX){alert("Excel export library is unavailable. Please check your internet connection and try again.");return;}
+ if(button)button.disabled=true;
+ if(notice)notice.textContent="Preparing approved examinee Excel file...";
+ try{
+  const columns=["Application ID","Full Name","Email","School / Campus","Company","Course / Program","Date of Birth","Certification","Examination Batch","Privacy Consent","Application Status","Application Submitted","Registration Email Sent","Account ID"];
+  const fields="id,full_name,email,school_campus,company,course_program,date_of_birth,examination_program,examination_batch,privacy_consent,status,created_at,email_sent_at,user_id";
+  const all=[];
+  const batchSize=500;
+  for(let offset=0;;offset+=batchSize){
+   const {data,error}=await backend.from("applications").select(fields).eq("status","approved").order("created_at",{ascending:false}).range(offset,offset+batchSize-1);
+   if(error)throw error;
+   all.push(...(data||[]));
+   if(!data||data.length<batchSize)break;
+  }
+  if(!all.length){if(notice)notice.textContent="No approved examinees to export.";return;}
+  const safe=value=>{
+   if(value===null||value===undefined)return "";
+   const text=String(value);
+   return /^[\\s]*[=+@-]/.test(text)?"'"+text:text;
+  };
+  const dateTime=value=>value?new Date(value).toLocaleString("en-PH",{timeZone:"Asia/Manila"}):"";
+  const rows=all.map(a=>{
+   const schedule=examinationSchedules.find(s=>s.id===a.examination_batch);
+   return [a.id,a.full_name,a.email,a.school_campus,a.company,a.course_program,a.date_of_birth,a.examination_program,schedule?.label||a.examination_batch,a.privacy_consent?"Yes":"No",a.status,dateTime(a.created_at),dateTime(a.email_sent_at),a.user_id].map(safe);
+  });
+  const sheet=XLSX.utils.aoa_to_sheet([columns,...rows]);
+  sheet["!cols"]=columns.map((label,i)=>({wch:Math.min(48,Math.max(label.length+3,...rows.map(row=>String(row[i]||"").length+2)))}));
+  sheet["!autofilter"]={ref:sheet["!ref"]};
+  const workbook=XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(workbook,sheet,"Approved Examinees");
+  const today=new Date().toLocaleDateString("en-CA",{timeZone:"Asia/Manila"});
+  XLSX.writeFile(workbook,"GrayVantage_Approved_Examinees_"+today+".xlsx");
+  if(notice)notice.textContent="Downloaded "+all.length+" approved examinee record(s).";
+ }catch(error){
+  const message="Excel export failed: "+(error?.message||"Unknown error");
+  if(notice)notice.textContent=message;
+  alert(message);
+ }finally{if(button)button.disabled=false;}
+}
 async function gvLoadApplications(){
  const box=document.getElementById("gvApplicationList");
  const approvedBox=document.getElementById("gvApprovedExamineeList");
