@@ -485,12 +485,12 @@ h2 {color:var(--navy);font-size:clamp(28px,3vw,39px);margin:0 0 30px}
 <button type="submit" class="btn btn-primary">Publish Schedule</button></form><div id="adminScheduleList"></div></div></div>
 <div class="dashboard-tab" data-role="admin" data-tab="certificates"><div class="dashboard-panel"><h2>Results & Certificate Management</h2><p>Assessment results and certificate issuance will be available after a secure database and authorized approval workflow are configured.</p></div></div>
 
-<div class="dashboard-tab" data-role="admin" data-tab="posts"><div class="dashboard-panel"><h2>POST — Announcements & Reviewer Materials</h2><form id="gvPostForm">
+<div class="dashboard-tab" data-role="admin" data-tab="posts"><div class="dashboard-panel"><h2>POST</h2><p>Select which certification program will receive your posts.</p><div class="gv-app-toolbar"><button type="button" class="btn" id="gvPostCPOA" onclick="gvChoosePostProgram('CPOA')">CPOA</button><button type="button" class="btn" id="gvPostCJMA" onclick="gvChoosePostProgram('CJMA')">CJMA</button></div><div id="gvProgramPostPanel" style="display:none"><h3 id="gvProgramPostTitle"></h3><form id="gvPostForm"><input type="hidden" name="target_program" id="gvPostTargetProgram">
 <div class="gv-field"><label>Post Type</label><select name="category"><option value="announcement">Announcement</option><option value="zoom">Zoom Meeting</option><option value="exam_portal">Examination Portal Link</option><option value="reviewer">Reviewer Material</option></select></div>
 <div class="gv-field"><label>Title</label><input name="title" required minlength="3" maxlength="160"></div>
 <div class="gv-field"><label>Details / Instructions</label><textarea name="body" maxlength="8000" placeholder="Description / instructions"></textarea></div>
 <div class="gv-field"><label>HTTPS Link (optional)</label><input name="link_url" type="url" placeholder="https://..."></div>
-<div class="gv-field"><label>Reviewer File (PDF, DOC, DOCX, PPT, PPTX, XLS, XLSX; max 20 MB)</label><input name="reviewer_file" type="file" accept=".pdf,.doc,.docx,.ppt,.pptx,.xls,.xlsx"></div><button class="btn btn-primary" type="submit">Publish Post</button><div class="gv-msg" id="gvPostMsg" role="status"></div></form><h3>Published Posts</h3><div id="gvAdminPosts"></div></div></div>
+<div class="gv-field"><label>Reviewer File (PDF, DOC, DOCX, PPT, PPTX, XLS, XLSX; max 20 MB)</label><input name="reviewer_file" type="file" accept=".pdf,.doc,.docx,.ppt,.pptx,.xls,.xlsx"></div><button class="btn btn-primary" type="submit">Publish Post</button><div class="gv-msg" id="gvPostMsg" role="status"></div></form><h3 id="gvProgramPublishedTitle">Published Posts</h3><div id="gvAdminPosts"></div></div></div></div>
 <div class="dashboard-tab" data-role="admin" data-tab="exams"><div class="dashboard-panel"><h2>Examination Portal Management</h2><p>Create an examination, add four-choice questions, and manually open or close it. The timer starts separately for each examinee when they begin.</p>
 <form id="gvExamForm"><div class="gv-grid"><div class="gv-field"><label>Exam Title</label><input name="title" required minlength="3" maxlength="180"></div><div class="gv-field"><label>Program</label><select name="program"><option>CPOA</option><option>CJMA</option></select></div><div class="gv-field"><label>Time Limit (minutes)</label><input name="duration_minutes" type="number" min="1" max="240" value="60" required></div><div class="gv-field"><label>Passing Percentage</label><input name="pass_percentage" type="number" min="0" max="100" step="0.01" value="75" required></div></div>
 <button type="submit" class="btn btn-primary">Create Closed Exam</button><div class="gv-msg" id="gvExamMsg" role="status"></div></form>
@@ -1031,22 +1031,50 @@ let gvExams=[],gvActiveAttempt=null,gvTimer=null,gvAttemptAnswers={};
 const gvRole=()=>currentProfile?.role;
 const gvMsg=(id,s)=>{if(gv$(id))gv$(id).textContent=s};
 const gvAdmin=()=>gvRole()==="admin"&&currentProfile.approved;
+let gvSelectedPostProgram=null;
+function gvChoosePostProgram(program){
+ if(!["CPOA","CJMA"].includes(program)||!gvAdmin())return;
+ gvSelectedPostProgram=program;
+ gv$("gvProgramPostPanel").style.display="block";
+ gv$("gvPostTargetProgram").value=program;
+ gv$("gvProgramPostTitle").textContent=program+" Posting Form";
+ gv$("gvProgramPublishedTitle").textContent=program+" Published Posts";
+ gv$("gvPostCPOA").classList.toggle("btn-primary",program==="CPOA");
+ gv$("gvPostCJMA").classList.toggle("btn-primary",program==="CJMA");
+ gvMsg("gvPostMsg","");
+ gvPosts().catch(error=>gvMsg("gvPostMsg",gvErr(error)));
+}
+async function gvExamineeProgram(){
+ const {data,error}=await backend.rpc("my_examinee_programs");
+ if(error)throw error;
+ return Array.isArray(data)?data.filter(p=>p==="CPOA"||p==="CJMA"):[];
+}
 async function gvReviewerMaterials(){
  const box=gv$("gvReviewerMaterials");
  if(!box||!currentProfile||currentProfile.role!=="examinee")return;
- box.textContent="Loading reviewer materials...";
- const {data,error}=await backend.from("announcements").select("title,body,material_path").eq("published",true).eq("category","reviewer").order("created_at",{ascending:false});
- if(error){box.textContent=gvErr(error);return}
- box.replaceChildren();
- if(!data?.length){box.textContent="No reviewer materials published yet.";return}
- for(const p of data){
-  const card=document.createElement("article");card.className="gv-panel";
-  const title=document.createElement("h3");title.textContent=p.title;
-  const description=document.createElement("p");description.textContent=p.body;
-  const button=document.createElement("button");button.className="btn";button.textContent="Open / Download Reviewer";
-  button.onclick=()=>gvOpenReviewer(p.material_path);
-  card.append(title,description,button);box.append(card);
- }
+ box.textContent="Loading your program's reviewer materials...";
+ try{
+  const programs=await gvExamineeProgram();
+  if(!programs.length){box.textContent="No approved CPOA or CJMA program is linked to your account.";return}
+  const {data,error}=await backend.from("announcements").select("title,body,material_path,target_program,link_url,category").eq("published",true).in("target_program",programs).order("created_at",{ascending:false});
+  if(error)throw error;
+  box.replaceChildren();
+  if(!data?.length){box.textContent="No posts or reviewer materials published for "+programs.join(" / ")+" yet.";return}
+  for(const p of data){
+   const card=document.createElement("article");card.className="gv-panel";
+   const heading=document.createElement("h3");heading.textContent=p.title;
+   const category=document.createElement("p");category.className="gv-small";category.textContent=p.target_program+" • "+p.category.replace("_"," ");
+   const description=document.createElement("p");description.textContent=p.body||"";
+   card.append(heading,category,description);
+   if(p.material_path){
+    const button=document.createElement("button");button.className="btn";button.textContent="Open / Download Reviewer";button.onclick=()=>gvOpenReviewer(p.material_path);card.append(button);
+   }
+   if(p.link_url){
+    const link=document.createElement("a");link.className="btn";link.textContent="Open Link";link.href=p.link_url;link.target="_blank";link.rel="noopener noreferrer";card.append(link);
+   }
+   box.append(card);
+  }
+ }catch(error){box.textContent="Unable to load your posts: "+gvErr(error)}
 }
 async function gvOpenReviewer(path){
  if(!path)return;
@@ -1058,30 +1086,43 @@ async function gvOpenReviewer(path){
 async function gvPosts(){
  const {data,error}=await backend.from("announcements").select("*").eq("published",true).order("created_at",{ascending:false}).limit(100);
  if(error)throw error;
- const cards=(data||[]).filter(p=>p.category!=="reviewer").map(p=>'<article class="gv-panel"><span class="gv-pill">'+gvEsc(p.category.replace("_"," "))+'</span><h3>'+gvEsc(p.title)+'</h3><p style="white-space:pre-wrap">'+gvEsc(p.body)+'</p>'+(p.link_url?'<a class="btn" target="_blank" rel="noopener noreferrer" href="'+gvEsc(p.link_url)+'">Open Link</a>':"")+'<p class="gv-small">'+new Date(p.created_at).toLocaleString()+'</p>'+(gvAdmin()?'<button class="btn" data-delete-post="'+p.id+'">Delete</button>':"")+'</article>').join("");
+ const cards=(data||[]).filter(p=>p.category!=="reviewer"&&p.target_program===null).map(p=>'<article class="gv-panel"><span class="gv-pill">'+gvEsc(p.category.replace("_"," "))+'</span><h3>'+gvEsc(p.title)+'</h3><p style="white-space:pre-wrap">'+gvEsc(p.body)+'</p>'+(p.link_url?'<a class="btn" target="_blank" rel="noopener noreferrer" href="'+gvEsc(p.link_url)+'">Open Link</a>':"")+'<p class="gv-small">'+new Date(p.created_at).toLocaleString()+'</p>'+(gvAdmin()?'<button class="btn" data-delete-post="'+p.id+'">Delete</button>':"")+'</article>').join("");
  gv$("gvPublicPosts").innerHTML=cards||"<p>No announcements published yet.</p>";
- gv$("gvAdminPosts").innerHTML=cards||"<p>No published posts.</p>";
- const reviewerPosts=(data||[]).filter(p=>p.category==="reviewer");
- for(const p of reviewerPosts){
-  const card=document.createElement("article");card.className="gv-panel";
-  const h=document.createElement("h3");h.textContent=p.title;
-  const description=document.createElement("p");description.textContent=p.body;
-  const open=document.createElement("button");open.className="btn";open.textContent="Open Reviewer File";open.onclick=()=>gvOpenReviewer(p.material_path);
-  const remove=document.createElement("button");remove.className="btn";remove.textContent="Delete";remove.onclick=async()=>{
-   if(!confirm("Delete reviewer post and file?"))return;
-   const {error}=await backend.from("announcements").delete().eq("id",p.id);
-   if(error){alert(gvErr(error));return}
-   if(p.material_path)await backend.storage.from("reviewer-materials").remove([p.material_path]);
-   await gvPosts();
-  };
-  card.append(h,description,open,remove);gv$("gvAdminPosts").append(card);
+ gv$("gvAdminPosts").innerHTML="<p>Choose CPOA or CJMA to manage its posts.</p>";
+ const programPosts=(data||[]).filter(p=>p.target_program===gvSelectedPostProgram);
+ if(gvSelectedPostProgram){
+  gv$("gvAdminPosts").replaceChildren();
+  if(!programPosts.length)gv$("gvAdminPosts").textContent="No posts for "+gvSelectedPostProgram+" yet.";
+  for(const p of programPosts){
+   const card=document.createElement("article");card.className="gv-panel";
+   const heading=document.createElement("h3");heading.textContent=p.title;
+   const label=document.createElement("p");label.className="gv-small";label.textContent=p.target_program+" • "+p.category.replace("_"," ");
+   const description=document.createElement("p");description.textContent=p.body||"";
+   card.append(heading,label,description);
+   if(p.material_path){
+    const open=document.createElement("button");open.className="btn";open.textContent="Open Reviewer File";open.onclick=()=>gvOpenReviewer(p.material_path);card.append(open);
+   }
+   if(p.link_url){
+    const link=document.createElement("a");link.className="btn";link.textContent="Open Link";link.href=p.link_url;link.target="_blank";link.rel="noopener noreferrer";card.append(link);
+   }
+   const remove=document.createElement("button");remove.className="btn";remove.textContent="Delete";remove.onclick=async()=>{
+    if(!confirm("Delete this "+p.target_program+" post?"))return;
+    const {error}=await backend.from("announcements").delete().eq("id",p.id);
+    if(error){alert(gvErr(error));return}
+    if(p.material_path)await backend.storage.from("reviewer-materials").remove([p.material_path]);
+    await gvPosts();
+   };
+   card.append(remove);gv$("gvAdminPosts").append(card);
+  }
  }
- gv$("gvAdminPosts").querySelectorAll("[data-delete-post]").forEach(b=>b.onclick=async()=>{if(!confirm("Delete this post?"))return;const {error}=await backend.from("announcements").delete().eq("id",b.dataset.deletePost);if(error)alert(gvErr(error));else await gvPosts()});
+
 }
 gv$("gvPostForm").onsubmit=async ev=>{
  ev.preventDefault();if(!gvAdmin())return;
  const form=ev.target,button=form.querySelector('button[type="submit"]'),f=new FormData(form);
  const category=String(f.get("category")),link=String(f.get("link_url")||"").trim(),file=f.get("reviewer_file");
+ const targetProgram=String(f.get("target_program")||"");
+ if(!["CPOA","CJMA"].includes(targetProgram)||targetProgram!==gvSelectedPostProgram){gvMsg("gvPostMsg","Select CPOA or CJMA before publishing.");return}
  const hasFile=file instanceof File&&file.size>0;
  if(link&&!/^https:\/\/\S+$/i.test(link)){gvMsg("gvPostMsg","Use an HTTPS link.");return}
  if(category==="reviewer"&&!hasFile){gvMsg("gvPostMsg","Choose a reviewer file.");return}
@@ -1098,9 +1139,9 @@ gv$("gvPostForm").onsubmit=async ev=>{
    const {error}=await backend.storage.from("reviewer-materials").upload(path,file,{contentType:types[ext],upsert:false});
    if(error)throw error;
   }
-  const {error}=await backend.from("announcements").insert({title,body,category,link_url:link||null,material_path:path,created_by:currentProfile.id});
+  const {error}=await backend.from("announcements").insert({title,body,category,target_program:targetProgram,link_url:link||null,material_path:path,created_by:currentProfile.id});
   if(error)throw error;
-  form.reset();gvMsg("gvPostMsg","Post published.");await gvPosts();
+  form.reset();gv$("gvPostTargetProgram").value=targetProgram;gvMsg("gvPostMsg",targetProgram+" post published.");await gvPosts();
  }catch(error){if(path)await backend.storage.from("reviewer-materials").remove([path]);gvMsg("gvPostMsg","Publishing failed: "+gvErr(error))}
  finally{button.disabled=false}
 };
