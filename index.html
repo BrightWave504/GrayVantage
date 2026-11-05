@@ -483,7 +483,7 @@ h2 {color:var(--navy);font-size:clamp(28px,3vw,39px);margin:0 0 30px}
 <section id="examinee" class="page">
 <div class="gv-examinee-topbar">
  <div class="gv-examinee-identity"><img id="gvExamineeBrandLogo" src="assets/CPOA-Logo.png" alt="Certification logo"><strong id="gvExamineeBrandName">Certified Professional Office Administrator</strong></div>
- <div class="gv-examinee-account"><div class="gv-examinee-person"><svg width="25" height="25" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21v-2a8 8 0 0 1 16 0v2"/></svg><span id="gvExamineeDisplayName">Examinee</span></div><div id="gvExamineeProgramSelector" class="gv-examinee-switch"></div><button type="button" class="gv-examinee-logout" onclick="logout()">Logout</button></div>
+ <div class="gv-examinee-account"><div class="gv-examinee-person"><svg width="25" height="25" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21v-2a8 8 0 0 1 16 0v2"/></svg><span id="gvExamineeDisplayName">Examinee</span></div><button type="button" class="gv-examinee-logout" onclick="logout()">Logout</button></div>
 </div>
 <div class="gv-examinee-home"><div class="gv-materials-page"><h2>Announcements</h2><div id="gvReviewerMaterials">Loading announcements...</div></div></div>
 <div class="gv-examinee-legacy" hidden><div id="examineeSchedules"></div><div id="gvExamineeExamList"></div><div id="gvExamRunner"></div><div id="gvRunnerMsg"></div></div>
@@ -1083,18 +1083,14 @@ async function gvReviewerMaterials(){
  try{
   const programs=await gvExamineeProgram();
   const selector=gv$("gvExamineeProgramSelector");
-  selector.replaceChildren();
+  if(selector)selector.replaceChildren();
   if(!programs.length){box.textContent="No approved CPOA or CJMA program is linked to your account.";return}
   if(!programs.includes(gvActiveExamineeProgram))gvActiveExamineeProgram=programs.length===1?programs[0]:null;
   const displayName=gv$("gvExamineeDisplayName");
   if(displayName)displayName.textContent=currentProfile.full_name||currentProfile.username||"Examinee";
   const logo=gv$("gvExamineeBrandLogo"),brand=gv$("gvExamineeBrandName");
-  if(programs.length>1){
-   const select=document.createElement("select");select.setAttribute("aria-label","Select certification portal");
-   for(const program of programs){const option=document.createElement("option");option.value=program;option.textContent=program;select.append(option)}
-   if(!gvActiveExamineeProgram)gvActiveExamineeProgram=programs[0];
-   select.value=gvActiveExamineeProgram;select.onchange=()=>gvSetExamineeProgram(select.value);selector.append(select);
-  }
+  // Choose the first approved program automatically; no visible program dropdown.
+  if(!gvActiveExamineeProgram)gvActiveExamineeProgram=programs[0];
   if(logo)logo.src=gvActiveExamineeProgram==="CJMA"?"assets/CJMA-logo.png":"assets/CPOA-Logo.png";
   if(brand)brand.textContent=gvActiveExamineeProgram==="CJMA"?"Certified Junior Marketing Associate":"Certified Professional Office Administrator";
   if(!gvActiveExamineeProgram){box.textContent="Select CPOA or CJMA above to view only that program's posts and reviewer materials.";return}
