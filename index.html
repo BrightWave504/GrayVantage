@@ -469,12 +469,13 @@ h2 {color:var(--navy);font-size:clamp(28px,3vw,39px);margin:0 0 30px}
 <div class="dashboard-tab" data-role="examinee" data-tab="exam"><div class="dashboard-panel"><h2>My Examination Portal</h2><p>Only approved examinees can start an open examination. One attempt per examination; the countdown starts on first access.</p><div id="gvExamineeExamList"></div><div id="gvExamRunner"></div><div class="gv-msg" id="gvRunnerMsg" role="status"></div></div></div></div></div></section>
 
 <section id="admin" class="page"><div class="dashboard-shell"><aside class="dashboard-sidebar"><h3>Admin Portal</h3>
-<button onclick="switchTab('admin','overview')">Overview</button><button onclick="switchTab('admin','applications')">Applications</button><button onclick="switchTab('admin','schedules')">Manage Schedules</button><button onclick="switchTab('admin','certificates')">Results & Certificates</button><button onclick="switchTab('admin','posts')">Posts & Zoom Links</button><button onclick="switchTab('admin','exams')">Examination Portal</button><button onclick="switchTab('admin','analytics')">Results Summary</button><button onclick="logout()">Logout</button></aside>
+<button onclick="switchTab('admin','overview')">Overview</button><button onclick="switchTab('admin','applications')">Applications</button><button onclick="switchTab('admin','examinees')">Examinees</button><button onclick="switchTab('admin','schedules')">Manage Schedules</button><button onclick="switchTab('admin','certificates')">Results & Certificates</button><button onclick="switchTab('admin','posts')">Posts & Zoom Links</button><button onclick="switchTab('admin','exams')">Examination Portal</button><button onclick="switchTab('admin','analytics')">Results Summary</button><button onclick="logout()">Logout</button></aside>
 <div class="dashboard-main"><span class="demo-label">Authenticated administrator session</span><h1>Administrator Dashboard</h1>
 <div class="dashboard-tab active" data-role="admin" data-tab="overview"><div class="metric-grid"><div class="metric">Applications received<strong id="gvApplicationCount">0</strong></div><div class="metric">Approved examinees<strong id="gvApprovedCount">0</strong></div><div class="metric">Published schedules<strong id="scheduleCount">0</strong></div></div><div class="dashboard-panel"><h2>Administration</h2><p>Manage examination schedules shared through Supabase. Application approvals, payments, certificates, and real-time availability require a backend.</p></div></div>
 <div class="dashboard-tab" data-role="admin" data-tab="applications"><div class="dashboard-panel"><h2>Application Management</h2><p class="muted">Applicants are grouped by certification. Select a name to review the complete submission and take action.</p>
 <div class="gv-app-toolbar"><button type="button" class="btn" onclick="gvLoadApplications()">Refresh Applications</button><span id="gvApplicationNotice" role="status" aria-live="polite"></span></div>
 <div id="gvApplicationList">Loading applications...</div></div></div>
+<div class="dashboard-tab" data-role="admin" data-tab="examinees"><div class="dashboard-panel"><h2>Approved Examinees</h2><p class="muted">Approved applicants are moved here automatically. Select a name to view their submitted details and resend the account activation email.</p><div class="gv-app-toolbar"><button type="button" class="btn" onclick="gvLoadApplications()">Refresh Examinees</button><span id="gvExamineeNotice" role="status" aria-live="polite"></span></div><div id="gvApprovedExamineeList">Loading approved examinees...</div></div></div>
 <div class="dashboard-tab" data-role="admin" data-tab="schedules"><div class="dashboard-panel"><h2>Examination Schedule Management</h2><p class="muted">Schedules are stored securely in Supabase and visible to applicants across devices.</p>
 <form id="scheduleForm"><div class="field"><label for="adminProgram">Certification Program</label><select id="adminProgram" required><option value="CPOA">CPOA</option><option value="CJMA">CJMA</option></select></div>
 <div class="field"><label for="adminBatch">Batch Name</label><input id="adminBatch" placeholder="e.g. Batch 1" maxlength="80" required></div>
@@ -732,21 +733,27 @@ document.getElementById("seminarForm").addEventListener("submit",function(event)
 
 /* Shared Supabase examination schedules */
 async function gvLoadApplications(){
- const box=document.getElementById("gvApplicationList");if(!box)return;
+ const box=document.getElementById("gvApplicationList");
+ const approvedBox=document.getElementById("gvApprovedExamineeList");
+ if(!box||!approvedBox)return;
  const notice=document.getElementById("gvApplicationNotice");
  box.textContent="Loading applications...";
+ approvedBox.textContent="Loading approved examinees...";
  const fields="id,full_name,email,school_campus,company,course_program,date_of_birth,examination_program,examination_batch,privacy_consent,status,created_at,email_sent_at";
  const {data,error}=await backend.from("applications").select(fields).order("created_at",{ascending:false});
- if(error){box.textContent="Unable to load applications: "+error.message;return}
- const apps=data||[];box.replaceChildren();
+ if(error){box.textContent="Unable to load applications: "+error.message;approvedBox.textContent="Unable to load approved examinees: "+error.message;return}
+ const apps=data||[];box.replaceChildren();approvedBox.replaceChildren();
  const total=document.getElementById("gvApplicationCount"),approved=document.getElementById("gvApprovedCount");
  if(total)total.textContent=String(apps.length);
  if(approved)approved.textContent=String(apps.filter(a=>a.status==="approved").length);
- if(notice)notice.textContent=apps.length+" application(s)";
+ if(notice)notice.textContent=apps.filter(a=>a.status!=="approved").length+" awaiting review / declined";
+ const examineeNotice=document.getElementById("gvExamineeNotice");
+ if(examineeNotice)examineeNotice.textContent=apps.filter(a=>a.status==="approved").length+" approved examinee(s)";
+ for(const destination of [{box,approved:false},{box:approvedBox,approved:true}]){
  for(const program of ["CPOA","CJMA"]){
-  const group=apps.filter(a=>a.examination_program===program);
+  const group=apps.filter(a=>a.examination_program===program&&(destination.approved?a.status==="approved":a.status!=="approved"));
   const section=document.createElement("section");section.className="gv-app-group";
-  const heading=document.createElement("h3");heading.textContent=program+" Applicants ("+group.length+")";section.append(heading);
+  const heading=document.createElement("h3");heading.textContent=program+(destination.approved?" Examinees (":" Applicants (")+group.length+")";section.append(heading);
   if(!group.length){const empty=document.createElement("p");empty.className="muted";empty.textContent="No applications yet.";section.append(empty)}
   for(const a of group){
    const detail=document.createElement("details");detail.className="gv-applicant";
@@ -767,7 +774,7 @@ async function gvLoadApplications(){
     wrapper.append(dt,dd);dl.append(wrapper)}
    body.append(dl);
    const actions=document.createElement("div");actions.className="gv-app-actions";
-   for(const [label,status] of [["Approve","approved"],["Decline","rejected"],["Delete Application","delete"],...(a.status==="approved"?[["Resend Account Email","resend"]]:[])]){
+   for(const [label,status] of (destination.approved?[["Resend Account Email","resend"]]:[["Approve","approved"],["Decline","rejected"],["Delete Application","delete"]])){
     const button=document.createElement("button");button.type="button";button.className="btn"+(status==="delete"?" gv-app-delete":"");button.textContent=label;button.disabled=a.status===status;
     button.onclick=async()=>{
      const isAccountAction=status==="approved"||status==="resend";
@@ -776,7 +783,7 @@ async function gvLoadApplications(){
       status==="resend"?"Send a new examinee account activation email to "+a.email+"?":"Decline the application for "+a.full_name+"?";
      if(!confirm(message))return;
      const buttons=[...actions.querySelectorAll("button")];buttons.forEach(b=>b.disabled=true);
-     const notice=document.getElementById("gvApplicationNotice");
+     const notice=document.getElementById(destination.approved?"gvExamineeNotice":"gvApplicationNotice");
      if(notice)notice.textContent=isAccountAction?"Processing examinee account and activation email...":"Updating application...";
      try{
       if(isAccountAction){
@@ -812,13 +819,14 @@ async function gvLoadApplications(){
    }
    body.append(actions);detail.append(body);section.append(detail);
   }
-  box.append(section);
+  destination.box.append(section);
+ }
  }
 }
 function switchTab(role,tab) {
   document.querySelectorAll('.dashboard-tab[data-role="'+role+'"]').forEach(el=>el.classList.toggle("active",el.dataset.tab===tab));
   if(role==="examinee") renderExamineeSchedules();
-  if(role==="admin") { renderAdminSchedules(); if(tab==="schedules") loadExaminationSchedules(); if(tab==="applications"||tab==="overview") gvLoadApplications(); }
+  if(role==="admin") { renderAdminSchedules(); if(tab==="schedules") loadExaminationSchedules(); if(tab==="applications"||tab==="examinees"||tab==="overview") gvLoadApplications(); }
 }
 function renderExamineeSchedules() {
   const target=document.getElementById("examineeSchedules");
