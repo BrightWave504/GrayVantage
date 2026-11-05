@@ -767,17 +767,47 @@ async function gvLoadApplications(){
     wrapper.append(dt,dd);dl.append(wrapper)}
    body.append(dl);
    const actions=document.createElement("div");actions.className="gv-app-actions";
-   for(const [label,status] of [["Approve","approved"],["Decline","rejected"],["Delete Application","delete"]]){
+   for(const [label,status] of [["Approve","approved"],["Decline","rejected"],["Delete Application","delete"],...(a.status==="approved"?[["Resend Account Email","resend"]]:[])]){
     const button=document.createElement("button");button.type="button";button.className="btn"+(status==="delete"?" gv-app-delete":"");button.textContent=label;button.disabled=a.status===status;
     button.onclick=async()=>{
+     const isAccountAction=status==="approved"||status==="resend";
      const message=status==="delete"?"Permanently delete the application for "+a.full_name+"? This cannot be undone.":
-      status==="approved"?"Approve "+a.full_name+"? Verify the requirements and payment first. Approval changes the application status only.":"Decline the application for "+a.full_name+"?";
+      status==="approved"?"Approve "+a.full_name+" and create an examinee account? Verify requirements and payment first. An activation email will be attempted.":
+      status==="resend"?"Send a new examinee account activation email to "+a.email+"?":"Decline the application for "+a.full_name+"?";
      if(!confirm(message))return;
-     [...actions.querySelectorAll("button")].forEach(b=>b.disabled=true);
-     const query=backend.from("applications");
-     const result=status==="delete"?await query.delete().eq("id",a.id).select("id"):await query.update({status}).eq("id",a.id).select("id");
-     if(result.error||!result.data?.length){alert("Action could not be completed: "+(result.error?.message||"No record was changed. Check administrator permissions."));[...actions.querySelectorAll("button")].forEach(b=>b.disabled=false);return}
-     await gvLoadApplications();
+     const buttons=[...actions.querySelectorAll("button")];buttons.forEach(b=>b.disabled=true);
+     const notice=document.getElementById("gvApplicationNotice");
+     if(notice)notice.textContent=isAccountAction?"Processing examinee account and activation email...":"Updating application...";
+     try{
+      if(isAccountAction){
+       const {data:{session},error:sessionError}=await backend.auth.getSession();
+       if(sessionError||!session?.access_token)throw new Error("Your administrator session has expired. Please log in again.");
+       const response=await fetch("https://hbiobqfhamiqtikkdyuu.supabase.co/functions/v1/approve-examinee-account",{
+        method:"POST",
+        headers:{"Content-Type":"application/json","apikey":"sb_publishable_6fYXJirNEjLhTeGmrriqew_T7GnxkWW","Authorization":"Bearer "+session.access_token},
+        body:JSON.stringify({application_id:a.id,action:status==="resend"?"resend":"approve"})
+       });
+       const result=await response.json().catch(()=>({}));
+       if(!response.ok||!result.success)throw new Error(result.error||"Account operation failed (HTTP "+response.status+").");
+       const feedback=result.email_sent
+        ? "Examinee account ready. Activation email sent to "+a.email+". Username: "+result.username
+        : "Examinee account approved, but activation email delivery failed. Check Edge Function logs, then use Resend Account Email. Username: "+result.username;
+       alert(feedback);
+       await gvLoadApplications();
+       if(notice)notice.textContent=feedback;
+      }else{
+       const query=backend.from("applications");
+       const result=status==="delete"?await query.delete().eq("id",a.id).select("id"):await query.update({status}).eq("id",a.id).select("id");
+       if(result.error||!result.data?.length)throw new Error(result.error?.message||"No record changed. Check administrator permissions.");
+       await gvLoadApplications();
+       if(notice)notice.textContent=status==="delete"?"Application deleted.":"Application declined.";
+      }
+     }catch(error){
+      const feedback="Action could not be completed: "+(error?.message||"Unknown error");
+      if(notice)notice.textContent=feedback;
+      alert(feedback);
+      buttons.forEach(b=>b.disabled=a.status===status);
+     }
     };actions.append(button);
    }
    body.append(actions);detail.append(body);section.append(detail);
