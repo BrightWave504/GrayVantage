@@ -501,15 +501,6 @@ h2 {color:var(--navy);font-size:clamp(28px,3vw,39px);margin:0 0 30px}
 <button type="submit" class="btn btn-primary">Save Question</button><div class="gv-msg" id="gvQuestionMsg" role="status"></div></form><div id="gvQuestionList"></div></div></div>
 <div class="dashboard-tab" data-role="admin" data-tab="analytics"><div class="dashboard-panel"><h2>Examination Results & Analytics</h2><div class="gv-field"><label>Filter Exam</label><select id="gvResultsExam"></select></div><div class="gv-grid" id="gvMetrics"></div><div id="gvResultsTable" class="gv-scroll"></div><h3>Examinee Answer Review</h3><div id="gvAnswerReview">Select an examinee to review answers.</div></div></div></div></div></section>
 
-<section id="it" class="page"><div class="dashboard-shell"><aside class="dashboard-sidebar"><h3>IT Department</h3>
-<button onclick="switchTab('it','overview')">System Overview</button><button onclick="switchTab('it','users')">User Accounts</button><button onclick="switchTab('it','security')">Security & Audit</button><button onclick="switchTab('it','settings')">System Settings</button><button onclick="logout()">Logout</button></aside>
-<div class="dashboard-main"><span class="demo-label">Authenticated IT session</span><h1>IT Department Dashboard</h1>
-<div class="dashboard-tab active" data-role="it" data-tab="overview"><div class="metric-grid"><div class="metric">Authentication backend<strong>Not connected</strong></div><div class="metric">Connected accounts<strong>0</strong></div><div class="metric">Audit logging<strong>Not enabled</strong></div></div><div class="dashboard-panel"><h2>System Status</h2><p>Supabase Authentication is connected. This account can view the authorized account directory below. Audit logs and additional account management tools are not enabled.</p></div></div>
-<div class="dashboard-tab" data-role="it" data-tab="users"><div class="dashboard-panel"><h2>User Account Management</h2><table><thead><tr><th>Account</th><th>Role</th><th>Status</th></tr></thead><tbody><tr><td colspan="3">No authenticated users connected</td></tr></tbody></table><p>Account roles are controlled by the backend. Passwords are never displayed in this directory.</p></div></div>
-<div class="dashboard-tab" data-role="it" data-tab="security"><div class="dashboard-panel"><h2>Security & Audit Logs</h2><p>Server-side login history, IP addresses, and security event records are not available in this static prototype.</p><p>Implement audit logging with access restrictions and appropriate data retention before production use.</p></div></div>
-<div class="dashboard-tab" data-role="it" data-tab="settings"><div class="dashboard-panel"><h2>System Settings</h2><p>Supabase Authentication and database access policies are enabled. Contact the project owner for server configuration changes.</p></div></div>
-</div></div></section>
-
 </main>
 
 <footer class="footer">
@@ -569,7 +560,7 @@ function navigate() {
   }
 
   if (!pages.some(page => page.id === id)) id = "home";
-  if (["admin","it","examinee"].includes(id) && (!authReady || !currentProfile || currentProfile.role !== id || !currentProfile.approved)) {
+  if (["admin","examinee"].includes(id) && (!authReady || !currentProfile || currentProfile.role !== id || !currentProfile.approved)) {
     id = "login";
     document.getElementById("loginMessage").style.display = "block";
     document.getElementById("loginMessage").textContent = "Please log in with an authorized account.";
@@ -882,7 +873,7 @@ async function refreshProfile() {
   if (!error && user) {
     const result = await backend.from("profiles").select("id,username,full_name,role,approved").eq("id",user.id).single();
     if (result.error) throw result.error;
-    if (result.data.approved) currentProfile = result.data;
+    if (result.data.approved && ["admin","examinee"].includes(result.data.role)) currentProfile = result.data;
   }
   authReady = true;
   gvUpdateHeaderAuth();
@@ -893,17 +884,7 @@ async function renderConnectedDashboard() {
   const role = currentProfile.role;
   const target = document.querySelector('#'+role+' .demo-label');
   if (target) target.textContent = "Signed in as " + currentProfile.username;
-  if (role === "it") {
-    const {data,error} = await backend.from("profiles").select("username,full_name,role,approved").order("created_at");
-    if(error) throw error;
-    const body = document.querySelector('#it table tbody');body.replaceChildren();
-    data.forEach(profile=>{
-      const row = document.createElement("tr");
-      [profile.username || profile.full_name || "Pending account",profile.role,profile.approved ? "Approved" : "Pending"].forEach(value=>{const cell=document.createElement("td");cell.textContent=value;row.append(cell);});
-      body.append(row);
-    });
-    const values=document.querySelectorAll('#it .metric strong');values[0].textContent="Connected";values[1].textContent=String(data.length);
-  }
+
   if (role === "admin") {
     const {data,error} = await backend.from("applications").select("id,full_name,examination_program,status").order("created_at",{ascending:false});
     if(error) throw error;
@@ -921,7 +902,6 @@ async function logout() {
   if(error){document.querySelector('#'+currentProfile.role+' .demo-label').textContent="Logout failed. Please try again.";return;}
   currentProfile = null;
   gvUpdateHeaderAuth();
-  document.querySelector('#it table tbody').replaceChildren();
   document.querySelector('#admin [data-tab="applications"] .dashboard-panel').replaceChildren();
   location.hash="login";navigate();
 }
@@ -1118,53 +1098,7 @@ renderConnectedDashboard = async function () {
     return;
   }
 
-  if (role === "it") {
-    const { data, error } = await backend
-      .from("profiles")
-      .select("username,full_name,role,approved")
-      .order("created_at");
 
-    if (error) throw error;
-
-    const body = document.querySelector(
-      "#it table tbody"
-    );
-
-    if (body) {
-      body.replaceChildren();
-
-      (data || []).forEach(profile => {
-        const row = document.createElement("tr");
-
-        [
-          profile.username ||
-            profile.full_name ||
-            "Pending account",
-          profile.role,
-          profile.approved ? "Approved" : "Pending"
-        ].forEach(value => {
-          const cell = document.createElement("td");
-          cell.textContent = value;
-          row.append(cell);
-        });
-
-        body.append(row);
-      });
-    }
-
-    const metrics = document.querySelectorAll(
-      "#it .metric strong"
-    );
-
-    if (metrics[0]) {
-      metrics[0].textContent = "Connected";
-    }
-
-    if (metrics[1]) {
-      metrics[1].textContent =
-        String((data || []).length);
-    }
-  }
 };
 
 // Keep the Applications interface intact on logout.
@@ -1177,12 +1111,7 @@ logout = async function () {
   }
 
   currentProfile = null;
-
-  const itBody = document.querySelector(
-    "#it table tbody"
-  );
-
-  if (itBody) itBody.replaceChildren();
+  gvUpdateHeaderAuth();
 
   const applicationList = document.getElementById(
     "gvApplicationList"
