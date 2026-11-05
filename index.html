@@ -712,28 +712,43 @@ document.getElementById("seminarForm").addEventListener("submit",function(event)
 
 /* Shared Supabase examination schedules */
 async function gvLoadApplications(){
-const box=document.getElementById("gvApplicationList");if(!box)return;
-box.textContent="Loading...";
-const {data,error}=await backend.from("applications").select("id,full_name,email,school_campus,course_program,examination_program,examination_batch,status,created_at,email_sent_at").order("created_at",{ascending:false});
-if(error){box.textContent="Could not load applications: "+error.message;return}
-const apps=data||[];box.replaceChildren();
-const total=document.getElementById("gvApplicationCount"),approved=document.getElementById("gvApprovedCount");
-if(total)total.textContent=apps.length;
-if(approved)approved.textContent=apps.filter(x=>x.status==="approved").length;
-if(!apps.length){box.textContent="No applications recorded.";return}
-for(const a of apps){
-const card=document.createElement("div");card.className="dashboard-panel";card.style.marginTop="12px";
-const title=document.createElement("h3");title.textContent=a.full_name+" — "+a.examination_program+" ("+a.status+")";card.append(title);
-const info=document.createElement("p");info.style.whiteSpace="pre-line";info.textContent="Email: "+a.email+"\nSchool: "+(a.school_campus||"—")+"\nCourse: "+(a.course_program||"—")+"\nBatch: "+(examinationSchedules.find(x=>x.id===a.examination_batch)?.label||a.examination_batch||"—")+"\nSubmitted: "+new Date(a.created_at).toLocaleString()+"\nConfirmation email: "+(a.email_sent_at?"Sent":"Not confirmed");card.append(info);
-for(const [label,status] of [["Approve","approved"],["Decline","rejected"],["Delete Application","delete"]]){
-const b=document.createElement("button");b.type="button";b.className="btn";b.style.marginRight="8px";b.textContent=label;
-b.disabled=a.status===status;
-b.onclick=async()=>{if(!confirm(label+" application for "+a.full_name+"?"+(status==="approved"?" Verify payment and requirements first.":"")))return;
-const query=backend.from("applications");
-const {error:err}=status==="delete"?await query.delete().eq("id",a.id):await query.update({status}).eq("id",a.id);
-if(err)alert("Action failed: "+err.message);else await gvLoadApplications();};card.append(b)}
-box.append(card);
-}}
+ const box=document.getElementById("gvApplicationList");if(!box)return;
+ box.textContent="Loading applications...";
+ const fields="id,full_name,email,school_campus,company,course_program,date_of_birth,examination_program,examination_batch,privacy_consent,status,created_at,email_sent_at";
+ const {data,error}=await backend.from("applications").select(fields).order("created_at",{ascending:false});
+ if(error){box.textContent="Could not load applications: "+error.message;return}
+ const apps=data||[];box.replaceChildren();
+ const total=document.getElementById("gvApplicationCount"),approved=document.getElementById("gvApprovedCount");
+ if(total)total.textContent=String(apps.length);
+ if(approved)approved.textContent=String(apps.filter(a=>a.status==="approved").length);
+ for(const program of ["CPOA","CJMA"]){
+  const section=document.createElement("section");section.style.marginTop="20px";
+  const heading=document.createElement("h3");heading.textContent=program+" Applicants ("+apps.filter(a=>a.examination_program===program).length+")";section.append(heading);
+  const group=apps.filter(a=>a.examination_program===program);
+  if(!group.length){const empty=document.createElement("p");empty.textContent="No applications yet.";section.append(empty)}
+  for(const a of group){
+   const detail=document.createElement("details");detail.style.cssText="background:#fff;border:1px solid #d8e5ef;border-radius:12px;padding:14px 18px;margin:10px 0";
+   const summary=document.createElement("summary");summary.style.cssText="cursor:pointer;font-weight:600;color:#103b60";summary.textContent=a.full_name;detail.append(summary);
+   const body=document.createElement("div");body.style.paddingTop="14px";
+   const schedule=examinationSchedules.find(x=>x.id===a.examination_batch);
+   const values=[["Full Name",a.full_name],["Email",a.email],["School & Campus",a.school_campus],["Company",a.company],["Course or Program",a.course_program],["Date of Birth",a.date_of_birth],["Certification",a.examination_program],["Examination Batch",schedule?.label||a.examination_batch],["Privacy Consent",a.privacy_consent?"Yes":"No"],["Application Status",a.status],["Submitted",new Date(a.created_at).toLocaleString()],["Confirmation Email",a.email_sent_at?"Sent":"Not confirmed"]];
+   for(const [label,value] of values){const p=document.createElement("p");p.style.margin="7px 0";const strong=document.createElement("strong");strong.textContent=label+": ";p.append(strong,document.createTextNode(value||"—"));body.append(p)}
+   const actions=document.createElement("div");actions.style.cssText="display:flex;flex-wrap:wrap;gap:10px;margin-top:18px";
+   for(const [label,status] of [["Approve","approved"],["Decline","rejected"],["Delete Application","delete"]]){
+    const button=document.createElement("button");button.type="button";button.className="btn";button.textContent=label;button.disabled=a.status===status;
+    button.onclick=async()=>{if(!confirm(label+" application for "+a.full_name+"?"+(status==="approved"?" Confirm that requirements and payment have been verified.":"")))return;
+     button.disabled=true;
+     const query=backend.from("applications");
+     const {error:changeError}=status==="delete"?await query.delete().eq("id",a.id):await query.update({status}).eq("id",a.id);
+     if(changeError){alert("Action failed: "+changeError.message);button.disabled=false}else await gvLoadApplications();
+    };
+    actions.append(button);
+   }
+   body.append(actions);detail.append(body);section.append(detail);
+  }
+  box.append(section);
+ }
+}
 function switchTab(role,tab) {
   document.querySelectorAll('.dashboard-tab[data-role="'+role+'"]').forEach(el=>el.classList.toggle("active",el.dataset.tab===tab));
   if(role==="examinee") renderExamineeSchedules();
