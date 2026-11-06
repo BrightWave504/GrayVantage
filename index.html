@@ -1470,14 +1470,15 @@ async function gvExamFinish(){
 }
 async function gvSubmitExam(){
  if(!gvActiveAttempt)return;
- clearInterval(gvTimer);const id=gvActiveAttempt.exam_id;
- const answers={...gvAttemptAnswers};
- gvActiveAttempt=null;
- gv$("gvExamInterface").hidden=true;
+ const id=gvActiveAttempt.exam_id,answers={...gvAttemptAnswers};
+ gvExamSaveLocal();
+ if(!navigator.onLine){gv$("gvExamStatus").textContent="Offline: answers saved on this device. Reconnect before submitting. The original timer still applies.";return}
  const {data,error}=await backend.rpc("submit_exam",{p_exam_id:id,p_answers:answers});
- if(!error){try{localStorage.removeItem("gv_exam_"+(currentProfile?.id||"user")+"_"+id)}catch(e){}}
+ if(error){gv$("gvExamStatus").textContent="Submission failed: "+gvErr(error)+". Retry while connected.";return}
+ clearInterval(gvTimer);gvActiveAttempt=null;gv$("gvExamInterface").hidden=true;
+ try{localStorage.removeItem("gv_exam_"+(currentProfile?.id||"user")+"_"+id)}catch(e){}
  if(document.fullscreenElement)document.exitFullscreen().catch(()=>{});
- gv$("gvExamComplete").textContent=error?"Submission failed: "+gvErr(error):"Examination submitted. Score: "+data.score+"/"+data.total+" — "+(data.passed?"PASS":"FAIL")+(data.late?" (Time expired)":"");
+ gv$("gvExamComplete").textContent="Examination submitted. Score: "+data.score+"/"+data.total+" — "+(data.passed?"PASS":"FAIL")+(data.late?" (Time expired)":"");
 }
 const gvOldSwitch=switchTab;
 switchTab=function(role,tab){gvOldSwitch(role,tab);if(role==="admin"&&gvAdmin()){if(tab==="posts")gvPosts().catch(console.error);if(tab==="exams"||tab==="analytics")gvLoadExams().catch(console.error)}if(role==="examinee"&&tab==="exam")gvLoadExaminee().catch(console.error);if(role==="examinee"&&tab==="materials")gvReviewerMaterials().catch(console.error)};
