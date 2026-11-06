@@ -167,7 +167,7 @@ body:has(#exam-taking.active) .header,body:has(#exam-taking.active) #gvPublicBoa
 .gv-exam-option{display:flex;justify-content:space-between;align-items:center;gap:16px;padding:18px;border:1px solid #d8e5ef;border-radius:12px;margin:12px 0}
 .gv-exam-page [hidden]{display:none!important}
 @media(max-width:700px){.gv-exam-page{margin:8px;padding:16px}.gv-exam-header,.gv-exam-option{flex-direction:column;align-items:flex-start}}
-</style>
+.gv-exam-access-status{font-weight:700;color:#164d72;margin:12px 0;padding:12px 16px;border-radius:10px;background:#eaf5ff}.gv-exam-access-on{background:#167647!important;color:#fff!important}.gv-exam-access-off{background:#b42318!important;color:#fff!important}#examinee .gv-materials-action:disabled{opacity:.5;cursor:not-allowed;box-shadow:none}</style>
 <style>
 .gv-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px}.gv-panel{background:white;border:1px solid #d8e5ef;border-radius:16px;padding:22px;margin:16px 0}.gv-panel h3{margin-top:0;color:#103b60}.gv-field{display:flex;flex-direction:column;gap:6px;margin:12px 0}.gv-field input,.gv-field select,.gv-field textarea{width:100%;border:1px solid #c9dbe9;border-radius:9px;padding:12px;background:white;color:#183b57}.gv-field textarea{min-height:95px}.gv-msg{padding:10px 0;color:#155e85;white-space:pre-wrap}.gv-row{border-bottom:1px solid #e1eaf1;padding:12px 0;overflow-wrap:anywhere}.gv-row:last-child{border:0}.gv-small{color:#5c7388;font-size:14px}.gv-table{width:100%;border-collapse:collapse;min-width:500px}.gv-table td,.gv-table th{border-bottom:1px solid #d8e5ef;text-align:left;padding:10px;vertical-align:top}.gv-scroll{overflow:auto}.gv-choice{display:block;margin:8px 0;padding:10px;border:1px solid #d8e5ef;border-radius:9px}.gv-choice input{margin-right:9px}.gv-pill{padding:4px 10px;border-radius:20px;background:#e3f1ff;display:inline-block}.gv-timer{font-size:22px;font-weight:700;color:#b91c1c}
 </style></head>
@@ -1147,7 +1147,7 @@ async function gvReviewerMaterials(){
     }
     card.append(entry);
    }
-   if(section.key==="exam_portal"){const start=document.createElement("button");start.type="button";start.className="gv-materials-action";start.textContent="OPEN EXAMINATION";start.onclick=()=>{location.hash="exam-taking"};card.append(start)}
+   if(section.key==="exam_portal"){const start=document.createElement("button");start.type="button";start.className="gv-materials-action";start.textContent="CHECK EXAM ACCESS";start.disabled=true;start.title="Checking administrator permission";start.onclick=()=>{location.hash="exam-taking"};card.append(start);backend.from("exams").select("id").eq("program",activeProgram).eq("is_open",true).limit(1).then(({data,error})=>{start.disabled=!!error||!data?.length;start.textContent=start.disabled?"EXAMINATION CLOSED":"OPEN EXAMINATION";start.title=start.disabled?"Waiting for administrator to open the examination":"Open the examination page"})}
    grid.append(card);
   }
   box.append(grid);
@@ -1289,9 +1289,9 @@ async function gvShowExam(){
  const {data,error}=await backend.from("exam_questions").select("*").eq("exam_id",e.id).order("created_at");
  if(error){gvMsg("gvQuestionMsg",gvErr(error));return}
  const wrap=gv$("gvExamDetails");const desc=document.createElement("p");desc.textContent=e.program+" • "+e.duration_minutes+" minutes • Passing "+e.pass_percentage+"% • "+(data||[]).length+" questions • "+(e.is_open?"OPEN":"CLOSED");
- const toggle=document.createElement("button");toggle.className="btn btn-primary";toggle.textContent=e.is_open?"Close Examination":"Open Examination";
+ const toggle=document.createElement("button");toggle.className="btn btn-primary";toggle.textContent=e.is_open?"TURN OFF EXAM ACCESS":"TURN ON EXAM ACCESS";toggle.className="btn "+(e.is_open?"gv-exam-access-off":"gv-exam-access-on");toggle.setAttribute("aria-pressed",String(e.is_open));
  toggle.onclick=async()=>{if(!e.is_open&&!(data||[]).length){alert("Add questions first.");return}if(!confirm((e.is_open?"Close":"Open")+" examination?"))return;const {error}=await backend.from("exams").update({is_open:!e.is_open}).eq("id",e.id);if(error)alert(gvErr(error));else await gvLoadExams()};
- wrap.append(desc,toggle);
+ const state=document.createElement("div");state.className="gv-exam-access-status";state.textContent=e.is_open?"ACCESS ON — Examinees can open this exam":"ACCESS OFF — Examinees cannot start this exam";wrap.append(desc,state,toggle);
  gv$("gvQuestionList").innerHTML="<h3>Question Bank ("+(data||[]).length+")</h3>"+(data||[]).map((q,i)=>'<div class="gv-row"><b>'+(i+1)+'. '+gvEsc(q.question)+'</b><p class="gv-small">Correct: '+gvEsc(q.options[q.correct_index])+'</p><button class="btn" data-del-question="'+q.id+'">Delete Question</button></div>').join("");
  gv$("gvQuestionList").querySelectorAll("[data-del-question]").forEach(b=>b.onclick=async()=>{if(!confirm("Delete question?"))return;const {error}=await backend.from("exam_questions").delete().eq("id",b.dataset.delQuestion);if(error)alert(gvErr(error));else await gvShowExam()});
 }
