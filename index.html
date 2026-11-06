@@ -167,7 +167,7 @@ body:has(#exam-taking.active) .header,body:has(#exam-taking.active) #gvPublicBoa
 .gv-exam-option{display:flex;justify-content:space-between;align-items:center;gap:16px;padding:18px;border:1px solid #d8e5ef;border-radius:12px;margin:12px 0}
 .gv-exam-page [hidden]{display:none!important}
 @media(max-width:700px){.gv-exam-page{margin:8px;padding:16px}.gv-exam-header,.gv-exam-option{flex-direction:column;align-items:flex-start}}
-.gv-exam-access-status{font-weight:700;color:#164d72;margin:12px 0;padding:12px 16px;border-radius:10px;background:#eaf5ff}.gv-exam-access-on{background:#167647!important;color:#fff!important}.gv-exam-access-off{background:#b42318!important;color:#fff!important}#examinee .gv-materials-action:disabled{opacity:.5;cursor:not-allowed;box-shadow:none}</style>
+.gv-exam-access-status{font-weight:700;color:#164d72;margin:12px 0;padding:12px 16px;border-radius:10px;background:#eaf5ff}.gv-exam-access-on{background:#167647!important;color:#fff!important}.gv-exam-access-off{background:#b42318!important;color:#fff!important}#examinee .gv-materials-action:disabled{opacity:.5;cursor:not-allowed;box-shadow:none}.gv-delete-response{color:#a82020!important;border-color:#e8b2b2!important;background:#fff5f5!important}.gv-delete-response:hover{background:#ffe1e1!important}.gv-delete-response:disabled{opacity:.55;cursor:wait}</style>
 <style>
 .gv-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px}.gv-panel{background:white;border:1px solid #d8e5ef;border-radius:16px;padding:22px;margin:16px 0}.gv-panel h3{margin-top:0;color:#103b60}.gv-field{display:flex;flex-direction:column;gap:6px;margin:12px 0}.gv-field input,.gv-field select,.gv-field textarea{width:100%;border:1px solid #c9dbe9;border-radius:9px;padding:12px;background:white;color:#183b57}.gv-field textarea{min-height:95px}.gv-msg{padding:10px 0;color:#155e85;white-space:pre-wrap}.gv-row{border-bottom:1px solid #e1eaf1;padding:12px 0;overflow-wrap:anywhere}.gv-row:last-child{border:0}.gv-small{color:#5c7388;font-size:14px}.gv-table{width:100%;border-collapse:collapse;min-width:500px}.gv-table td,.gv-table th{border-bottom:1px solid #d8e5ef;text-align:left;padding:10px;vertical-align:top}.gv-scroll{overflow:auto}.gv-choice{display:block;margin:8px 0;padding:10px;border:1px solid #d8e5ef;border-radius:9px}.gv-choice input{margin-right:9px}.gv-pill{padding:4px 10px;border-radius:20px;background:#e3f1ff;display:inline-block}.gv-timer{font-size:22px;font-weight:700;color:#b91c1c}
 </style></head>
@@ -1313,8 +1313,19 @@ async function gvLoadResults(){
  gv$("gvMetrics").innerHTML=[["Total Attempts",gvResultAttempts.length],["Submitted",completed.length],["Passers",pass],["Average Score",avg.toFixed(2)+"%"]].map(([label,v])=>'<div class="gv-panel"><div>'+label+'</div><h2>'+v+'</h2></div>').join("");
  const ids=[...new Set(gvResultAttempts.map(a=>a.examinee_id))];let names={};
  if(ids.length){const p=await backend.from("profiles").select("id,username,full_name").in("id",ids);if(!p.error)(p.data||[]).forEach(x=>names[x.id]=x.full_name||x.username||x.id)}
- const table=document.createElement("table");table.className="gv-table";table.innerHTML="<thead><tr><th>Examinee</th><th>Score</th><th>Percentage</th><th>Result</th><th>Answers</th></tr></thead>";
- const body=document.createElement("tbody");gvResultAttempts.forEach(a=>{const tr=document.createElement("tr");[names[a.examinee_id]||a.examinee_id,a.submitted_at?a.score+" / "+a.total:"In progress",a.submitted_at&&a.total?(100*a.score/a.total).toFixed(2)+"%":"—",a.submitted_at?(a.passed?"PASS":"FAIL"):"Not submitted"].forEach(t=>{const td=document.createElement("td");td.textContent=t;tr.append(td)});const td=document.createElement("td");const btn=document.createElement("button");btn.className="btn";btn.textContent="Review";btn.disabled=!a.submitted_at;btn.onclick=()=>gvReview(a);td.append(btn);tr.append(td);body.append(tr)});table.append(body);gv$("gvResultsTable").append(table);
+ const table=document.createElement("table");table.className="gv-table";table.innerHTML="<thead><tr><th>Examinee</th><th>Score</th><th>Percentage</th><th>Result</th><th>Answers</th><th>Delete Response</th></tr></thead>";
+ const body=document.createElement("tbody");gvResultAttempts.forEach(a=>{const tr=document.createElement("tr");[names[a.examinee_id]||a.examinee_id,a.submitted_at?a.score+" / "+a.total:"In progress",a.submitted_at&&a.total?(100*a.score/a.total).toFixed(2)+"%":"—",a.submitted_at?(a.passed?"PASS":"FAIL"):"Not submitted"].forEach(t=>{const td=document.createElement("td");td.textContent=t;tr.append(td)});const td=document.createElement("td");const btn=document.createElement("button");btn.className="btn";btn.textContent="Review";btn.disabled=!a.submitted_at;btn.onclick=()=>gvReview(a);td.append(btn);tr.append(td);
+ const delCell=document.createElement("td"),delBtn=document.createElement("button");
+ delBtn.type="button";delBtn.className="btn gv-delete-response";delBtn.textContent="Delete Response";
+ delBtn.onclick=async()=>{
+  const examineeName=names[a.examinee_id]||a.examinee_id;
+  if(!confirm("Permanently delete the examination response of "+examineeName+"? This will remove their answers, score and result, and may allow a retake. This cannot be undone."))return;
+  delBtn.disabled=true;delBtn.textContent="Deleting...";
+  const {error}=await backend.rpc("admin_delete_exam_response",{p_attempt_id:a.id});
+  if(error){alert("Unable to delete response: "+gvErr(error));delBtn.disabled=false;delBtn.textContent="Delete Response";return}
+  gv$("gvAnswerReview").textContent="Response deleted.";await gvLoadResults();
+ };
+ delCell.append(delBtn);tr.append(delCell);body.append(tr)});table.append(body);gv$("gvResultsTable").append(table);
 }
 function gvReview(a){
  const answers=a.answers||{};const box=gv$("gvAnswerReview");box.replaceChildren();
