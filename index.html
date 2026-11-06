@@ -151,6 +151,9 @@ h2 {color:var(--navy);font-size:clamp(28px,3vw,39px);margin:0 0 30px}
 #examinee .gv-materials-action{background:linear-gradient(#3b9cda,#07518b);border-radius:9px;padding:10px 23px}
 @media(max-width:780px){#examinee .gv-examinee-topbar{height:auto;min-height:86px;padding:10px 15px;flex-wrap:wrap}#examinee .gv-examinee-identity img{width:56px;height:56px}#examinee .gv-examinee-account{gap:10px;flex-wrap:wrap}#examinee .gv-examinee-person{font-size:14px}#examinee .gv-examinee-logout{padding:10px 15px}#examinee .gv-examinee-home{padding:18px 16px 40px}#examinee .gv-materials-grid{grid-template-columns:1fr;max-width:none;gap:18px}#examinee .gv-materials-card{min-height:0}}/* Force-hide legacy certification selectors on examinee portal */
 #examinee #gvExamineeProgramSelector,#examinee .gv-examinee-switch,#examinee .gv-examinee-account select{display:none!important;visibility:hidden!important}
+
+#examinee .gv-reviewer-library[hidden],#examinee #gvExamineeLanding[hidden]{display:none!important}
+.gv-reviewer-library h2{font-size:36px;margin:16px 0 6px}.gv-library-back{background:white;border:1px solid #bdd6e8;border-radius:10px;padding:12px 20px;color:#155b8e;font-weight:700}.gv-library-layout{display:grid;grid-template-columns:minmax(230px,330px) minmax(0,1fr);gap:20px;margin-top:25px}.gv-library-list,.gv-library-preview{background:#fff;border:1px solid #d8e5ef;border-radius:18px;padding:18px;min-height:350px}.gv-library-list{display:flex;flex-direction:column;gap:10px;align-self:start}.gv-library-item{display:flex;flex-direction:column;text-align:left;gap:7px;padding:15px;background:#f4f9fd;border:1px solid #d6e7f3;border-radius:12px;color:#103b60;overflow-wrap:anywhere}.gv-library-item.selected,.gv-library-item:hover{background:#dceefa;border-color:#3784ba}.gv-library-item small{color:#57748b}.gv-library-preview h3{margin:0 0 14px;overflow-wrap:anywhere}.gv-library-viewer iframe{width:100%;height:min(74vh,850px);min-height:440px;border:1px solid #e1e9ef;border-radius:9px}.gv-library-note{font-size:12px;color:#667e8e}@media(max-width:760px){.gv-library-layout{grid-template-columns:1fr}.gv-library-viewer iframe{min-height:420px}}
 </style>
 <style>
 .gv-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px}.gv-panel{background:white;border:1px solid #d8e5ef;border-radius:16px;padding:22px;margin:16px 0}.gv-panel h3{margin-top:0;color:#103b60}.gv-field{display:flex;flex-direction:column;gap:6px;margin:12px 0}.gv-field input,.gv-field select,.gv-field textarea{width:100%;border:1px solid #c9dbe9;border-radius:9px;padding:12px;background:white;color:#183b57}.gv-field textarea{min-height:95px}.gv-msg{padding:10px 0;color:#155e85;white-space:pre-wrap}.gv-row{border-bottom:1px solid #e1eaf1;padding:12px 0;overflow-wrap:anywhere}.gv-row:last-child{border:0}.gv-small{color:#5c7388;font-size:14px}.gv-table{width:100%;border-collapse:collapse;min-width:500px}.gv-table td,.gv-table th{border-bottom:1px solid #d8e5ef;text-align:left;padding:10px;vertical-align:top}.gv-scroll{overflow:auto}.gv-choice{display:block;margin:8px 0;padding:10px;border:1px solid #d8e5ef;border-radius:9px}.gv-choice input{margin-right:9px}.gv-pill{padding:4px 10px;border-radius:20px;background:#e3f1ff;display:inline-block}.gv-timer{font-size:22px;font-weight:700;color:#b91c1c}
@@ -487,7 +490,7 @@ h2 {color:var(--navy);font-size:clamp(28px,3vw,39px);margin:0 0 30px}
  <div class="gv-examinee-identity"><img id="gvExamineeBrandLogo" src="assets/CPOA-Logo.png" alt="Certification logo"><strong id="gvExamineeBrandName">Certified Professional Office Administrator</strong></div>
  <div class="gv-examinee-account"><div class="gv-examinee-person"><svg width="25" height="25" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21v-2a8 8 0 0 1 16 0v2"/></svg><span id="gvExamineeDisplayName">Examinee</span></div><button type="button" class="gv-examinee-logout" onclick="logout()">Logout</button></div>
 </div>
-<div class="gv-examinee-home"><div class="gv-materials-page"><h2>Announcements</h2><div id="gvReviewerMaterials">Loading announcements...</div></div></div>
+<div class="gv-examinee-home"><div id="gvExamineeLanding" class="gv-materials-page"><h2>Announcements</h2><div id="gvReviewerMaterials">Loading announcements...</div></div><div id="gvReviewerLibrary" class="gv-reviewer-library" hidden><button type="button" class="gv-library-back" onclick="gvCloseReviewerLibrary()">← Back to Dashboard</button><h2>Reviewer Materials</h2><p id="gvLibraryProgram"></p><div class="gv-library-layout"><div id="gvLibraryFiles" class="gv-library-list"></div><div class="gv-library-preview"><h3 id="gvLibraryFilename">Select a reviewer file</h3><div id="gvLibraryViewer" class="gv-library-viewer">Select a file to open here.</div></div></div></div></div>
 <div class="gv-examinee-legacy" hidden><div id="examineeSchedules"></div><div id="gvExamineeExamList"></div><div id="gvExamRunner"></div><div id="gvRunnerMsg"></div></div>
 </section>
 <section id="admin" class="page"><div class="dashboard-shell"><aside class="dashboard-sidebar"><h3>Admin Portal</h3>
@@ -1122,7 +1125,7 @@ async function gvReviewerMaterials(){
     const description=document.createElement("p");description.textContent=p.body||"";
     entry.append(heading,description);
     if(p.material_path){
-     const button=document.createElement("button");button.type="button";button.className="gv-materials-action";button.textContent="OPEN FILE";button.onclick=()=>gvOpenReviewer(p.material_path);entry.append(button);
+     const button=document.createElement("button");button.type="button";button.className="gv-materials-action";button.textContent="OPEN FILE";button.onclick=()=>gvShowReviewerLibrary();entry.append(button);
     }
     if(p.link_url){
      const link=document.createElement("a");link.className="gv-materials-action";link.textContent=section.action;link.href=p.link_url;link.target="_blank";link.rel="noopener noreferrer";entry.append(link);
@@ -1139,6 +1142,42 @@ async function gvReviewerMaterials(){
    box.append(more);
   }
  }catch(error){box.textContent="Unable to load your posts: "+gvErr(error)}
+}
+
+function gvCloseReviewerLibrary(){
+ gv$("gvReviewerLibrary").hidden=true;gv$("gvExamineeLanding").hidden=false;
+ gv$("gvLibraryViewer").replaceChildren();
+}
+async function gvShowReviewerLibrary(){
+ gv$("gvExamineeLanding").hidden=true;gv$("gvReviewerLibrary").hidden=false;
+ gv$("gvLibraryProgram").textContent="Available "+gvActiveExamineeProgram+" reviewer materials";
+ gv$("gvLibraryFiles").textContent="Loading reviewer files...";
+ gv$("gvLibraryViewer").textContent="Select a file from the list.";
+ try{
+  const {data,error}=await backend.from("announcements").select("id,title,body,material_path,created_at").eq("published",true).eq("target_program",gvActiveExamineeProgram).eq("category","reviewer").not("material_path","is",null).order("created_at",{ascending:false});
+  if(error)throw error;
+  const list=gv$("gvLibraryFiles");list.replaceChildren();
+  if(!data?.length){list.textContent="No reviewer files available yet.";return}
+  for(const item of data){
+   const button=document.createElement("button");button.type="button";button.className="gv-library-item";
+   const name=document.createElement("strong");name.textContent=item.title;
+   const desc=document.createElement("small");desc.textContent=item.body||"Select to view";
+   button.append(name,desc);button.onclick=()=>gvPreviewReviewer(item,button);list.append(button);
+  }
+ }catch(error){gv$("gvLibraryFiles").textContent="Unable to load files: "+gvErr(error)}
+}
+async function gvPreviewReviewer(item,button){
+ document.querySelectorAll(".gv-library-item").forEach(x=>x.classList.remove("selected"));button.classList.add("selected");
+ gv$("gvLibraryFilename").textContent=item.title;
+ const box=gv$("gvLibraryViewer");box.textContent="Opening document...";
+ const {data,error}=await backend.storage.from("reviewer-materials").createSignedUrl(item.material_path,600);
+ if(error||!data?.signedUrl){box.textContent="Unable to open this document.";return}
+ const ext=item.material_path.split(".").pop().toLowerCase();
+ const iframe=document.createElement("iframe");iframe.title=item.title;iframe.referrerPolicy="no-referrer";
+ if(ext==="pdf")iframe.src=data.signedUrl+"#toolbar=0&navpanes=0";
+ else iframe.src="https://view.officeapps.live.com/op/embed.aspx?src="+encodeURIComponent(data.signedUrl);
+ box.replaceChildren(iframe);
+ const note=document.createElement("p");note.className="gv-library-note";note.textContent="View-only interface. Browser or document-provider controls may still allow saving. If the preview is unavailable, ask your administrator to upload a PDF version.";box.append(note);
 }
 async function gvOpenReviewer(path){
  if(!path)return;
