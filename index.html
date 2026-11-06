@@ -1332,6 +1332,52 @@ async function gvLoadExaminee(){
  if(!(er.data||[]).length)box.textContent="No open examinations at this time.";
 }
 
+let gvExamSavePending=false,gvExamViolationPending=false;
+function gvExamStorageKey(){return gvActiveAttempt?"gv_exam_"+(currentProfile?.id||"user")+"_"+gvActiveAttempt.exam_id:null}
+function gvExamSaveLocal(){
+ const key=gvExamStorageKey();if(!key)return;
+ try{localStorage.setItem(key,JSON.stringify({answers:gvAttemptAnswers,expires_at:gvActiveAttempt.expires_at,questions:gvActiveAttempt.questions,position:gvExamPosition}))}catch(e){console.warn("Local saving unavailable",e)}
+}
+async function gvExamSync(){
+ if(!gvActiveAttempt||!navigator.onLine||gvExamSavePending)return;
+ gvExamSavePending=true;
+ try{
+  const {error}=await backend.rpc("save_exam_progress",{p_exam_id:gvActiveAttempt.exam_id,p_answers:gvAttemptAnswers});
+  if(error)throw error;
+  gv$("gvExamStatus").textContent="Answers saved online";
+ }catch(e){gv$("gvExamStatus").textContent="Saved on this device. Waiting for connection."}
+ finally{gvExamSavePending=false}
+}
+function gvExamRecordAnswer(){
+ gvExamSaveLocal();gvExamSync().catch(console.error);
+}
+async function gvExamDisqualify(reason){
+ if(!gvActiveAttempt||gvExamViolationPending)return;
+ gvExamViolationPending=true;
+ const id=gvActiveAttempt.exam_id;
+ clearInterval(gvTimer);
+ gv$("gvExamInterface").hidden=true;
+ gv$("gvExamComplete").textContent="Examination disqualified due to a monitored security violation ("+reason+").";
+ try{
+  if(!navigator.onLine)localStorage.setItem("gv_exam_violation_"+id,reason);
+  else {
+   const {error}=await backend.rpc("report_exam_violation",{p_exam_id:id,p_reason:reason});
+   if(error)throw error;
+  }
+ }catch(e){try{localStorage.setItem("gv_exam_violation_"+id,reason)}catch(_){}}
+ gvActiveAttempt=null;
+}
+document.addEventListener("visibilitychange",()=>{if(document.hidden&&gvActiveAttempt)gvExamDisqualify("tab_hidden").catch(console.error)});
+document.addEventListener("fullscreenchange",()=>{if(gvActiveAttempt&&!document.fullscreenElement)gvExamDisqualify("fullscreen_exited").catch(console.error)});
+window.addEventListener("online",async()=>{
+ if(gvActiveAttempt)await gvExamSync();
+ for(let i=0;i<localStorage.length;i++){
+  const key=localStorage.key(i);if(!key?.startsWith("gv_exam_violation_"))continue;
+  const id=key.slice("gv_exam_violation_".length),reason=localStorage.getItem(key);
+  const {error}=await backend.rpc("report_exam_violation",{p_exam_id:id,p_reason:reason});
+  if(!error)localStorage.removeItem(key);
+ }
+});
 let gvExamPosition=0;
 async function gvLoadExamChoices(){
  const box=gv$("gvExamChoices");if(!box)return;
@@ -1353,13 +1399,26 @@ function gvExamShuffle(items){
  const array=[...items];for(let i=array.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[array[i],array[j]]=[array[j],array[i]]}return array;
 }
 async function gvStartExam(id){
- if(!confirm("Open examination now? The time limit starts immediately and cannot be paused."))return;
+ if(!confirm("Opening starts the timer. Leaving fullscreen or switching away from the exam tab causes disqualification. Continue?"))return;
  const {data,error}=await backend.rpc("start_exam",{p_exam_id:id});
  if(error){gv$("gvExamComplete").textContent=gvErr(error);return}
  if(data?.expired){gv$("gvExamComplete").textContent="Your examination time has expired.";return}
  if(!Array.isArray(data?.questions)){gv$("gvExamComplete").textContent="Unable to load examination questions.";return}
  gvActiveAttempt={exam_id:id,...data,questions:gvExamShuffle(data.questions)};
- gvAttemptAnswers={};gvExamPosition=0;
+ gvAttemptAnswers={};gvExamPosition=0;gvExamViolationPending=false;
+ const key=gvExamStorageKey();
+ try{
+  const saved=JSON.parse(localStorage.getItem(key)||"null");
+  if(saved?.expires_at===data.expires_at&&Array.isArray(saved.questions)&&saved.questions.length===data.questions.length){
+   gvActiveAttempt.questions=saved.questions;
+   gvAttemptAnswers=saved.answers||{};gvExamPosition=Math.min(Math.max(0,saved.position||0),saved.questions.length-1);
+  }
+ }catch(e){}
+ const pendingViolation=localStorage.getItem("gv_exam_violation_"+id);
+ if(pendingViolation){await gvExamDisqualify(pendingViolation);return}
+ try{await document.documentElement.requestFullscreen()}catch(e){
+  gvActiveAttempt=null;gv$("gvExamComplete").textContent="Fullscreen permission is required to start. The timer may already be running; reopen the examination after allowing fullscreen.";return
+ }
  gv$("gvExamChooser").hidden=true;gv$("gvExamInterface").hidden=false;gv$("gvExamComplete").textContent="";
  gvExamRender();
  clearInterval(gvTimer);
@@ -1381,7 +1440,7 @@ function gvExamRender(){
   const label=document.createElement("label");label.className="gv-exam-answer";
   const radio=document.createElement("input");radio.type="radio";radio.name="gvAnswer";radio.value=index;
   radio.checked=gvAttemptAnswers[q.id]===index;
-  radio.onchange=()=>{gvAttemptAnswers[q.id]=index;gvExamRender()};
+  radio.onchange=()=>{gvAttemptAnswers[q.id]=index;gvExamRecordAnswer();gvExamRender()};
   label.append(radio,document.createTextNode(option));box.append(label);
  });
  const selected=gvAttemptAnswers[q.id]!==undefined;
@@ -1394,16 +1453,16 @@ function gvExamRender(){
  questions.forEach((question,index)=>{
   const b=document.createElement("button");b.type="button";b.textContent=index+1;
   b.className="gv-exam-number"+(index===gvExamPosition?" current":"")+(gvAttemptAnswers[question.id]!==undefined?" answered":"");
-  b.onclick=()=>{gvExamPosition=index;gvExamRender()};numbers.append(b);
+  b.onclick=()=>{gvExamPosition=index;gvExamSaveLocal();gvExamRender()};numbers.append(b);
  });
  gv$("gvExamStatus").textContent=Object.keys(gvAttemptAnswers).length+" of "+questions.length+" answered";
 }
-function gvExamGoPrevious(){if(gvActiveAttempt&&gvExamPosition>0){gvExamPosition--;gvExamRender()}}
+function gvExamGoPrevious(){if(gvActiveAttempt&&gvExamPosition>0){gvExamPosition--;gvExamSaveLocal();gvExamRender()}}
 function gvExamGoNext(){
  if(!gvActiveAttempt)return;
  const q=gvActiveAttempt.questions[gvExamPosition];
  if(gvAttemptAnswers[q.id]===undefined)return;
- if(gvExamPosition<gvActiveAttempt.questions.length-1){gvExamPosition++;gvExamRender()}
+ if(gvExamPosition<gvActiveAttempt.questions.length-1){gvExamPosition++;gvExamSaveLocal();gvExamRender()}
 }
 async function gvExamFinish(){
  if(!gvActiveAttempt||gvActiveAttempt.questions.some(q=>gvAttemptAnswers[q.id]===undefined))return;
@@ -1416,6 +1475,8 @@ async function gvSubmitExam(){
  gvActiveAttempt=null;
  gv$("gvExamInterface").hidden=true;
  const {data,error}=await backend.rpc("submit_exam",{p_exam_id:id,p_answers:answers});
+ if(!error){try{localStorage.removeItem("gv_exam_"+(currentProfile?.id||"user")+"_"+id)}catch(e){}}
+ if(document.fullscreenElement)document.exitFullscreen().catch(()=>{});
  gv$("gvExamComplete").textContent=error?"Submission failed: "+gvErr(error):"Examination submitted. Score: "+data.score+"/"+data.total+" — "+(data.passed?"PASS":"FAIL")+(data.late?" (Time expired)":"");
 }
 const gvOldSwitch=switchTab;
