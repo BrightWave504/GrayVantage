@@ -512,7 +512,7 @@ h2 {color:var(--navy);font-size:clamp(28px,3vw,39px);margin:0 0 30px}
 <div class="gv-field"><label>Title</label><input name="title" required minlength="3" maxlength="160"></div>
 <div class="gv-field"><label>Details / Instructions</label><textarea name="body" maxlength="8000" placeholder="Description / instructions"></textarea></div>
 <div class="gv-field"><label>HTTPS Link (optional)</label><input name="link_url" type="url" placeholder="https://..."></div>
-<div class="gv-field"><label>Reviewer File (PDF, DOC, DOCX, PPT, PPTX, XLS, XLSX; max 20 MB)</label><input name="reviewer_file" type="file" accept=".pdf,.doc,.docx,.ppt,.pptx,.xls,.xlsx"></div><button class="btn btn-primary" type="submit">Publish Post</button><div class="gv-msg" id="gvPostMsg" role="status"></div></form><h3 id="gvProgramPublishedTitle">Published Posts</h3><div id="gvAdminPosts"></div></div></div></div>
+<div class="gv-field"><label>Reviewer Files (select multiple; max 20 MB each)</label><input name="reviewer_file" type="file" multiple accept=".pdf,.doc,.docx,.ppt,.pptx,.xls,.xlsx"></div><button class="btn btn-primary" type="submit">Publish Post</button><div class="gv-msg" id="gvPostMsg" role="status"></div></form><h3 id="gvProgramPublishedTitle">Published Posts</h3><div id="gvAdminPosts"></div></div></div></div>
 <div class="dashboard-tab" data-role="admin" data-tab="exams"><div class="dashboard-panel"><h2>Examination Portal Management</h2><p>Create an examination, add four-choice questions, and manually open or close it. The timer starts separately for each examinee when they begin.</p>
 <form id="gvExamForm"><div class="gv-grid"><div class="gv-field"><label>Exam Title</label><input name="title" required minlength="3" maxlength="180"></div><div class="gv-field"><label>Program</label><select name="program"><option>CPOA</option><option>CJMA</option></select></div><div class="gv-field"><label>Time Limit (minutes)</label><input name="duration_minutes" type="number" min="1" max="240" value="60" required></div><div class="gv-field"><label>Passing Percentage</label><input name="pass_percentage" type="number" min="0" max="100" step="0.01" value="75" required></div></div>
 <button type="submit" class="btn btn-primary">Create Closed Exam</button><div class="gv-msg" id="gvExamMsg" role="status"></div></form>
@@ -1184,29 +1184,35 @@ async function gvPosts(){
 gv$("gvPostForm").onsubmit=async ev=>{
  ev.preventDefault();if(!gvAdmin())return;
  const form=ev.target,button=form.querySelector('button[type="submit"]'),f=new FormData(form);
- const category=String(f.get("category")),link=String(f.get("link_url")||"").trim(),file=f.get("reviewer_file");
+
+ const category=String(f.get("category")),link=String(f.get("link_url")||"").trim();
+ const files=Array.from(form.querySelector('[name="reviewer_file"]').files||[]);
  const targetProgram=String(f.get("target_program")||"");
  if(!["CPOA","CJMA"].includes(targetProgram)||targetProgram!==gvSelectedPostProgram){gvMsg("gvPostMsg","Select CPOA or CJMA before publishing.");return}
- const hasFile=file instanceof File&&file.size>0;
- if(link&&!/^https:\/\/\S+$/i.test(link)){gvMsg("gvPostMsg","Use an HTTPS link.");return}
- if(category==="reviewer"&&!hasFile){gvMsg("gvPostMsg","Choose a reviewer file.");return}
- if(category!=="reviewer"&&hasFile){gvMsg("gvPostMsg","Select Reviewer Material to upload files.");return}
+ if(link&&!link.startsWith("https://")){gvMsg("gvPostMsg","Use an HTTPS link.");return}
+ if(category==="reviewer"&&!files.length){gvMsg("gvPostMsg","Choose reviewer files.");return}
+ if(category!=="reviewer"&&files.length){gvMsg("gvPostMsg","Select Reviewer Material to upload files.");return}
  const types={pdf:"application/pdf",doc:"application/msword",docx:"application/vnd.openxmlformats-officedocument.wordprocessingml.document",ppt:"application/vnd.ms-powerpoint",pptx:"application/vnd.openxmlformats-officedocument.presentationml.presentation",xls:"application/vnd.ms-excel",xlsx:"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"};
- const ext=hasFile?file.name.split(".").pop().toLowerCase():"";
- if(hasFile&&(!types[ext]||file.size>20971520)){gvMsg("gvPostMsg","Only supported documents up to 20 MB are allowed.");return}
+ if(files.some(file=>!types[file.name.split(".").pop().toLowerCase()]||file.size>20971520)){gvMsg("gvPostMsg","Unsupported file or over 20 MB.");return}
  const title=String(f.get("title")||"").trim(),body=String(f.get("body")||"").trim()||"Reviewer material";
- button.disabled=true;let path=null;
+ button.disabled=true;let completed=0;
  try{
-  if(hasFile){
-   path=crypto.randomUUID()+"."+ext;
-   gvMsg("gvPostMsg","Uploading file...");
-   const {error}=await backend.storage.from("reviewer-materials").upload(path,file,{contentType:types[ext],upsert:false});
+  if(category==="reviewer"){
+   for(const file of files){
+    const ext=file.name.split(".").pop().toLowerCase(),path=crypto.randomUUID()+"."+ext;
+    gvMsg("gvPostMsg","Uploading "+(completed+1)+" of "+files.length);
+    const {error}=await backend.storage.from("reviewer-materials").upload(path,file,{contentType:types[ext],upsert:false});
+    if(error)throw error;
+    const {error:insertError}=await backend.from("announcements").insert({title:files.length>1?title+" — "+file.name:title,body,category,target_program:targetProgram,link_url:link||null,material_path:path,created_by:currentProfile.id});
+    if(insertError){await backend.storage.from("reviewer-materials").remove([path]);throw insertError}
+    completed++;
+   }
+  }else{
+   const {error}=await backend.from("announcements").insert({title,body,category,target_program:targetProgram,link_url:link||null,material_path:null,created_by:currentProfile.id});
    if(error)throw error;
   }
-  const {error}=await backend.from("announcements").insert({title,body,category,target_program:targetProgram,link_url:link||null,material_path:path,created_by:currentProfile.id});
-  if(error)throw error;
-  form.reset();gv$("gvPostTargetProgram").value=targetProgram;gvMsg("gvPostMsg",targetProgram+" post published.");await gvPosts();
- }catch(error){if(path)await backend.storage.from("reviewer-materials").remove([path]);gvMsg("gvPostMsg","Publishing failed: "+gvErr(error))}
+  form.reset();gv$("gvPostTargetProgram").value=targetProgram;gvMsg("gvPostMsg",targetProgram+" post published ("+completed+" files).");await gvPosts();
+ }catch(error){gvMsg("gvPostMsg","Publishing failed: "+gvErr(error)+". "+completed+" files already published.")}
  finally{button.disabled=false}
 };
 async function gvLoadExams(){
