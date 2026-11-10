@@ -337,6 +337,17 @@ body:has(#exam-taking.active) .header,body:has(#exam-taking.active) #gvPublicBoa
 @keyframes gv-entry-ring{50%{transform:scale(1.07);opacity:.5}}
 @keyframes gv-entry-load{to{transform:translateX(0)}}
 @media(prefers-reduced-motion:reduce){.gv-entry-logo-wrap,.gv-entry-logo-wrap:before,.gv-entry-progress:after{animation:none!important}.gv-entry-progress:after{transform:none}}
+
+/* Hero logo: ambient levitation and interactive 3D tilt (desktop + mobile). */
+#home .hero-logo{perspective:1100px;isolation:isolate}
+#home .hero-logo .gv-hero-logo-float{position:relative;display:flex;align-items:center;justify-content:center;width:100%;animation:gvHeroFloat 5s ease-in-out infinite;transform-style:preserve-3d;will-change:transform}
+#home .hero-logo .gv-hero-logo-float:before{content:"";position:absolute;width:min(85%,390px);aspect-ratio:1;border-radius:50%;background:radial-gradient(circle,#b4e6ff55,transparent 67%);filter:blur(17px);pointer-events:none;animation:gvHeroGlow 4s ease-in-out infinite}
+#home .hero-logo img{position:relative;z-index:1;transform:perspective(950px) rotateX(var(--gv-rotate-x,0deg)) rotateY(var(--gv-rotate-y,0deg)) scale(var(--gv-logo-scale,1));transition:transform .35s cubic-bezier(.2,.7,.2,1),box-shadow .35s ease,filter .35s ease;will-change:transform;cursor:default}
+#home .hero-logo:hover img{--gv-logo-scale:1.045;box-shadow:0 32px 65px #06243d88,0 0 30px #b7e8ff55;filter:brightness(1.045)}
+@keyframes gvHeroFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-15px)}}
+@keyframes gvHeroGlow{0%,100%{opacity:.45;transform:scale(.95)}50%{opacity:.85;transform:scale(1.08)}}
+@media(max-width:767px){#home .hero-logo .gv-hero-logo-float{animation-duration:5.5s}#home .hero-logo .gv-hero-logo-float:before{width:85%}}
+@media(prefers-reduced-motion:reduce){#home .hero-logo .gv-hero-logo-float,#home .hero-logo .gv-hero-logo-float:before{animation:none!important}#home .hero-logo img{transition:none!important}}
 </style>
 <style>
 .gv-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px}.gv-panel{background:white;border:1px solid #d8e5ef;border-radius:16px;padding:22px;margin:16px 0}.gv-panel h3{margin-top:0;color:#103b60}.gv-field{display:flex;flex-direction:column;gap:6px;margin:12px 0}.gv-field input,.gv-field select,.gv-field textarea{width:100%;border:1px solid #c9dbe9;border-radius:9px;padding:12px;background:white;color:#183b57}.gv-field textarea{min-height:95px}.gv-msg{padding:10px 0;color:#155e85;white-space:pre-wrap}.gv-row{border-bottom:1px solid #e1eaf1;padding:12px 0;overflow-wrap:anywhere}.gv-row:last-child{border:0}.gv-small{color:#5c7388;font-size:14px}.gv-table{width:100%;border-collapse:collapse;min-width:500px}.gv-table td,.gv-table th{border-bottom:1px solid #d8e5ef;text-align:left;padding:10px;vertical-align:top}.gv-scroll{overflow:auto}.gv-choice{display:block;margin:8px 0;padding:10px;border:1px solid #d8e5ef;border-radius:9px}.gv-choice input{margin-right:9px}.gv-pill{padding:4px 10px;border-radius:20px;background:#e3f1ff;display:inline-block}.gv-timer{font-size:22px;font-weight:700;color:#b91c1c}
@@ -384,7 +395,7 @@ body:has(#exam-taking.active) .header,body:has(#exam-taking.active) #gvPublicBoa
         </div>
       </div>
       <div class="hero-logo">
-        <img src="assets/GVACS-logo.png" alt="GrayVantage Academic and Corporate Services Logo">
+        <div class="gv-hero-logo-float"><img src="assets/GVACS-logo.png" alt="GrayVantage Academic and Corporate Services Logo"></div>
       </div>
     </div>
   </div>
@@ -1748,5 +1759,25 @@ logout = async function () {
 };
 </script>
 
+
+<script>
+/* Interactive pointer tilt applies only to the large homepage logo. */
+(function(){
+ const host=document.querySelector("#home .hero-logo");
+ const logo=host&&host.querySelector("img");
+ if(!host||!logo||!window.matchMedia("(hover: hover) and (pointer: fine)").matches||window.matchMedia("(prefers-reduced-motion: reduce)").matches)return;
+ host.addEventListener("pointermove",function(e){
+  const rect=logo.getBoundingClientRect();
+  const x=Math.max(-1,Math.min(1,(e.clientX-(rect.left+rect.width/2))/(rect.width/2)));
+  const y=Math.max(-1,Math.min(1,(e.clientY-(rect.top+rect.height/2))/(rect.height/2)));
+  logo.style.setProperty("--gv-rotate-x",(-y*11).toFixed(2)+"deg");
+  logo.style.setProperty("--gv-rotate-y",(x*11).toFixed(2)+"deg");
+ });
+ host.addEventListener("pointerleave",function(){
+  logo.style.setProperty("--gv-rotate-x","0deg");
+  logo.style.setProperty("--gv-rotate-y","0deg");
+ });
+})();
+</script>
 </body>
 </html>
