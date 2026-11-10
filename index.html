@@ -376,9 +376,27 @@ body:has(#exam-taking.active) .header,body:has(#exam-taking.active) #gvPublicBoa
  #home .hero{background-image:url("assets/grayvantage-hero-background.png");background-position:center center}
 }
 
-/* Static 3D depth for the small header logo; no motion or hover effects. */
-.header .brand img{animation:none!important;transform:none!important;scale:1!important;filter:drop-shadow(0 3px 5px #0c396055);transition:none!important}
-.header .brand:hover img,.header .brand:focus-visible img{animation:none!important;transform:none!important;scale:1!important;filter:drop-shadow(0 3px 5px #0c396055)}
+/* Static dimensional emblem for the small header logo: no motion or hover animation. */
+.header .brand{perspective:700px}
+.header .brand img{
+ border-radius:50%;
+ background:radial-gradient(circle at 32% 24%,#fff 0%,#f4faff 48%,#b9d3e8 100%);
+ border:2px solid #e2f2ff;
+ padding:2px;
+ transform:rotateX(5deg) rotateY(-7deg) translateZ(0)!important;
+ transform-style:preserve-3d;
+ box-shadow:inset 3px 3px 5px #ffffffcc,inset -5px -5px 8px #285d8b55,3px 5px 0 #537c9d,7px 10px 15px #0c31566b,0 0 0 1px #a2c6df;
+ filter:drop-shadow(0 2px 2px #102f4a44) contrast(1.06) saturate(1.06);
+ animation:none!important;
+ transition:none!important;
+ scale:1!important;
+}
+.header .brand:hover img,.header .brand:focus-visible img{
+ animation:none!important;transition:none!important;scale:1!important;
+ transform:rotateX(5deg) rotateY(-7deg) translateZ(0)!important;
+ box-shadow:inset 3px 3px 5px #ffffffcc,inset -5px -5px 8px #285d8b55,3px 5px 0 #537c9d,7px 10px 15px #0c31566b,0 0 0 1px #a2c6df;
+ filter:drop-shadow(0 2px 2px #102f4a44) contrast(1.06) saturate(1.06);
+}
 </style></head>
 <body>
 <div id="gvEntrySplash" class="gv-entry-splash" role="status" aria-label="GrayVantage website loading">
