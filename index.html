@@ -319,11 +319,49 @@ body:has(#exam-taking.active) .header,body:has(#exam-taking.active) #gvPublicBoa
  .detail-header{grid-template-columns:50px minmax(0,1fr) 50px}
  .detail-header img{width:50px}
 }
+
+/* Entry-only animated logo splash; leaves existing desktop/mobile pages unchanged. */
+.gv-entry-splash{position:fixed;inset:0;z-index:99999;display:grid;place-items:center;background:radial-gradient(circle at 50% 40%,#287eb9 0%,#164b76 44%,#092b49 100%);color:#fff;opacity:1;visibility:visible;transition:opacity .5s ease,visibility .5s ease;overflow:hidden}
+.gv-entry-splash.gv-entry-hide{opacity:0;visibility:hidden;pointer-events:none}
+.gv-entry-content{text-align:center;padding:24px;perspective:950px;max-width:95vw}
+.gv-entry-logo-wrap{position:relative;margin:0 auto 24px;width:clamp(150px,35vw,250px);height:clamp(150px,35vw,250px);transform-style:preserve-3d;animation:gv-entry-3d 2.4s cubic-bezier(.22,.8,.2,1) both}
+.gv-entry-logo-wrap:before{content:"";position:absolute;inset:-12px;border:2px solid #a7d9ff70;border-radius:50%;box-shadow:0 0 40px #62b7fa50;animation:gv-entry-ring 2s ease-in-out infinite}
+.gv-entry-logo{display:block;width:100%;height:100%;object-fit:contain;border-radius:50%;background:#fff;box-shadow:0 25px 55px #001b36aa, inset 0 0 18px #ffffff;backface-visibility:hidden;transform:translateZ(30px)}
+.gv-entry-title{font-weight:800;letter-spacing:.03em;font-size:clamp(19px,4vw,29px);margin:0 0 12px}
+.gv-entry-subtitle{font-size:clamp(12px,2.6vw,15px);color:#d9ecfb;margin:0 0 22px}
+.gv-entry-progress{height:4px;width:min(230px,60vw);margin:auto;border-radius:999px;background:#ffffff35;overflow:hidden}
+.gv-entry-progress:after{content:"";display:block;height:100%;width:100%;background:#b9e5ff;transform:translateX(-100%);animation:gv-entry-load 2.6s ease-out forwards}
+.gv-entry-skip{display:block;margin:22px auto 0;padding:8px 15px;color:#d9ecfb;background:transparent;border:1px solid #ffffff55;border-radius:9px;font-size:13px}
+.gv-entry-skip:hover{background:#ffffff1c}
+@keyframes gv-entry-3d{0%{opacity:0;transform:translateY(38px) rotateY(-75deg) rotateX(18deg) scale(.7)}45%{opacity:1;transform:translateY(0) rotateY(20deg) rotateX(-8deg) scale(1.06)}75%{transform:rotateY(-8deg) rotateX(3deg) scale(1)}100%{opacity:1;transform:rotateY(0) rotateX(0) scale(1)}}
+@keyframes gv-entry-ring{50%{transform:scale(1.07);opacity:.5}}
+@keyframes gv-entry-load{to{transform:translateX(0)}}
+@media(prefers-reduced-motion:reduce){.gv-entry-logo-wrap,.gv-entry-logo-wrap:before,.gv-entry-progress:after{animation:none!important}.gv-entry-progress:after{transform:none}}
 </style>
 <style>
 .gv-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px}.gv-panel{background:white;border:1px solid #d8e5ef;border-radius:16px;padding:22px;margin:16px 0}.gv-panel h3{margin-top:0;color:#103b60}.gv-field{display:flex;flex-direction:column;gap:6px;margin:12px 0}.gv-field input,.gv-field select,.gv-field textarea{width:100%;border:1px solid #c9dbe9;border-radius:9px;padding:12px;background:white;color:#183b57}.gv-field textarea{min-height:95px}.gv-msg{padding:10px 0;color:#155e85;white-space:pre-wrap}.gv-row{border-bottom:1px solid #e1eaf1;padding:12px 0;overflow-wrap:anywhere}.gv-row:last-child{border:0}.gv-small{color:#5c7388;font-size:14px}.gv-table{width:100%;border-collapse:collapse;min-width:500px}.gv-table td,.gv-table th{border-bottom:1px solid #d8e5ef;text-align:left;padding:10px;vertical-align:top}.gv-scroll{overflow:auto}.gv-choice{display:block;margin:8px 0;padding:10px;border:1px solid #d8e5ef;border-radius:9px}.gv-choice input{margin-right:9px}.gv-pill{padding:4px 10px;border-radius:20px;background:#e3f1ff;display:inline-block}.gv-timer{font-size:22px;font-weight:700;color:#b91c1c}
 </style></head>
 <body>
+<div id="gvEntrySplash" class="gv-entry-splash" role="status" aria-label="GrayVantage website loading">
+ <div class="gv-entry-content">
+  <div class="gv-entry-logo-wrap"><img class="gv-entry-logo" src="assets/GVACS-logo.png" alt="GrayVantage Academic & Corporate Services logo"></div>
+  <p class="gv-entry-title">GrayVantage</p>
+  <p class="gv-entry-subtitle">Academic &amp; Corporate Services</p>
+  <div class="gv-entry-progress" aria-hidden="true"></div>
+  <button class="gv-entry-skip" type="button" id="gvEntrySkip">Skip intro</button>
+ </div>
+</div>
+<script>
+(function(){
+ const splash=document.getElementById("gvEntrySplash");
+ const dismiss=()=>{if(!splash||splash.classList.contains("gv-entry-hide"))return;splash.classList.add("gv-entry-hide");setTimeout(()=>splash.remove(),600)};
+ document.getElementById("gvEntrySkip").addEventListener("click",dismiss);
+ if(location.hash&&location.hash!=="#home"){dismiss();return}
+ const delay=window.matchMedia("(prefers-reduced-motion: reduce)").matches?450:2800;
+ setTimeout(dismiss,delay);
+})();
+</script>
+
 
 <header class="header">
   <nav class="nav">
