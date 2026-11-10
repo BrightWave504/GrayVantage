@@ -348,14 +348,12 @@ body:has(#exam-taking.active) .header,body:has(#exam-taking.active) #gvPublicBoa
   <p class="gv-entry-title">GrayVantage</p>
   <p class="gv-entry-subtitle">Academic &amp; Corporate Services</p>
   <div class="gv-entry-progress" aria-hidden="true"></div>
-  <button class="gv-entry-skip" type="button" id="gvEntrySkip">Skip intro</button>
  </div>
 </div>
 <script>
 (function(){
  const splash=document.getElementById("gvEntrySplash");
  const dismiss=()=>{if(!splash||splash.classList.contains("gv-entry-hide"))return;splash.classList.add("gv-entry-hide");setTimeout(()=>splash.remove(),600)};
- document.getElementById("gvEntrySkip").addEventListener("click",dismiss);
  if(location.hash&&location.hash!=="#home"){dismiss();return}
  const delay=window.matchMedia("(prefers-reduced-motion: reduce)").matches?450:2800;
  setTimeout(dismiss,delay);
