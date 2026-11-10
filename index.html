@@ -376,26 +376,23 @@ body:has(#exam-taking.active) .header,body:has(#exam-taking.active) #gvPublicBoa
  #home .hero{background-image:url("assets/grayvantage-hero-background.png");background-position:center center}
 }
 
-/* Static dimensional emblem for the small header logo: no motion or hover animation. */
-.header .brand{perspective:700px}
+/* Upright static 3D circular header emblem with neutral gray shadows. */
 .header .brand img{
  border-radius:50%;
- background:radial-gradient(circle at 32% 24%,#fff 0%,#f4faff 48%,#b9d3e8 100%);
- border:2px solid #e2f2ff;
+ background:radial-gradient(circle at 32% 24%,#fff 0%,#f7f7f7 50%,#dedede 100%);
+ border:2px solid #e8e8e8;
  padding:2px;
- transform:rotateX(5deg) rotateY(-7deg) translateZ(0)!important;
- transform-style:preserve-3d;
- box-shadow:inset 3px 3px 5px #ffffffcc,inset -5px -5px 8px #285d8b55,3px 5px 0 #537c9d,7px 10px 15px #0c31566b,0 0 0 1px #a2c6df;
- filter:drop-shadow(0 2px 2px #102f4a44) contrast(1.06) saturate(1.06);
+ transform:none!important;
+ box-shadow:inset 3px 3px 5px #ffffffcc,inset -4px -4px 7px #55555533,2px 4px 0 #999999,5px 8px 13px #00000055,0 0 0 1px #bcbcbc;
+ filter:drop-shadow(0 2px 2px #00000033) contrast(1.06);
  animation:none!important;
  transition:none!important;
  scale:1!important;
 }
 .header .brand:hover img,.header .brand:focus-visible img{
- animation:none!important;transition:none!important;scale:1!important;
- transform:rotateX(5deg) rotateY(-7deg) translateZ(0)!important;
- box-shadow:inset 3px 3px 5px #ffffffcc,inset -5px -5px 8px #285d8b55,3px 5px 0 #537c9d,7px 10px 15px #0c31566b,0 0 0 1px #a2c6df;
- filter:drop-shadow(0 2px 2px #102f4a44) contrast(1.06) saturate(1.06);
+ transform:none!important;animation:none!important;transition:none!important;scale:1!important;
+ box-shadow:inset 3px 3px 5px #ffffffcc,inset -4px -4px 7px #55555533,2px 4px 0 #999999,5px 8px 13px #00000055,0 0 0 1px #bcbcbc;
+ filter:drop-shadow(0 2px 2px #00000033) contrast(1.06);
 }
 </style></head>
 <body>
