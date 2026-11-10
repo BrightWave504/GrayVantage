@@ -363,6 +363,18 @@ body:has(#exam-taking.active) .header,body:has(#exam-taking.active) #gvPublicBoa
 </style>
 <style>
 .gv-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px}.gv-panel{background:white;border:1px solid #d8e5ef;border-radius:16px;padding:22px;margin:16px 0}.gv-panel h3{margin-top:0;color:#103b60}.gv-field{display:flex;flex-direction:column;gap:6px;margin:12px 0}.gv-field input,.gv-field select,.gv-field textarea{width:100%;border:1px solid #c9dbe9;border-radius:9px;padding:12px;background:white;color:#183b57}.gv-field textarea{min-height:95px}.gv-msg{padding:10px 0;color:#155e85;white-space:pre-wrap}.gv-row{border-bottom:1px solid #e1eaf1;padding:12px 0;overflow-wrap:anywhere}.gv-row:last-child{border:0}.gv-small{color:#5c7388;font-size:14px}.gv-table{width:100%;border-collapse:collapse;min-width:500px}.gv-table td,.gv-table th{border-bottom:1px solid #d8e5ef;text-align:left;padding:10px;vertical-align:top}.gv-scroll{overflow:auto}.gv-choice{display:block;margin:8px 0;padding:10px;border:1px solid #d8e5ef;border-radius:9px}.gv-choice input{margin-right:9px}.gv-pill{padding:4px 10px;border-radius:20px;background:#e3f1ff;display:inline-block}.gv-timer{font-size:22px;font-weight:700;color:#b91c1c}
+
+/* GrayVantage homepage photo background: keeps existing text and animated logo. */
+#home .hero{
+ background-image:linear-gradient(90deg,rgba(6,34,62,.78) 0%,rgba(8,46,82,.67) 49%,rgba(10,51,89,.38) 100%),url("assets/grayvantage-hero-background.png");
+ background-position:center center;
+ background-size:cover;
+ background-repeat:no-repeat;
+ background-color:#174266;
+}
+@media(max-width:767px){
+ #home .hero{background-image:linear-gradient(90deg,rgba(6,34,62,.78),rgba(8,46,82,.55)),url("assets/grayvantage-hero-background.png");background-position:center center}
+}
 </style></head>
 <body>
 <div id="gvEntrySplash" class="gv-entry-splash" role="status" aria-label="GrayVantage website loading">
