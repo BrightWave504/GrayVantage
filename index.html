@@ -409,8 +409,9 @@ body:has(#exam-taking.active) .header,body:has(#exam-taking.active) #gvPublicBoa
 <main>
 
 <section id="home" class="page active">
-  <div class="hero">
-    <div class="hero-inner">
+  <div class="hero" style="position:relative;isolation:isolate;background:none!important;overflow:hidden;">
+    <img src="assets/grayvantage-hero-background.png" alt="" aria-hidden="true" class="gv-hero-background-photo" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center;z-index:-1;pointer-events:none;">
+    <div class="hero-inner" style="position:relative;z-index:1;">
       <div>
         <h1>Build your skills.<br>Validate your expertise.</h1>
         <p>GrayVantage Academic &amp; Corporate Services provides professional training, seminars, webinars, and competency-based assessment programs for students and working professionals.</p>
