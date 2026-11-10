@@ -344,6 +344,18 @@ body:has(#exam-taking.active) .header,body:has(#exam-taking.active) #gvPublicBoa
 #home .hero-logo .gv-hero-logo-float:before{content:"";position:absolute;width:min(85%,390px);aspect-ratio:1;border-radius:50%;background:radial-gradient(circle,#b4e6ff55,transparent 67%);filter:blur(17px);pointer-events:none;animation:gvHeroGlow 4s ease-in-out infinite}
 #home .hero-logo img{position:relative;z-index:1;transform:perspective(950px) rotateX(var(--gv-rotate-x,0deg)) rotateY(var(--gv-rotate-y,0deg)) scale(var(--gv-logo-scale,1));transition:transform .35s cubic-bezier(.2,.7,.2,1),box-shadow .35s ease,filter .35s ease;will-change:transform;cursor:default}
 #home .hero-logo:hover img{--gv-logo-scale:1.045;box-shadow:0 32px 65px #06243d88,0 0 30px #b7e8ff55;filter:brightness(1.045)}
+/* Lively 3D hero emblem: gentle idle rotation, reactive shine and hover lift. */
+#home .hero-logo .gv-hero-logo-float{animation:gvHeroFloat 5s ease-in-out infinite}
+#home .hero-logo img{transform:perspective(1000px) rotateX(calc(var(--gv-rotate-x,0deg) + var(--gv-idle-x,0deg))) rotateY(calc(var(--gv-rotate-y,0deg) + var(--gv-idle-y,0deg))) scale(var(--gv-logo-scale,1));animation:gvHeroIdle3D 7s ease-in-out infinite;transition:transform .18s ease-out,box-shadow .3s ease,filter .3s ease}
+#home .hero-logo .gv-hero-logo-float:after{content:"";position:absolute;inset:8%;border-radius:50%;background:linear-gradient(120deg,transparent 32%,#ffffff66 47%,transparent 60%);opacity:0;transform:translateX(-35%) rotate(-18deg);transition:opacity .25s ease,transform .5s ease;pointer-events:none;z-index:2;mix-blend-mode:screen}
+#home .hero-logo:hover .gv-hero-logo-float:after{opacity:.65;transform:translateX(30%) rotate(-18deg)}
+#home .hero-logo:hover img{--gv-logo-scale:1.085;box-shadow:0 36px 80px #041d3ba8,0 0 42px #c6efff88;filter:brightness(1.075) saturate(1.08)}
+#home .hero-logo.gv-logo-active .gv-hero-logo-float{animation-play-state:paused}
+#home .hero-logo.gv-logo-active img{animation-play-state:paused}
+@keyframes gvHeroIdle3D{0%,100%{--gv-idle-x:0deg;--gv-idle-y:0deg}25%{--gv-idle-x:3deg;--gv-idle-y:-5deg}50%{--gv-idle-x:-2deg;--gv-idle-y:4deg}75%{--gv-idle-x:2deg;--gv-idle-y:-3deg}}
+@property --gv-idle-x{syntax:"<angle>";inherits:false;initial-value:0deg}
+@property --gv-idle-y{syntax:"<angle>";inherits:false;initial-value:0deg}
+@media(prefers-reduced-motion:reduce){#home .hero-logo img{animation:none!important;transition:none!important}#home .hero-logo .gv-hero-logo-float:after{display:none}}
 @keyframes gvHeroFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-15px)}}
 @keyframes gvHeroGlow{0%,100%{opacity:.45;transform:scale(.95)}50%{opacity:.85;transform:scale(1.08)}}
 @media(max-width:767px){#home .hero-logo .gv-hero-logo-float{animation-duration:5.5s}#home .hero-logo .gv-hero-logo-float:before{width:85%}}
@@ -1766,6 +1778,7 @@ logout = async function () {
  const host=document.querySelector("#home .hero-logo");
  const logo=host&&host.querySelector("img");
  if(!host||!logo||!window.matchMedia("(hover: hover) and (pointer: fine)").matches||window.matchMedia("(prefers-reduced-motion: reduce)").matches)return;
+ host.addEventListener("pointerenter",function(){host.classList.add("gv-logo-active")});
  host.addEventListener("pointermove",function(e){
   const rect=logo.getBoundingClientRect();
   const x=Math.max(-1,Math.min(1,(e.clientX-(rect.left+rect.width/2))/(rect.width/2)));
@@ -1774,6 +1787,7 @@ logout = async function () {
   logo.style.setProperty("--gv-rotate-y",(x*11).toFixed(2)+"deg");
  });
  host.addEventListener("pointerleave",function(){
+  host.classList.remove("gv-logo-active");
   logo.style.setProperty("--gv-rotate-x","0deg");
   logo.style.setProperty("--gv-rotate-y","0deg");
  });
