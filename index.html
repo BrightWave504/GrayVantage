@@ -375,6 +375,14 @@ body:has(#exam-taking.active) .header,body:has(#exam-taking.active) #gvPublicBoa
 @media(max-width:767px){
  #home .hero{background-image:url("assets/grayvantage-hero-background.png");background-position:center center}
 }
+
+/* Subtle living 3D animation for the small navigation logo only. */
+.header .brand{perspective:550px}
+.header .brand img{transform-origin:center;transform-style:preserve-3d;animation:gvNavLogoLife 5.5s ease-in-out infinite;filter:drop-shadow(0 3px 3px #0c39602b);transition:filter .25s ease,scale .25s ease;backface-visibility:visible}
+.header .brand:hover img,.header .brand:focus-visible img{animation:gvNavLogoHover 1.3s ease-in-out infinite;scale:1.12;filter:drop-shadow(0 6px 9px #287eb966) brightness(1.08)}
+@keyframes gvNavLogoLife{0%,100%{transform:translateY(0) rotateY(-9deg) rotateX(2deg)}50%{transform:translateY(-4px) rotateY(9deg) rotateX(-3deg)}}
+@keyframes gvNavLogoHover{0%,100%{transform:rotateY(-15deg) rotateZ(-3deg)}50%{transform:rotateY(15deg) rotateZ(3deg)}}
+@media(prefers-reduced-motion:reduce){.header .brand img,.header .brand:hover img,.header .brand:focus-visible img{animation:none!important;transform:none!important}}
 </style></head>
 <body>
 <div id="gvEntrySplash" class="gv-entry-splash" role="status" aria-label="GrayVantage website loading">
